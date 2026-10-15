@@ -13,8 +13,6 @@ pub struct Settings {
     pub name: String,
     #[serde(default = "default_character")]
     pub character: String,
-    #[serde(default, rename = "customCharacters")]
-    pub custom_characters: Vec<serde_json::Value>,
     pub coat: String,
     pub size: u32,
     pub speed: u32,
@@ -85,7 +83,6 @@ impl Default for Settings {
             version: 1,
             name: "Alex".into(),
             character: default_character(),
-            custom_characters: vec![],
             coat: "slate".into(),
             size: 80,
             speed: 45,
@@ -106,13 +103,7 @@ impl Settings {
         if self.version != 1 || self.name.trim().is_empty() || self.name.chars().count() > 80 {
             return Err("Invalid settings version or pet name".into());
         }
-        crate::custom_characters::validate(&self.custom_characters)?;
-        if !valid_character(&self.character)
-            && !self
-                .custom_characters
-                .iter()
-                .any(|c| c["id"] == self.character)
-        {
+        if !valid_character(&self.character) {
             return Err("Unknown or reference-only companion".into());
         }
         if !["left", "right"].contains(&self.home_side.as_str())
@@ -155,8 +146,11 @@ pub fn load(path: &Path) -> Result<Settings, String> {
         return Ok(Settings::default());
     }
     let data = std::fs::read(path).map_err(|e| e.to_string())?;
-    let settings: Settings =
+    let mut settings: Settings =
         serde_json::from_slice(&data).map_err(|e| format!("Settings could not be read: {e}"))?;
+    if settings.character.starts_with("custom-") {
+        settings.character = default_character();
+    }
     settings.validate()?;
     Ok(settings)
 }
@@ -250,6 +244,33 @@ mod tests {
                 "{id}"
             );
         }
+    }
+    #[test]
+    fn removed_custom_selection_falls_back_without_losing_preferences() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("settings.json");
+        let mut old = serde_json::to_value(Settings::default()).unwrap();
+        old["character"] = "custom-retired".into();
+        old["name"] = "My friend".into();
+        old["speed"] = 60.into();
+        old["customCharacters"] = serde_json::json!([{"id": "custom-retired"}]);
+        std::fs::write(&path, serde_json::to_vec(&old).unwrap()).unwrap();
+        let settings = load(&path).unwrap();
+        assert_eq!(settings.character, "alex");
+        assert_eq!(settings.name, "My friend");
+        assert_eq!(settings.speed, 60);
+        save(&path, &settings).unwrap();
+        let saved: serde_json::Value =
+            serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap();
+        assert!(saved.get("customCharacters").is_none());
+    }
+    #[test]
+    fn removed_custom_selection_cannot_be_saved() {
+        let settings = Settings {
+            character: "custom-retired".into(),
+            ..Settings::default()
+        };
+        assert!(settings.validate().is_err());
     }
     #[test]
     fn corrupted_file_is_not_overwritten() {

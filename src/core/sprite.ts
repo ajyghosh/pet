@@ -1,4 +1,3 @@
-import { getCustomCharacter } from "./customCharacters.ts";
 import { isCollectionCharacter, spriteGrid } from "./characters.ts";
 import { collectionSprite } from "./collectionArtwork.ts";
 import type { CharacterId } from "./characters";
@@ -56,7 +55,7 @@ export function sprite(
   character: CharacterId = "alex",
 ): Run[] {
   const normalized = ((Math.floor(frame) % 32) + 32) % 32;
-  const key = `${character}:${JSON.stringify(getCustomCharacter(character)?.appearance) ?? ""}:${animation}:${normalized}:${coat}:${direction < 0 ? -1 : 1}`;
+  const key = `${character}:${animation}:${normalized}:${coat}:${direction < 0 ? -1 : 1}`;
   const cached = poseCache.get(key);
   if (cached) return cached;
   const runs = drawSprite(animation, normalized, coat, direction, character);
@@ -71,17 +70,6 @@ function drawSprite(
   direction = 1,
   character: CharacterId = "alex",
 ): Run[] {
-  const custom = getCustomCharacter(character);
-  if (custom)
-    return collectionSprite(
-      character,
-      64,
-      animation,
-      frame,
-      coat,
-      direction,
-      custom.appearance,
-    );
   if (isCollectionCharacter(character))
     return collectionSprite(
       character,

@@ -2,7 +2,7 @@
 
 Current **heykup pets 1.3.0-beta.1** fixes, reminder work and validation: [beta follow-up](BETA_FIXES.md). Older release results below do not validate the beta.
 
-The current offline manual-creator changes and their checks are recorded in [Phase 1 status](CREATOR_STATUS.md). Older release packaging results below do not validate the creator changes.
+Historical manual-creator checks are recorded in [Phase 1 status](CREATOR_STATUS.md). That feature has since been removed; earlier results below describe the snapshots tested.
 
 ## MiniMates 1.2.0 — character collections and movement
 

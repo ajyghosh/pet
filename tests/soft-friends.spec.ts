@@ -39,3 +39,47 @@ test("Maple can be found, selected, animated, and saved", async ({ page }) => {
   });
   expect(failures).toEqual([]);
 });
+
+test("all plush animals have complete offline atlases and can become the saved companion", async ({
+  page,
+}) => {
+  const failures: string[] = [];
+  page.on("pageerror", (error) => failures.push(error.message));
+  page.on("response", (response) => {
+    if (
+      response.url().includes("/characters/soft-") &&
+      response.status() >= 400
+    )
+      failures.push(response.url());
+  });
+  await page.goto("/");
+  for (const [id, name] of [
+    ["soft-bunny", "Mallow"],
+    ["soft-kitten", "Tofu"],
+    ["soft-puppy", "Pudding"],
+    ["soft-panda", "Pebble"],
+    ["soft-duck", "Buttercup"],
+    ["soft-axolotl", "Bubble"],
+  ]) {
+    await page.getByRole("button", { name: "Characters", exact: true }).click();
+    await page.getByLabel("Character collection").selectOption("Soft Friends");
+    await page
+      .getByRole("button", { name: `Choose ${name}`, exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Save changes", exact: true })
+      .click();
+    await page.reload();
+    await expect(
+      page.getByRole("heading", { name, exact: true }),
+    ).toBeVisible();
+    await page.evaluate(async (id) => {
+      for (const coat of ["ginger", "cream", "slate"]) {
+        const image = new Image();
+        image.src = `/characters/${id}-${coat}.png`;
+        await image.decode();
+      }
+    }, id);
+  }
+  expect(failures).toEqual([]);
+});

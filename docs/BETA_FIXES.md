@@ -1,3 +1,5 @@
+> **Current scope:** The custom-character library, manual creator, photo-creation entry, and preset export have been removed. Creator details below describe an earlier snapshot.
+
 # heykup pets — 1.3.0-beta.1 follow-up
 
 The app is now branded **heykup pets** in lowercase, using the warm cream, coral/rust and ink colours inspected on [heykup.com](https://heykup.com/) on 15 October 2026. Native/download bundle filenames use `heykup-pets`. The website/domain has not been modified. The legacy `com.miso.desktop` identity, existing data paths and Miso startup registration remain compatible with upgrades.

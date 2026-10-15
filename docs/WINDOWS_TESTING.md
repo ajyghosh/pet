@@ -58,9 +58,9 @@ If a native error hides the pet, quit via the tray and reopen it after resolving
 - Check compact bubbles with normal, 120-character, Unicode, and multiline messages. Clicks through bubble and transparent character pixels must reach underlying applications.
 
 
-## 1.3 beta creator, reminders and recovery
+## 1.3 beta reminders and recovery
 
-- [ ] Manual character creation/edit/duplicate/delete persists, including emoji names. Create from Photo is disabled and explicitly unavailable in beta.
+- [ ] Characters shows only bundled companions; custom-character creation and photo-upload controls are absent. Older saved custom selections fall back to Alex without losing other preferences.
 - [ ] Right-click the companion (with consent on Mac) and use tray → Quick reminder. Both open the reminder form; create a one-minute reminder with both alert methods.
 - [ ] Close settings and verify the scheduled bubble and system notification. Test notification settings/Focus suppression, and confirm the UI does not claim OS presentation was guaranteed.
 - [ ] Hide the companion: its bubble remains hidden, while selected system notifications still work. Test repeat intervals, pause, edit, reschedule, delete and 15-minute snooze.
@@ -68,4 +68,4 @@ If a native error hides the pet, quit via the tray and reopen it after resolving
 - [ ] Custom reminders persist independently of appearance Save/Discard. Damaged reminder JSON is preserved until an explicit reminder save.
 - [ ] Simulate a hung/failed pet webview: native recovery disables its input and hides it after the heartbeat deadline. Custom system reminders continue. Show / restart pet restores correct input after a valid frame.
 - [ ] About loads full third-party license texts offline; the installed app also contains LICENSE, THIRD_PARTY_NOTICES.md and THIRD_PARTY_LICENSES.txt. Verify downloaded artifacts against SHA256SUMS.txt.
-- [ ] Record CPU/RSS at startup, 30 and 60 minutes with settings closed, a full custom library, a 3D gallery, and repeated edits. Include OS/build/display details and any sustained growth.
+- [ ] Record CPU/RSS at startup, 30 and 60 minutes with settings closed, a 3D gallery and repeated settings edits. Include OS/build/display details and any sustained growth.

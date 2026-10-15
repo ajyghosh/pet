@@ -77,7 +77,6 @@ async function mockNative(
             return { reminders: scheduled, warning: null, snoozedUntil: 0 };
           }
           if (cmd === "input_status") return true;
-          if (cmd === "export_character") return "/test/Downloads/preset.json";
           if (cmd === "plugin:event|listen") return 1;
           return null;
         },
@@ -186,82 +185,6 @@ test("high-resolution 3D companions submit 64-pixel hit masks within a parked ar
       ),
     )
     .toMatchObject({ grid: 64, x: 880 });
-});
-
-test("custom native companion renders canvas and submits the same 64px hit spans", async ({
-  page,
-}) => {
-  const { newCustomCharacter, registerCustomCharacters } =
-    await import("../src/core/customCharacters");
-  const { silhouette, sprite } = await import("../src/core/sprite");
-  const custom = newCustomCharacter();
-  custom.name = "Custom native";
-  custom.appearance.accessories = ["hat", "glasses"];
-  registerCustomCharacters([custom]);
-  await mockNative(page, "pet", false, {
-    ...structuredClone(defaults),
-    character: custom.id,
-    customCharacters: [custom],
-  });
-  await page.goto("/");
-  await expect(page.locator("canvas")).toBeVisible();
-  await expect
-    .poll(() =>
-      page.evaluate(
-        () =>
-          (window as unknown as { calls: { cmd: string }[] }).calls.filter(
-            (c) => c.cmd === "present_frame",
-          ).length,
-      ),
-    )
-    .toBeGreaterThan(2);
-  const submitted = await page.evaluate(() => {
-    const calls = (
-      window as unknown as {
-        calls: {
-          cmd: string;
-          args: { frame: { grid: number; rows: number[][] } };
-        }[];
-      }
-    ).calls;
-    return calls.find((c) => c.cmd === "present_frame")!.args.frame;
-  });
-  expect(submitted.grid).toBe(64);
-  // Startup stays idle for four seconds. Match against the complete wrapped idle cycle.
-  expect(
-    Array.from({ length: 32 }, (_, frame) =>
-      silhouette(sprite("idle", frame, "slate", 1, custom.id)),
-    ),
-  ).toContainEqual(submitted.rows);
-  registerCustomCharacters([]);
-});
-
-test("desktop preset export uses the restricted native command", async ({
-  page,
-}) => {
-  const { newCustomCharacter } = await import("../src/core/customCharacters");
-  const custom = newCustomCharacter();
-  await mockNative(page, "settings", false, {
-    ...structuredClone(defaults),
-    customCharacters: [custom],
-  });
-  await page.goto("/");
-  await page.getByRole("button", { name: "Characters", exact: true }).click();
-  await page
-    .getByRole("button", { name: "Export preset", exact: true })
-    .click();
-  await expect(
-    page.getByText("Exported to /test/Downloads/preset.json", { exact: true }),
-  ).toBeVisible();
-  const exported = await page.evaluate(
-    () =>
-      (
-        window as unknown as {
-          calls: { cmd: string; args: { character: unknown } }[];
-        }
-      ).calls.find((c) => c.cmd === "export_character")!.args.character,
-  );
-  expect(exported).toEqual(custom);
 });
 
 test("newer edits survive a pending native save and remain unsaved", async ({

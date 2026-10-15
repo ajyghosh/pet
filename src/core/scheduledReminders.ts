@@ -1,4 +1,4 @@
-import { assertUnicodeText } from "./customCharacters";
+import { assertUnicodeText } from "./unicode";
 export interface ScheduledReminder {
   id: string;
   title: string;

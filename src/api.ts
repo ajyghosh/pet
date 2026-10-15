@@ -2,11 +2,7 @@ import {
   validateReminderList,
   validateScheduledReminder,
 } from "./core/scheduledReminders";
-import {
-  validateCustomCharacter,
-  assertUnicodeText,
-  type CustomCharacter,
-} from "./core/customCharacters";
+import { assertUnicodeText } from "./core/unicode";
 import { invoke, isTauri } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { defaults, normalizeSettings, type Settings } from "./core/settings";
@@ -99,25 +95,6 @@ export async function on<T>(
   const listener = (e: Event) => callback((e as CustomEvent<T>).detail);
   window.addEventListener(event, listener);
   return () => window.removeEventListener(event, listener);
-}
-
-export async function exportPreset(
-  character: CustomCharacter,
-): Promise<string> {
-  const valid = validateCustomCharacter(character);
-  if (native) {
-    const path = await invoke<string>("export_character", { character: valid });
-    return `Exported to ${path}`;
-  }
-  const url = URL.createObjectURL(
-    new Blob([JSON.stringify(valid, null, 2)], { type: "application/json" }),
-  );
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `${valid.id}.json`;
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-  return "Preset downloaded.";
 }
 
 const remindersKey = "heykup-pets.reminders.v1";

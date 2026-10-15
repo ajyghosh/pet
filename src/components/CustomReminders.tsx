@@ -148,7 +148,7 @@ export function CustomReminders({
           requires the installed desktop app.
         </p>
       )}
-      <div className="creator-actions">
+      <div className="reminder-actions">
         <button
           className="secondary-button"
           disabled={!native || busy}
@@ -175,7 +175,7 @@ export function CustomReminders({
               ? "Edit reminder"
               : "New reminder"}
           </legend>
-          <div className="creator-fields">
+          <div className="reminder-form-fields">
             <label>
               Reminder title
               <input
@@ -261,7 +261,7 @@ export function CustomReminders({
             )}
           </div>
           {mode === "quick" && (
-            <div className="creator-actions">
+            <div className="reminder-actions">
               {[5, 15, 30, 60].map((n) => (
                 <button
                   key={n}
@@ -274,7 +274,7 @@ export function CustomReminders({
               ))}
             </div>
           )}
-          <div className="creator-actions">
+          <div className="reminder-actions">
             <label className="accessory-choice">
               <input
                 type="checkbox"
@@ -312,7 +312,7 @@ export function CustomReminders({
             notifications; speech bubbles follow your companion’s visibility and
             bubble preference.
           </p>
-          <div className="creator-actions">
+          <div className="reminder-actions">
             <button
               className="primary-button"
               onClick={() => {
@@ -348,7 +348,7 @@ export function CustomReminders({
                 ? ` · Last alert attempted ${new Date(r.lastFiredAt).toLocaleString()}`
                 : ""}
             </p>
-            <div className="creator-actions">
+            <div className="reminder-actions">
               <button
                 className="secondary-button"
                 disabled={busy}

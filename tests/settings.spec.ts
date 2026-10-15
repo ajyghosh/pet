@@ -126,7 +126,7 @@ test("all imported collections are available, 3D choice persists, and references
   await page.goto("/");
   await page.getByRole("button", { name: "Characters", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "Ready to join · 133" }),
+    page.getByRole("button", { name: "Ready to join · 139" }),
   ).toBeVisible();
   await page
     .getByLabel("Character collection")
@@ -190,7 +190,7 @@ test("character gallery filters, saves, and discards unsaved choices", async ({
     );
   }
   await page.getByRole("button", { name: "Animals", exact: true }).click();
-  await expect(page.locator(".character-card")).toHaveCount(8);
+  await expect(page.locator(".character-card")).toHaveCount(14);
   await page.getByLabel("Search characters").fill("fox");
   await expect(page.locator(".character-card")).toHaveCount(1);
   await page.getByRole("button", { name: "Choose Ember", exact: true }).click();
@@ -267,7 +267,6 @@ test("About exposes the packaged dependency notices and beta feature limits", as
   await expect(notices).toContainText("npm: react@");
   await expect(notices).toContainText("cargo: tauri@");
   await expect(notices).toContainText("Mozilla Public License Version 2.0");
-  await expect(
-    page.getByText(/Manual character customization is included/),
-  ).toBeVisible();
+  await expect(page.getByText(/139 companions/)).toBeVisible();
+  await expect(page.getByText(/Manual character customization/)).toHaveCount(0);
 });

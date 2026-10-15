@@ -134,6 +134,11 @@ export function CharacterGallery({
       </p>
       {references ? (
         <div className="reference-grid">
+          {!referenceList.length && (
+            <p className="gallery-empty" role="status">
+              No reference ideas match your search.
+            </p>
+          )}
           {referenceList.map((c) => (
             <article key={c.id} className="reference-card">
               <BookOpen size={20} />

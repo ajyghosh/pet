@@ -1,4 +1,3 @@
-import { getCustomCharacter } from "./customCharacters.ts";
 import readyIds from "./ready-characters.json" with { type: "json" };
 import seed from "../../assets/characters/collections/characters.json" with { type: "json" };
 /** Original bundled characters. IDs are persisted in both browser and native settings. */
@@ -98,6 +97,57 @@ export interface Character {
   collection: string;
   style: "pixel-art" | "cute-3d";
 }
+/** Original plush-style animals, rendered locally into bundled sprite atlases. */
+export const softFriends: Character[] = [
+  {
+    id: "soft-bear",
+    name: "Maple",
+    description: "Soft little bear · warm hugs, gentle company",
+    color: "#f6e7d7",
+  },
+  {
+    id: "soft-bunny",
+    name: "Mallow",
+    description: "Plush bunny · floppy ears, softer days",
+    color: "#f6e5ee",
+  },
+  {
+    id: "soft-kitten",
+    name: "Tofu",
+    description: "Plush kitten · tiny paws, cozy company",
+    color: "#f6e9dc",
+  },
+  {
+    id: "soft-puppy",
+    name: "Pudding",
+    description: "Plush puppy · a pocket-sized best friend",
+    color: "#f1e1cf",
+  },
+  {
+    id: "soft-panda",
+    name: "Pebble",
+    description: "Plush panda · made for little pauses",
+    color: "#e5e9ed",
+  },
+  {
+    id: "soft-duck",
+    name: "Buttercup",
+    description: "Plush duckling · a little ray of sunshine",
+    color: "#fff0cd",
+  },
+  {
+    id: "soft-axolotl",
+    name: "Bubble",
+    description: "Plush axolotl · a tiny smile by your side",
+    color: "#f7e0e9",
+  },
+].map((character) => ({
+  ...character,
+  kind: "Animals",
+  collection: "Soft Friends",
+  style: "cute-3d",
+}));
+
 export const referenceCharacters = seed.characters.filter(
   (c) => c.asset_status === "reference_only",
 );
@@ -109,15 +159,7 @@ export const characterDefinitions: Character[] = [
     collection: "heykup pets Originals",
     style: "pixel-art" as const,
   })),
-  {
-    id: "soft-bear",
-    name: "Maple",
-    kind: "Animals",
-    description: "Soft little bear · warm hugs, gentle company",
-    color: "#f6e7d7",
-    collection: "Soft Friends",
-    style: "cute-3d",
-  },
+  ...softFriends,
   ...seed.characters
     .filter((c) => {
       if (c.asset_status !== "planned" || seen.has(c.id)) return false;
@@ -140,17 +182,6 @@ export const characters = characterDefinitions.filter(
 );
 const byId = new Map(characterDefinitions.map((c) => [c.id, c]));
 export function characterInfo(id: CharacterId): Character {
-  const custom = getCustomCharacter(id);
-  if (custom)
-    return {
-      id,
-      name: custom.name,
-      description: custom.personality,
-      collection: "My Custom Characters",
-      kind: "People",
-      style: "cute-3d",
-      color: "#fbe5ef",
-    };
   return byId.get(id) ?? characters[0];
 }
 export function spriteGrid(id: CharacterId) {

@@ -1,4 +1,3 @@
-mod custom_characters;
 mod custom_reminders;
 mod geometry;
 #[cfg(any(target_os = "macos", test))]
@@ -107,17 +106,6 @@ fn save_settings(
     app.emit("settings-changed", &settings)
         .map_err(|e| e.to_string())?;
     Ok(settings)
-}
-#[tauri::command]
-fn export_character(
-    window: WebviewWindow,
-    app: tauri::AppHandle,
-    character: serde_json::Value,
-) -> Result<String, String> {
-    allowed(&window, &["settings"])?;
-    let directory = app.path().download_dir().map_err(|e| e.to_string())?;
-    custom_characters::export(&directory, &character)
-        .map(|path| path.to_string_lossy().into_owned())
 }
 type ReminderState = Mutex<custom_reminders::Store>;
 #[tauri::command]
@@ -770,7 +758,6 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             bootstrap,
             save_settings,
-            export_character,
             list_custom_reminders,
             save_custom_reminder,
             delete_custom_reminder,

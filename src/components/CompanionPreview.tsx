@@ -1,4 +1,4 @@
-import type { CustomCharacter } from "../core/customCharacters";
+import { useReducedMotion } from "../hooks/useReducedMotion";
 import { useEffect, useRef, useState } from "react";
 import { Moon, Sun, Pause, Play, Monitor } from "lucide-react";
 import { PetSprite } from "./PetSprite";
@@ -15,18 +15,16 @@ export const animations: { id: Animation; label: string }[] = [
 export function CompanionPreview({
   settings,
   expanded = false,
-  customCharacter,
-  facing,
 }: {
   settings: Settings;
   expanded?: boolean;
-  customCharacter?: CustomCharacter;
-  facing?: number;
 }) {
+  const reducedMotion = useReducedMotion();
   const [animation, setAnimation] = useState<Animation>("walking");
-  const [paused, setPaused] = useState(
-    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
+  const [paused, setPaused] = useState(reducedMotion);
+  useEffect(() => {
+    if (reducedMotion) setPaused(true);
+  }, [reducedMotion]);
   const [night, setNight] = useState(false);
   const [time, setTime] = useState(0);
   const stage = useRef<HTMLDivElement>(null);
@@ -56,6 +54,7 @@ export function CompanionPreview({
     animation === "walking"
       ? 24 + (progress <= distance ? progress : distance * 2 - progress)
       : (width - size) / 2;
+  const speechWidth = Math.min(220, Math.max(1, width - 32));
   const lift =
     animation === "jumping"
       ? Math.max(0, Math.sin(((time % 1400) / 700) * Math.PI)) * 55
@@ -109,15 +108,23 @@ export function CompanionPreview({
           className="preview-human"
           data-animation={animation}
           style={{ width: size, height: size, left: x, bottom: 45 + lift }}
-          onClick={() => {
-            setAnimation("happy");
-            setTime(0);
-          }}
         >
           {(animation === "happy" ||
             animation === "drinking" ||
             animation === "sleeping") && (
-            <div className="preview-speech">
+            <div
+              className="preview-speech"
+              style={{
+                width: speechWidth,
+                left: Math.max(
+                  16 - x,
+                  Math.min(
+                    (size - speechWidth) / 2,
+                    width - 16 - x - speechWidth,
+                  ),
+                ),
+              }}
+            >
               {animation === "drinking"
                 ? "Water break? 💧"
                 : animation === "sleeping"
@@ -125,14 +132,22 @@ export function CompanionPreview({
                   : `Hey, I'm ${settings.name}!`}
             </div>
           )}
-          <PetSprite
-            animation={animation}
-            frame={Math.floor(time / 160)}
-            coat={settings.coat}
-            character={settings.character}
-            direction={facing ?? (animation === "walking" ? direction : 1)}
-            customCharacter={customCharacter}
-          />
+          <button
+            className="preview-pet-trigger"
+            aria-label={`${animation === "sleeping" ? "Wake" : "Greet"} ${settings.name} in preview`}
+            onClick={() => {
+              setAnimation("happy");
+              setTime(0);
+            }}
+          >
+            <PetSprite
+              animation={animation}
+              frame={Math.floor(time / 160)}
+              coat={settings.coat}
+              character={settings.character}
+              direction={animation === "walking" ? direction : 1}
+            />
+          </button>
         </div>
         <div className="preview-taskbar" aria-hidden="true">
           <span className="taskbar-start">▦</span>

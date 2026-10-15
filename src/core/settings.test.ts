@@ -56,3 +56,21 @@ it("migrates old preferences and normalizes unknown characters and crossed limit
   expect(invalid.walkStart).toBe(90);
   expect(invalid.walkEnd).toBe(100);
 });
+
+it("drops legacy custom characters and keeps unrelated preferences", () => {
+  const settings = normalizeSettings({
+    ...defaults,
+    character: "custom-retired",
+    customCharacters: [{ id: "custom-retired", name: "Retired" }],
+    name: "My friend",
+    speed: 60,
+    coat: "cream",
+  });
+  expect(settings).toMatchObject({
+    character: "alex",
+    name: "My friend",
+    speed: 60,
+    coat: "cream",
+  });
+  expect(settings).not.toHaveProperty("customCharacters");
+});

@@ -1,7 +1,3 @@
-import {
-  validateCustomCharacters,
-  type CustomCharacter,
-} from "./customCharacters";
 import { characters, type CharacterId } from "./characters";
 export const reminderKinds = ["water", "stretch", "break"] as const;
 export type ReminderKind = (typeof reminderKinds)[number];
@@ -17,7 +13,6 @@ export interface Settings {
   version: 1;
   name: string;
   character: CharacterId;
-  customCharacters: CustomCharacter[];
   coat: Coat;
   size: number;
   speed: number;
@@ -35,7 +30,6 @@ export const defaults: Settings = {
   version: 1,
   name: "Alex",
   character: "alex",
-  customCharacters: [],
   coat: "slate",
   size: 80,
   speed: 45,
@@ -80,14 +74,10 @@ const str = (x: unknown, fallback: string, length: number) =>
 export function normalizeSettings(value: unknown): Settings {
   const v = record(value),
     reminders = record(v.reminders);
-  const customCharacters = validateCustomCharacters(v.customCharacters);
   return {
     version: 1,
     name: str(v.name, defaults.name, 80),
-    customCharacters,
-    character: [...characters, ...customCharacters].some(
-      (c) => c.id === v.character,
-    )
+    character: characters.some((c) => c.id === v.character)
       ? (v.character as CharacterId)
       : defaults.character,
     coat: ["ginger", "cream", "slate"].includes(String(v.coat))

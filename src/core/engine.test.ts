@@ -115,3 +115,14 @@ describe("walking area and reminder-only excursions", () => {
     expect(p.x).toBe(250);
   });
 });
+
+it("greeting a sleeping pet clears its indefinite sleep and resumes normal behavior", () => {
+  const sleeping = interact(createPet(), "sleeping", 0);
+  expect(advance(sleeping, 100000, 0.1, 1000, defaults).animation).toBe(
+    "sleeping",
+  );
+  const awake = interact(sleeping, "happy", 100000);
+  expect(awake.animation).toBe("happy");
+  expect(Number.isFinite(awake.until)).toBe(true);
+  expect(advance(awake, 103000, 0.1, 1000, defaults).animation).toBe("idle");
+});

@@ -1,9 +1,9 @@
+import { useReducedMotion } from "./hooks/useReducedMotion";
+import { ReminderInterval } from "./components/ReminderInterval";
 import { CustomReminders } from "./components/CustomReminders";
 import { takeQuickReminderRequest } from "./api";
 import { version as appVersion } from "../package.json";
 import { LicenseNotices } from "./components/LicenseNotices";
-import { registerCustomCharacters } from "./core/customCharacters";
-import { CustomCharacterLibrary } from "./components/CustomCharacterLibrary";
 import { characters, characterInfo, type CharacterId } from "./core/characters";
 import { CharacterGallery } from "./components/CharacterGallery";
 import { MovementSettings } from "./components/MovementSettings";
@@ -115,6 +115,7 @@ function Toggle({
   );
 }
 export default function App() {
+  const reducedMotion = useReducedMotion();
   const [quickRequest, setQuickRequest] = useState(0);
   const [tab, setTab] = useState<Tab>("companion");
   const [settings, setSettings] = useState<Settings>(structuredClone(defaults));
@@ -133,7 +134,7 @@ export default function App() {
   const [animation, setAnimation] = useState<Animation>("idle"),
     [frame, setFrame] = useState(0);
   const mac = platform === "macos";
-  registerCustomCharacters(settings.customCharacters);
+
   const dirty = JSON.stringify(settings) !== JSON.stringify(saved);
   useEffect(() => {
     let active = true;
@@ -223,9 +224,10 @@ export default function App() {
     };
   }, []);
   useEffect(() => {
+    if (reducedMotion) return;
     const timer = setInterval(() => setFrame((f) => f + 1), 160);
     return () => clearInterval(timer);
-  }, []);
+  }, [reducedMotion]);
   useEffect(() => {
     if (!notice) return;
     const timer = setTimeout(() => setNotice(""), 5000);
@@ -306,9 +308,7 @@ export default function App() {
     setSettings((s) => ({
       ...s,
       character,
-      name: [...characters, ...s.customCharacters].some(
-        (c) => c.name === s.name,
-      )
+      name: characters.some((c) => c.name === s.name)
         ? characterInfo(character).name
         : s.name,
     }));
@@ -387,22 +387,17 @@ export default function App() {
           ))}
         </nav>
         <div className="sidebar-note">
-          <span className="note-spark">✳</span>
-          <h3>
-            A better kind of
-            <br />
-            screen time.
-          </h3>
-          <p>
-            A wave. A water break.
-            <br />
-            The little things add up.
-          </p>
+          <span className="note-spark" aria-hidden="true">
+            ✳
+          </span>
+          <h3>A better kind of screen time.</h3>
+          <p>A wave. A water break. The little things add up.</p>
           <span>A LITTLE FRIEND, ON YOUR SIDE.</span>
         </div>
         <div className="sidebar-bottom">
           <button
             className={`nav-item ${tab === "about" ? "selected" : ""}`}
+            aria-current={tab === "about" ? "page" : undefined}
             onClick={() => setTab("about")}
           >
             <Info size={18} />
@@ -499,7 +494,13 @@ export default function App() {
                     <span>YOUR COMPANION</span>
                     <span className="count-tag">01</span>
                   </div>
-                  <div className={`profile-avatar ${settings.coat}`}>
+                  <button
+                    className={`profile-avatar ${settings.coat}`}
+                    aria-label={`${animation === "sleeping" ? "Wake" : "Greet"} ${settings.name}`}
+                    onClick={() =>
+                      void play(animation === "sleeping" ? "wake" : "happy")
+                    }
+                  >
                     <div className="avatar-orbit" />
                     <PetSprite
                       animation={animation}
@@ -507,8 +508,10 @@ export default function App() {
                       coat={settings.coat}
                       character={settings.character}
                     />
-                    <span className="avatar-spark">✦</span>
-                  </div>
+                    <span className="avatar-spark" aria-hidden="true">
+                      ✦
+                    </span>
+                  </button>
                   <h2>{settings.name}</h2>
                   <p>
                     {animation === "sleeping"
@@ -668,24 +671,11 @@ export default function App() {
                       <div className="reminder-fields">
                         <label>
                           Remind me every
-                          <div className="interval-input">
-                            <input
-                              aria-label={`${m.title} interval in minutes`}
-                              type="number"
-                              min={1}
-                              max={240}
-                              value={r.minutes}
-                              onChange={(e) =>
-                                reminder(k, {
-                                  minutes: Math.max(
-                                    1,
-                                    Math.min(240, Number(e.target.value) || 1),
-                                  ),
-                                })
-                              }
-                            />
-                            <span>minutes</span>
-                          </div>
+                          <ReminderInterval
+                            label={`${m.title} interval in minutes`}
+                            minutes={r.minutes}
+                            onChange={(minutes) => reminder(k, { minutes })}
+                          />
                         </label>
                         <label>
                           A little message
@@ -722,10 +712,6 @@ export default function App() {
           )}
           {tab === "characters" && (
             <>
-              <CustomCharacterLibrary
-                settings={settings}
-                onChange={setSettings}
-              />
               <CharacterGallery
                 settings={settings}
                 frame={frame}
@@ -968,10 +954,8 @@ export default function App() {
                   Choose from {characters.length} original characters, each with
                   three color styles and six animation states. Pick a walking
                   area, park on either side, or move only for reminders.
-                  Multiple simultaneous companions, photo creation, ZIP pack
-                  imports, and fullscreen auto-hide are not available in this
-                  beta. Manual character customization is included in Characters
-                  → Create Character.
+                  Multiple simultaneous companions and fullscreen auto-hide are
+                  not available in this beta.
                 </p>
               </div>
               <p className="field-help">

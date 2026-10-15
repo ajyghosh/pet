@@ -1,4 +1,3 @@
-import { registerCustomCharacters } from "./core/customCharacters";
 import { spriteGrid, type CharacterId } from "./core/characters";
 import { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
@@ -47,7 +46,7 @@ export function PetWindow() {
     };
     async function start() {
       let settings = (await bootstrap()).settings;
-      registerCustomCharacters(settings.customCharacters);
+
       let displays = await monitors();
       if (disposed) return;
       let pet = createPet(),
@@ -98,7 +97,7 @@ export function PetWindow() {
           )
         )
           pet.excursion = null;
-        registerCustomCharacters(s.customCharacters ?? []);
+
         settings = s;
         clock.update(s, performance.now());
       });

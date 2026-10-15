@@ -1,3 +1,4 @@
+import { useReducedMotion } from "../hooks/useReducedMotion";
 import { useEffect, useState } from "react";
 import { advance, createPet, remind } from "../core/engine";
 import type { Settings } from "../core/settings";
@@ -9,12 +10,14 @@ export function MovementSettings({
   settings: Settings;
   onChange: (patch: Partial<Settings>) => void;
 }) {
+  const reducedMotion = useReducedMotion();
   const [pet, setPet] = useState(createPet);
   const [frame, setFrame] = useState(0);
   // A scaled, independent simulation: it never sends commands to the desktop.
   const simulation = { ...settings, size: 64 };
   useEffect(() => {
     setPet(advance(createPet(), 0, 0, 1000, { ...settings, size: 64 }));
+    if (reducedMotion) return;
     let now = 0;
     const timer = setInterval(() => {
       now += 50;
@@ -23,6 +26,7 @@ export function MovementSettings({
     }, 50);
     return () => clearInterval(timer);
   }, [
+    reducedMotion,
     settings.roaming,
     settings.alertsOnly,
     settings.homeSide,

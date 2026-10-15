@@ -1,3 +1,5 @@
+> **Current scope:** The custom-character library, manual creator, photo-creation entry, and preset export have been removed. Creator details below describe an earlier snapshot.
+
 # Offline character creator — Phase 1
 
 For the current lowercase **heykup pets** brand, beta fixes and custom reminders, see [the beta follow-up](BETA_FIXES.md). This document records the original creator integration.
