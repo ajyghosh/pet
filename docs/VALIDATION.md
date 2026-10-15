@@ -12,7 +12,8 @@ Validated on 15 October 2026: 132 playable character definitions (12 originals +
 | Rust tests, including settings migration, collection allowlist, geometry and hit routing | 11 passed |
 | Rust clippy with warnings denied | Passed |
 | Visual inspection | Original animals, pixel collections, Cute 3D collections, gallery filters and movement area inspected |
-| Native installer builds | New GitHub Actions run required for 1.2.0; prior-release results below do not validate this release |
+| Local Mac Intel app bundle | Passed; 65.76 MiB ad-hoc-signed app, strict signature verification passed |
+| Native release installer builds | [GitHub Actions run 38712027979](https://github.com/ajyghosh/pet/actions/runs/38712027979) triggered for code commit `3debfac`; prior-release results below do not validate this release |
 
 The shaded figures use original procedural geometry, not imported 3D models. Each ready character has three atlas files and an MIT manifest. Reference-only IDs are rejected by both settings layers. Frame numbers wrap identically in the renderer and PNG atlas, preventing hit-mask drift after extended runtime.
 
