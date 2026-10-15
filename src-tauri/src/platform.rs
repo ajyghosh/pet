@@ -82,6 +82,7 @@ mod win {
             id,
             primary: info.monitorInfo.dwFlags & 1 != 0,
             scale: dx as f64 / 96.0,
+            coordinate_scale: dx as f64 / 96.0,
             bounds: rect(bounds),
             work: rect(work),
             taskbar,
@@ -177,15 +178,66 @@ mod win {
     }
 }
 #[cfg(windows)]
-pub use win::*;
-#[cfg(not(windows))]
-pub fn displays() -> Result<Vec<Display>, String> {
-    Err(
-        "Native desktop pet is supported on Windows. Use npm run dev for the browser preview."
-            .into(),
-    )
+pub use win::shape;
+#[cfg(target_os = "macos")]
+#[path = "platform_macos.rs"]
+mod mac;
+#[cfg(target_os = "macos")]
+pub use mac::{
+    clear_input, displays, initialize, input_status, position, request_input_permission, sync_input,
+};
+
+#[cfg(not(target_os = "macos"))]
+pub fn displays(_: &tauri::AppHandle) -> Result<Vec<Display>, String> {
+    #[cfg(windows)]
+    {
+        win::displays()
+    }
+    #[cfg(not(windows))]
+    {
+        Err("Miso currently supports Windows and macOS.".into())
+    }
 }
-#[cfg(not(windows))]
-pub fn shape(_: &tauri::WebviewWindow, _: &[[i32; 3]], _: i32) -> Result<(), String> {
-    Err("Windows region support is required".into())
+#[cfg(not(target_os = "macos"))]
+pub fn position(
+    window: &tauri::WebviewWindow,
+    x: i32,
+    y: i32,
+    width: i32,
+    height: i32,
+) -> Result<bool, String> {
+    window
+        .set_position(tauri::PhysicalPosition::new(x, y))
+        .map_err(|e| e.to_string())?;
+    let size = tauri::PhysicalSize::new(width as u32, height as u32);
+    let resized = window.inner_size().map_err(|e| e.to_string())? != size;
+    if resized {
+        window.set_size(size).map_err(|e| e.to_string())?;
+    }
+    Ok(resized)
+}
+#[cfg(not(target_os = "macos"))]
+pub fn initialize(_: &tauri::AppHandle) -> Result<(), String> {
+    Ok(())
+}
+#[cfg(not(target_os = "macos"))]
+pub fn clear_input() {}
+#[cfg(not(target_os = "macos"))]
+pub fn input_status() -> bool {
+    true
+}
+#[cfg(not(target_os = "macos"))]
+pub fn request_input_permission() -> bool {
+    true
+}
+#[cfg(not(target_os = "macos"))]
+pub fn sync_input(
+    _: &tauri::WebviewWindow,
+    _: i32,
+    _: i32,
+    _: i32,
+    _: &[[i32; 3]],
+    _: bool,
+) -> Result<Option<bool>, String> {
+    Ok(None)
 }

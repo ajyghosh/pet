@@ -16,7 +16,7 @@ describe("settings resilience", () => {
     });
     expect(s.name).toBe("Bean");
     expect(s.coat).toBe("slate");
-    expect(s.size).toBe(128);
+    expect(s.size).toBe(80);
     expect(s.speed).toBe(45);
     expect(s.autostart).toBe(false);
     expect(s.reminders.water.minutes).toBe(240);

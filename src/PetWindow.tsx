@@ -3,12 +3,22 @@ import { invoke } from "@tauri-apps/api/core";
 import { bootstrap, monitors, on, type Display } from "./api";
 import { advance, createPet, interact } from "./core/engine";
 import { ReminderClock } from "./core/reminders";
-import { defaults, type Animation, type ReminderKind } from "./core/settings";
+import {
+  defaults,
+  type Animation,
+  type ReminderKind,
+  type Coat,
+} from "./core/settings";
 import { sprite, silhouette } from "./core/sprite";
-import { PixelSprite } from "./components/PetSprite";
+import { PetSprite } from "./components/PetSprite";
 
 export function PetWindow() {
-  const [runs, setRuns] = useState(() => sprite("idle", 0, "ginger"));
+  const [pose, setPose] = useState<{
+    animation: Animation;
+    frame: number;
+    coat: Coat;
+    direction: number;
+  }>({ animation: "idle", frame: 0, coat: "slate", direction: 1 });
   const hover = useRef(false);
   const input = useRef<(action: string) => void>(() => {});
   useEffect(() => {
@@ -45,12 +55,16 @@ export function PetWindow() {
         }
         if (a.startsWith("reminder:")) {
           say(settings.reminders[a.slice(9) as ReminderKind].message);
+          pet = interact(
+            pet,
+            a === "reminder:water" ? "drinking" : "idle",
+            now,
+          );
           return;
         }
         const animation = a === "wake" ? "idle" : (a as Animation);
         pet = interact(pet, animation, now);
-        if (animation === "happy")
-          say("A little head scratch makes a big difference. ♡");
+        if (animation === "happy") say("Hey there! Nice to see you.");
         if (animation === "sleeping")
           say("Just resting my eyes. Click me when you need company.");
         if (animation === "jumping") say("A tiny leap of joy!");
@@ -73,7 +87,7 @@ export function PetWindow() {
           displays.find((d) => d.primary) ??
           displays[0];
         if (!d) throw new Error("No desktop monitor is available.");
-        const width = (d.work.right - d.work.left) / d.scale;
+        const width = (d.work.right - d.work.left) / d.coordinateScale;
         pet = advance(
           pet,
           now,
@@ -83,7 +97,10 @@ export function PetWindow() {
         );
         last = now;
         const reminder = clock.tick(now);
-        if (reminder) say(settings.reminders[reminder].message);
+        if (reminder) {
+          say(settings.reminders[reminder].message);
+          pet = interact(pet, reminder === "water" ? "drinking" : "idle", now);
+        }
         if (now >= messageUntil) message = null;
         const nextRuns = sprite(
           pet.animation,
@@ -91,8 +108,13 @@ export function PetWindow() {
           settings.coat,
           pet.direction,
         );
-        setRuns(nextRuns);
-        await invoke("present_frame", {
+        setPose({
+          animation: pet.animation,
+          frame: Math.floor(now / 160),
+          coat: settings.coat,
+          direction: pet.direction,
+        });
+        const nativeHover = await invoke<boolean | null>("present_frame", {
           frame: {
             x: pet.x,
             lift: pet.lift,
@@ -100,6 +122,7 @@ export function PetWindow() {
             message,
           },
         });
+        if (nativeHover !== null) hover.current = nativeHover;
         if (!disposed)
           timer = setTimeout(() => {
             void tick().catch(fail);
@@ -111,7 +134,7 @@ export function PetWindow() {
       if (disposed) return;
       // Fail closed: hide the overlay if monitor positioning or shape updates fail.
       await invoke("report_pet_error", {
-        message: `Miso paused: ${String(error)}. Quit and reopen Miso to retry.`,
+        message: `MiniMates paused: ${String(error)}. Quit and reopen MiniMates to retry.`,
       }).catch(console.error);
     }
     void start().catch(fail);
@@ -137,7 +160,7 @@ export function PetWindow() {
         void invoke("open_settings");
       }}
     >
-      <PixelSprite runs={runs} />
+      <PetSprite {...pose} />
     </div>
   );
 }

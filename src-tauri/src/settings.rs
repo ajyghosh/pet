@@ -45,9 +45,9 @@ impl Default for Settings {
         .collect();
         Self {
             version: 1,
-            name: "Miso".into(),
-            coat: "ginger".into(),
-            size: 128,
+            name: "Alex".into(),
+            coat: "slate".into(),
+            size: 80,
             speed: 45,
             monitor: "primary".into(),
             autostart: false,
@@ -63,7 +63,7 @@ impl Settings {
             return Err("Invalid settings version or pet name".into());
         }
         if !["ginger", "cream", "slate"].contains(&self.coat.as_str())
-            || ![96, 128, 160].contains(&self.size)
+            || ![64, 80, 96, 128, 160].contains(&self.size)
             || !(10..=100).contains(&self.speed)
         {
             return Err("Invalid appearance settings".into());

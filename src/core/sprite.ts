@@ -6,17 +6,47 @@ export interface Run {
   width: number;
   color: string;
 }
+// Original MiniMates pixel artwork. Clothing IDs retain compatibility with Miso settings.
 const palettes: Record<Coat, string[]> = {
-  ginger: ["#513c32", "#d98c52", "#edb878", "#ffe2af", "#b9693e", "#dd8d89"],
-  cream: ["#675342", "#d9c6a0", "#eee0bf", "#fff3d8", "#b99b72", "#e5a4a0"],
-  slate: ["#303e48", "#738b99", "#9bb1b9", "#e3e8de", "#526b7a", "#dca3a5"],
+  ginger: [
+    "#25243f",
+    "#ee795e",
+    "#ffae8d",
+    "#f4bd97",
+    "#cf8d68",
+    "#42342e",
+    "#fff5e6",
+    "#424c7c",
+    "#a9e9ff",
+  ],
+  cream: [
+    "#25243f",
+    "#a184e8",
+    "#c9b4ff",
+    "#e5a77e",
+    "#bb795a",
+    "#3a2929",
+    "#fff5e6",
+    "#414b71",
+    "#a9e9ff",
+  ],
+  slate: [
+    "#25243f",
+    "#5479ef",
+    "#9bb7ff",
+    "#bf815c",
+    "#9b5e43",
+    "#28232b",
+    "#fff5e6",
+    "#353b5c",
+    "#a9e9ff",
+  ],
 };
-/** Original hand-built 32×32 pixel character. The same opaque runs form the Win32 region. */
 export function sprite(
   animation: Animation,
   frame: number,
   coat: Coat,
-  direction: number = 1,
+  direction = 1,
 ): Run[] {
   const pixels = Array.from({ length: GRID }, () =>
     Array<number>(GRID).fill(-1),
@@ -26,61 +56,81 @@ export function sprite(
       for (let i = x; i < x + w; i++)
         if (j >= 0 && j < GRID && i >= 0 && i < GRID) pixels[j][i] = c;
   };
-  const sleep = animation === "sleeping";
-  const step = animation === "walking" ? frame % 4 : 0;
-  // Tail curls behind the body. The feet always finish on row 31.
-  rect(25, sleep ? 23 : 19, 4, 10, 0);
-  rect(26, sleep ? 23 : 18, 4, 7, 0);
-  rect(26, sleep ? 24 : 20, 2, 7, 1);
-  rect(27, sleep ? 24 : 19, 2, 4, 2);
-  rect(8, sleep ? 22 : 18, 18, sleep ? 9 : 13, 0);
-  rect(9, sleep ? 23 : 19, 16, sleep ? 7 : 11, 1);
-  rect(12, 23, 9, 7, 3);
-  rect(9, 29, 6, 3 - (step === 1 ? 1 : 0), 0);
-  rect(19, 29, 6, 3 - (step === 3 ? 1 : 0), 0);
-  rect(10, 29, 4, 2 - (step === 1 ? 1 : 0), 2);
-  rect(20, 29, 4, 2 - (step === 3 ? 1 : 0), 2);
-  const y = sleep
-    ? frame % 12 < 6
-      ? 10
-      : 9
-    : animation === "happy" && frame % 2
-      ? 1
-      : 0;
-  rect(6, 3 + y, 6, 10, 0);
-  rect(21, 3 + y, 6, 10, 0);
-  rect(7, 5 + y, 4, 7, 1);
-  rect(22, 5 + y, 4, 7, 1);
-  rect(8, 7 + y, 2, 4, 5);
-  rect(23, 7 + y, 2, 4, 5);
-  rect(8, 9 + y, 17, 14, 0);
-  rect(5, 12 + y, 23, 8, 0);
-  rect(7, 12 + y, 19, 8, 2);
-  rect(9, 10 + y, 15, 12, 2);
-  rect(13, 10 + y, 2, 4, 4);
-  rect(17, 10 + y, 2, 3, 4);
-  rect(7, 16 + y, 3, 2, 4);
-  rect(23, 16 + y, 3, 2, 4);
-  rect(12, 18 + y, 9, 3, 3);
+  const step = frame % 4;
+  const walking = animation === "walking",
+    sleeping = animation === "sleeping";
+  const happy = animation === "happy",
+    jumping = animation === "jumping",
+    drinking = animation === "drinking";
+  const bob = walking && step % 2 ? 1 : 0;
+  const headY = sleeping ? 13 + (frame % 12 < 6 ? 0 : 1) : 2 + bob;
+  // Denim legs, alternating stride, and chunky white-soled sneakers.
+  const left = walking && step === 1 ? 9 : 11;
+  const right = walking && step === 3 ? 19 : 17;
+  rect(left, 23, 5, 8, 0);
+  rect(left + 1, 23, 3, 6, 7);
+  rect(right, 23, 5, 8, 0);
+  rect(right + 1, 23, 3, 6, 7);
+  rect(left - 1, 29, 6, 3, 0);
+  rect(left, 30, 5, 1, 6);
+  rect(right, 29, 6, 3, 0);
+  rect(right + 1, 30, 4, 1, 6);
+  // Jacket, tee, collar, pockets and hands.
+  const bodyY = sleeping ? 23 : 15 + bob;
+  rect(10, bodyY, 13, sleeping ? 6 : 10, 0);
+  rect(11, bodyY + 1, 11, sleeping ? 4 : 8, 1);
+  rect(15, bodyY + 1, 4, 5, 6);
+  rect(16, bodyY + 5, 2, 3, 2);
+  if (!sleeping) {
+    rect(11, 22 + bob, 3, 1, 2);
+    rect(20, 22 + bob, 2, 1, 2);
+  }
+  const armY = bodyY + 1 + (walking && step % 2 ? -1 : 0);
+  rect(7, armY, 4, 7, 0);
+  rect(8, armY + 1, 3, 4, 1);
+  rect(8, armY + 5, 3, 3, 3);
+  if (happy || jumping) {
+    const wave = happy && step % 2 ? 1 : 0;
+    rect(22, 12 - wave, 4, 8, 0);
+    rect(23, 13 - wave, 2, 6, 1);
+    rect(24, 8 - wave, 4, 6, 0);
+    rect(25, 9 - wave, 2, 4, 3);
+  } else if (drinking) {
+    rect(22, 13, 4, 8, 0);
+    rect(23, 14, 2, 6, 1);
+    rect(22, 12, 5, 3, 3);
+    rect(24, 7, 4, 7, 0);
+    rect(25, 8, 2, 5, 8);
+    rect(25, 6, 2, 2, 6);
+  } else {
+    rect(22, armY, 4, 7, 0);
+    rect(23, armY + 1, 2, 4, 1);
+    rect(23, armY + 5, 3, 3, 3);
+  }
+  // Neck, rounded face, ears and a swept hairstyle. No downloaded artwork.
+  rect(14, headY + 11, 5, 3, 4);
+  rect(10, headY + 2, 13, 11, 0);
+  rect(11, headY + 3, 11, 9, 3);
+  rect(9, headY + 7, 2, 3, 3);
+  rect(22, headY + 7, 2, 3, 3);
+  rect(10, headY, 12, 5, 5);
+  rect(12, headY - 1, 8, 2, 5);
+  rect(10, headY + 4, 3, 3, 5);
+  rect(12, headY + 3, 5, 2, 5);
+  rect(21, headY + 3, 2, 3, 5);
   const closed =
-    sleep ||
-    animation === "happy" ||
-    (animation === "idle" && frame % 32 === 30);
-  rect(10, 15 + y, 3, closed ? 1 : 3, 0);
-  rect(20, 15 + y, 3, closed ? 1 : 3, 0);
-  if (!closed) {
-    rect(11, 15 + y, 1, 1, 3);
-    rect(21, 15 + y, 1, 1, 3);
+    sleeping || happy || (animation === "idle" && frame % 32 === 30);
+  rect(14, headY + 7, 2, closed ? 1 : 2, 0);
+  rect(19, headY + 7, 2, closed ? 1 : 2, 0);
+  rect(17, headY + 9, 1, 1, 4);
+  rect(16, headY + 10, happy ? 4 : 2, 1, happy ? 6 : 0);
+  if (sleeping) {
+    rect(7, 25, 6, 3, 3);
+    rect(21, 25, 5, 3, 3);
   }
-  rect(16, 18 + y, 2, 1, 5);
-  rect(16, 19 + y, 2, 1, 0);
-  if (animation === "happy") {
-    rect(9, 18 + y, 3, 1, 5);
-    rect(22, 18 + y, 3, 1, 5);
-  }
-  if (animation === "jumping") {
-    rect(4, 23, 5, 3, 0);
-    rect(5, 23, 4, 2, 2);
+  if (jumping) {
+    rect(5, 16, 3, 3, 3);
+    rect(6, 18, 3, 4, 1);
   }
   const runs: Run[] = [];
   for (let y = 0; y < GRID; y++) {

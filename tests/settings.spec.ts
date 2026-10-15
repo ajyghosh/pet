@@ -1,32 +1,32 @@
 import { test, expect } from "@playwright/test";
-test("appearance and reminder settings persist; discard restores saved settings", async ({
+test("appearance and reminders persist; discard restores saved settings", async ({
   page,
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: "A little company for your day." }),
+    page.getByRole("heading", { name: "Small company. Big day." }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Appearance", exact: true }).click();
-  await page.getByLabel("A name to come home to").fill("Bean");
-  await page.getByRole("button", { name: "slate coat" }).click();
+  await page.getByLabel("Your companion’s name").fill("Sam");
+  await page.getByRole("button", { name: "Sunset coral outfit" }).click();
   await page.getByRole("button", { name: "Save changes" }).click();
   await page.reload();
   await expect(
-    page.getByRole("heading", { name: "Bean YOUR COMPANION" }),
+    page.getByRole("heading", { name: "Sam", exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Gentle reminders" }).click();
-  await page.getByRole("switch", { name: "Stay hydrated reminder" }).click();
+  await page.getByRole("button", { name: "Reminders", exact: true }).click();
+  await page.getByRole("switch", { name: "Drink water reminder" }).click();
   await page.getByLabel("Stretch a little interval in minutes").fill("25");
   await page
-    .getByLabel("Miso’s message", { exact: true })
-    .nth(1)
-    .fill("A short stretch, Bean says.");
+    .getByLabel("Stretch a little message")
+    .fill("A stretch and a smile.");
   await page.getByRole("button", { name: "Save changes" }).click();
   await page.reload();
+  await page.getByRole("button", { name: "Reminders", exact: true }).click();
   await expect(
-    page.getByRole("switch", { name: "Stay hydrated reminder" }),
+    page.getByRole("switch", { name: "Drink water reminder" }),
   ).toHaveAttribute("aria-checked", "false");
   await expect(
     page.getByLabel("Stretch a little interval in minutes"),
@@ -38,36 +38,48 @@ test("appearance and reminder settings persist; discard restores saved settings"
   ).toHaveValue("25");
   expect(errors).toEqual([]);
 });
-test("all animations, local preview, and desktop preferences are usable", async ({
+test("dedicated preview plays all six states, pauses, and switches scene", async ({
   page,
 }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Nap time" }).click();
-  await expect(
-    page.getByText("Dreaming of very small adventures"),
-  ).toBeVisible();
-  await page.getByRole("button", { name: "Wake up" }).click();
-  await page.getByRole("button", { name: "Let’s play" }).click();
-  await expect(page.locator(".preview-pet")).toHaveClass(/jumping/);
-  await page.getByRole("button", { name: "Appearance", exact: true }).click();
-  for (const state of ["walking", "sleeping", "jumping", "happy", "idle"]) {
-    await page.getByRole("button", { name: state, exact: true }).click();
-    await expect(page.locator(".preview-pet")).toHaveClass(new RegExp(state));
+  await page.getByRole("button", { name: "Open preview" }).click();
+  for (const [label, state] of [
+    ["Idle", "idle"],
+    ["Walk", "walking"],
+    ["Wave", "happy"],
+    ["Jump", "jumping"],
+    ["Drink water", "drinking"],
+    ["Sleep", "sleeping"],
+  ]) {
+    await page.getByRole("button", { name: label, exact: true }).click();
+    await expect(page.locator(".preview-human")).toHaveAttribute(
+      "data-animation",
+      state,
+    );
   }
-  await page
-    .getByRole("button", { name: "Desktop & startup", exact: true })
-    .click();
-  await expect(
-    page.getByRole("switch", { name: "Start with Windows" }),
-  ).toBeDisabled();
-  await page.getByRole("switch", { name: "Show speech bubbles" }).click();
-  await page.getByRole("button", { name: "Save changes" }).click();
-  await page.getByRole("button", { name: "About Miso" }).click();
-  await expect(
-    page.getByText("Good company. No strings attached."),
-  ).toBeVisible();
+  await page.getByRole("button", { name: "Night preview" }).click();
+  await expect(page.locator(".preview-stage")).toHaveClass(/night/);
+  await page.getByRole("button", { name: "Walk", exact: true }).click();
+  await page.getByRole("button", { name: "Pause preview" }).click();
+  const left = await page
+    .locator(".preview-human")
+    .evaluate((el) => (el as HTMLElement).style.left);
+  await page.waitForTimeout(250);
+  expect(
+    await page
+      .locator(".preview-human")
+      .evaluate((el) => (el as HTMLElement).style.left),
+  ).toBe(left);
+  await page.getByRole("button", { name: "Play preview" }).click();
+  await expect
+    .poll(() =>
+      page
+        .locator(".preview-human")
+        .evaluate((el) => (el as HTMLElement).style.left),
+    )
+    .not.toBe(left);
 });
-test("UI loads without remote assets and fits a small window", async ({
+test("desktop preferences and small-window layout work offline", async ({
   page,
 }) => {
   const external: string[] = [];
@@ -80,13 +92,30 @@ test("UI loads without remote assets and fits a small window", async ({
   });
   await page.setViewportSize({ width: 760, height: 700 });
   await page.goto("/");
+  await page.getByRole("button", { name: "Nap time" }).click();
+  await expect(page.getByText("Off on a tiny dream adventure.")).toBeVisible();
+  await page.getByRole("button", { name: "Wake up" }).click();
+  for (const tab of [
+    "Preview studio",
+    "Reminders",
+    "Appearance",
+    "Desktop & startup",
+    "About MiniMates",
+  ]) {
+    await page.getByRole("button", { name: tab, exact: true }).click();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
+  await page
+    .getByRole("button", { name: "Desktop & startup", exact: true })
+    .click();
   await expect(
-    page.getByRole("heading", { name: "A little company for your day." }),
-  ).toBeVisible();
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBe(true);
+    page.getByRole("switch", { name: "Start with Windows" }),
+  ).toBeDisabled();
+  await page.getByRole("switch", { name: "Show speech bubbles" }).click();
+  await page.getByRole("button", { name: "Save changes" }).click();
   expect(external).toEqual([]);
 });

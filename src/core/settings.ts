@@ -1,6 +1,7 @@
 export const reminderKinds = ["water", "stretch", "break"] as const;
 export type ReminderKind = (typeof reminderKinds)[number];
-export type Animation = "idle" | "walking" | "sleeping" | "jumping" | "happy";
+export type Animation =
+  "idle" | "walking" | "sleeping" | "jumping" | "happy" | "drinking";
 export type Coat = "ginger" | "cream" | "slate";
 export interface Reminder {
   enabled: boolean;
@@ -21,9 +22,9 @@ export interface Settings {
 }
 export const defaults: Settings = {
   version: 1,
-  name: "Miso",
-  coat: "ginger",
-  size: 128,
+  name: "Alex",
+  coat: "slate",
+  size: 80,
   speed: 45,
   monitor: "primary",
   autostart: false,
@@ -66,7 +67,7 @@ export function normalizeSettings(value: unknown): Settings {
     coat: ["ginger", "cream", "slate"].includes(String(v.coat))
       ? (v.coat as Coat)
       : defaults.coat,
-    size: [96, 128, 160].includes(Number(v.size))
+    size: [64, 80, 96, 128, 160].includes(Number(v.size))
       ? Number(v.size)
       : defaults.size,
     speed: num(v.speed, defaults.speed, 10, 100),

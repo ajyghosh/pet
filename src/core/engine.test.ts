@@ -5,12 +5,12 @@ describe("pet motion", () => {
   it("turns at both work area edges without touching the taskbar", () => {
     let p = {
       ...createPet(),
-      x: 870,
+      x: 918,
       animation: "walking" as const,
       nextDecision: 99999,
     };
     const right = advance(p, 1000, 0.1, 1000, defaults);
-    expect(right.x).toBe(872);
+    expect(right.x).toBe(920);
     expect(right.direction).toBe(-1);
     const left = advance(
       { ...p, x: 0, direction: -1 },
@@ -24,9 +24,9 @@ describe("pet motion", () => {
   });
   it("clamps after unplugging a large monitor and on extremely narrow screens", () => {
     expect(advance({ ...createPet(), x: 3000 }, 0, 0, 800, defaults).x).toBe(
-      672,
+      720,
     );
-    expect(advance(createPet(), 0, 0, 90, defaults).x).toBe(0);
+    expect(advance(createPet(), 0, 0, 70, defaults).x).toBe(0);
   });
   it("does not teleport when the computer resumes", () => {
     const p = {

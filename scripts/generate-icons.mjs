@@ -1,51 +1,10 @@
 // Original Miso artwork; dependency-free PNG/ICO encoder. Run with Node 22+.
 import { deflateSync } from "node:zlib";
 import { mkdirSync, writeFileSync } from "node:fs";
+import { sprite } from "../src/core/sprite.ts";
 const pixels = Array.from({ length: 32 }, () => Array(32).fill(null));
-const colors = [
-  "#513c32",
-  "#d98c52",
-  "#edb878",
-  "#ffe2af",
-  "#b9693e",
-  "#dd8d89",
-];
-function rect(x, y, w, h, c) {
-  for (let j = y; j < y + h; j++)
-    for (let i = x; i < x + w; i++) pixels[j][i] = colors[c];
-}
-rect(25, 19, 4, 10, 0);
-rect(26, 18, 4, 7, 0);
-rect(26, 20, 2, 7, 1);
-rect(27, 19, 2, 4, 2);
-rect(8, 18, 18, 13, 0);
-rect(9, 19, 16, 11, 1);
-rect(12, 23, 9, 7, 3);
-rect(9, 29, 6, 3, 0);
-rect(19, 29, 6, 3, 0);
-rect(10, 29, 4, 2, 2);
-rect(20, 29, 4, 2, 2);
-rect(6, 3, 6, 10, 0);
-rect(21, 3, 6, 10, 0);
-rect(7, 5, 4, 7, 1);
-rect(22, 5, 4, 7, 1);
-rect(8, 7, 2, 4, 5);
-rect(23, 7, 2, 4, 5);
-rect(8, 9, 17, 14, 0);
-rect(5, 12, 23, 8, 0);
-rect(7, 12, 19, 8, 2);
-rect(9, 10, 15, 12, 2);
-rect(13, 10, 2, 4, 4);
-rect(17, 10, 2, 3, 4);
-rect(7, 16, 3, 2, 4);
-rect(23, 16, 3, 2, 4);
-rect(12, 18, 9, 3, 3);
-rect(10, 15, 3, 3, 0);
-rect(20, 15, 3, 3, 0);
-rect(11, 15, 1, 1, 3);
-rect(21, 15, 1, 1, 3);
-rect(16, 18, 2, 1, 5);
-rect(16, 19, 2, 1, 0);
+for (const r of sprite("idle", 0, "slate"))
+  for (let x = r.x; x < r.x + r.width; x++) pixels[r.y][x] = r.color;
 function crc32(data) {
   let crc = 0xffffffff;
   for (const byte of data) {
@@ -113,4 +72,87 @@ writeFileSync(
   "src-tauri/icons/icon.ico",
   Buffer.concat([header, ...entries, ...images]),
 );
-console.log("Generated original Miso PNG and Windows ICO assets.");
+const macImages = [
+  ["ic07", 128],
+  ["ic08", 256],
+  ["ic09", 512],
+  ["ic10", 1024],
+].map(([type, size]) => {
+  const data = png(size);
+  const header = Buffer.alloc(8);
+  header.write(type, 0, 4, "ascii");
+  header.writeUInt32BE(data.length + 8, 4);
+  return Buffer.concat([header, data]);
+});
+const macHeader = Buffer.alloc(8);
+macHeader.write("icns", 0, 4, "ascii");
+macHeader.writeUInt32BE(
+  8 + macImages.reduce((sum, data) => sum + data.length, 0),
+  4,
+);
+writeFileSync(
+  "src-tauri/icons/icon.icns",
+  Buffer.concat([macHeader, ...macImages]),
+);
+const states = ["idle", "walking", "sleeping", "jumping", "happy", "drinking"];
+mkdirSync("public/characters", { recursive: true });
+for (const coat of ["ginger", "cream", "slate"]) {
+  const width = 32 * 32,
+    height = states.length * 2 * 32;
+  const scan = Buffer.alloc((width * 4 + 1) * height);
+  states.forEach((state, index) => {
+    for (const direction of [1, -1])
+      for (let frame = 0; frame < 32; frame++) {
+        const row = index * 2 + (direction < 0 ? 1 : 0);
+        for (const r of sprite(state, frame, coat, direction))
+          for (let x = r.x; x < r.x + r.width; x++) {
+            const o =
+              (row * 32 + r.y) * (width * 4 + 1) + 1 + (frame * 32 + x) * 4;
+            scan[o] = parseInt(r.color.slice(1, 3), 16);
+            scan[o + 1] = parseInt(r.color.slice(3, 5), 16);
+            scan[o + 2] = parseInt(r.color.slice(5, 7), 16);
+            scan[o + 3] = 255;
+          }
+      }
+  });
+  const head = Buffer.alloc(13);
+  head.writeUInt32BE(width);
+  head.writeUInt32BE(height, 4);
+  head[8] = 8;
+  head[9] = 6;
+  writeFileSync(
+    `public/characters/alex-${coat}.png`,
+    Buffer.concat([
+      Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+      chunk("IHDR", head),
+      chunk("IDAT", deflateSync(scan)),
+      chunk("IEND", Buffer.alloc(0)),
+    ]),
+  );
+}
+writeFileSync(
+  "public/characters/alex.json",
+  JSON.stringify(
+    {
+      id: "alex",
+      name: "Alex",
+      personality: "The everyday optimist",
+      license: "MIT",
+      artist: "Original MiniMates project artwork",
+      frameWidth: 32,
+      frameHeight: 32,
+      framesPerAnimation: 32,
+      frameDurationMs: 160,
+      states,
+      directions: ["right", "left"],
+      outfits: ["ginger", "cream", "slate"],
+      layout:
+        "Each state occupies two rows: right, then left. Frames advance across columns.",
+    },
+    null,
+    2,
+  ) + "\n",
+);
+console.log(
+  "Generated original MiniMates human sprite sheets, PNG, ICO, and ICNS assets.",
+);

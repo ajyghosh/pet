@@ -1,4 +1,6 @@
 mod geometry;
+#[cfg(any(target_os = "macos", test))]
+mod hit_test;
 mod platform;
 mod settings;
 
@@ -9,10 +11,7 @@ use std::{
     sync::Mutex,
     time::{Duration, Instant},
 };
-use tauri::{
-    Emitter, Manager, PhysicalPosition, PhysicalSize, WebviewUrl, WebviewWindow,
-    WebviewWindowBuilder,
-};
+use tauri::{Emitter, Manager, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 use tauri_plugin_autostart::ManagerExt;
 
 struct DesktopState {
@@ -25,6 +24,9 @@ struct DesktopState {
     shape: Vec<[i32; 3]>,
     side: i32,
     message: Option<String>,
+    started: Instant,
+    last_frame: Option<Instant>,
+    pet_error: Option<String>,
 }
 type Shared = Mutex<DesktopState>;
 fn allowed(window: &WebviewWindow, labels: &[&str]) -> Result<(), String> {
@@ -42,7 +44,10 @@ fn show_settings(app: &tauri::AppHandle) {
     }
 }
 #[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 struct Bootstrap {
+    platform: &'static str,
+    click_enabled: bool,
     settings: Settings,
     warning: Option<String>,
 }
@@ -56,6 +61,8 @@ fn bootstrap(
     let mut s = state.lock().map_err(|e| e.to_string())?;
     s.settings.autostart = app.autolaunch().is_enabled().map_err(|e| e.to_string())?;
     Ok(Bootstrap {
+        platform: std::env::consts::OS,
+        click_enabled: platform::input_status(),
         settings: s.settings.clone(),
         warning: s.warning.clone(),
     })
@@ -102,7 +109,7 @@ fn list_monitors(
     state: tauri::State<Shared>,
 ) -> Result<Vec<Display>, String> {
     allowed(&window, &["pet", "settings"])?;
-    let displays = platform::displays()?;
+    let displays = platform::displays(window.app_handle())?;
     let mut s = state.lock().map_err(|e| e.to_string())?;
     s.displays = displays.clone();
     s.refreshed = Instant::now();
@@ -121,7 +128,7 @@ fn present_frame(
     app: tauri::AppHandle,
     state: tauri::State<Shared>,
     frame: Frame,
-) -> Result<(), String> {
+) -> Result<Option<bool>, String> {
     allowed(&window, &["pet"])?;
     if !frame.x.is_finite()
         || !frame.lift.is_finite()
@@ -143,7 +150,7 @@ fn present_frame(
     }
     let mut s = state.lock().map_err(|e| e.to_string())?;
     if s.refreshed.elapsed() > Duration::from_secs(2) {
-        s.displays = platform::displays()?;
+        s.displays = platform::displays(&app)?;
         s.refreshed = Instant::now();
     }
     let display = s
@@ -155,19 +162,12 @@ fn present_frame(
         .ok_or("No monitors available")?
         .clone();
     let (x, y, side) = geometry::placement(&display, frame.x, s.settings.size, frame.lift);
-    // Move first: WM_DPICHANGED can resize a window when changing monitors.
-    window
-        .set_position(PhysicalPosition::new(x, y))
-        .map_err(|e| e.to_string())?;
-    let desired_size = PhysicalSize::new(side as u32, side as u32);
-    let resized = window.inner_size().map_err(|e| e.to_string())? != desired_size;
-    if resized {
-        window.set_size(desired_size).map_err(|e| e.to_string())?;
-    }
+    let resized = platform::position(&window, x, y, side, side)?;
     // A region is applied BEFORE a hidden pet is shown; no rectangular input blocker at startup.
     if s.shape != frame.rows || s.side != side || resized {
+        #[cfg(windows)]
         platform::shape(&window, &frame.rows, side)?;
-        s.shape = frame.rows;
+        s.shape = frame.rows.clone();
         s.side = side;
     }
     if !s.hidden && !window.is_visible().map_err(|e| e.to_string())? {
@@ -187,26 +187,30 @@ fn present_frame(
             .map_err(|e| e.to_string())?;
     }
     if message.is_some() {
-        let bw = (280.0 * display.scale).round() as i32;
-        let bh = (104.0 * display.scale).round() as i32;
+        let bw = (280.0 * display.coordinate_scale).round() as i32;
+        let bh = (104.0 * display.coordinate_scale).round() as i32;
         let bx = (x + side / 2 - bw / 2).clamp(
             display.work.left,
             (display.work.right - bw).max(display.work.left),
         );
-        bubble
-            .set_position(PhysicalPosition::new(bx, (y - bh).max(display.work.top)))
-            .map_err(|e| e.to_string())?;
-        let bubble_size = PhysicalSize::new(bw as u32, bh as u32);
-        if bubble.inner_size().map_err(|e| e.to_string())? != bubble_size {
-            bubble.set_size(bubble_size).map_err(|e| e.to_string())?;
-        }
+        platform::position(&bubble, bx, (y - bh).max(display.work.top), bw, bh)?;
         if !bubble.is_visible().map_err(|e| e.to_string())? {
             bubble.show().map_err(|e| e.to_string())?;
         }
     } else if bubble.is_visible().map_err(|e| e.to_string())? {
         bubble.hide().map_err(|e| e.to_string())?;
     }
-    Ok(())
+    let hover = platform::sync_input(&window, x, y, side, &frame.rows, !s.hidden)?;
+    // Startup is fully click-through until a valid native silhouette is installed.
+    #[cfg(windows)]
+    if s.last_frame.is_none() {
+        window
+            .set_ignore_cursor_events(false)
+            .map_err(|e| e.to_string())?;
+    }
+    s.last_frame = Some(Instant::now());
+    s.pet_error = None;
+    Ok(hover)
 }
 #[tauri::command]
 fn bubble_message(
@@ -225,6 +229,7 @@ fn pet_action(window: WebviewWindow, app: tauri::AppHandle, action: String) -> R
         "sleeping",
         "jumping",
         "happy",
+        "drinking",
         "snooze",
         "wake",
         "reminder:water",
@@ -251,6 +256,7 @@ fn report_pet_error(
     message: String,
 ) -> Result<(), String> {
     allowed(&window, &["pet"])?;
+    platform::clear_input();
     window.hide().map_err(|e| e.to_string())?;
     if let Some(bubble) = app.get_webview_window("bubble") {
         let _ = bubble.hide();
@@ -258,10 +264,87 @@ fn report_pet_error(
     app.state::<Shared>()
         .lock()
         .map_err(|e| e.to_string())?
-        .warning = Some(message.chars().take(500).collect());
+        .pet_error = Some(message.chars().take(500).collect());
     let _ = app.emit_to("settings", "native-error", message);
     show_settings(&app);
     Ok(())
+}
+#[tauri::command]
+fn input_status(window: WebviewWindow) -> Result<bool, String> {
+    allowed(&window, &["settings"])?;
+    Ok(platform::input_status())
+}
+#[tauri::command]
+fn request_input_permission(window: WebviewWindow) -> Result<bool, String> {
+    allowed(&window, &["settings"])?;
+    Ok(platform::request_input_permission())
+}
+/// Show a harmless overlay from native startup, without waiting for its first JS frame.
+fn warm_pet(app: &tauri::AppHandle) -> Result<(), String> {
+    let window = app.get_webview_window("pet").ok_or("Pet window missing")?;
+    window
+        .set_ignore_cursor_events(true)
+        .map_err(|e| e.to_string())?;
+    platform::clear_input();
+    let displays = platform::displays(app)?;
+    let settings = app
+        .state::<Shared>()
+        .lock()
+        .map_err(|e| e.to_string())?
+        .settings
+        .clone();
+    let display = displays
+        .iter()
+        .find(|d| d.id == settings.monitor)
+        .or_else(|| displays.iter().find(|d| d.primary))
+        .or_else(|| displays.first())
+        .ok_or("No desktop monitor is available")?;
+    let (x, y, side) = geometry::placement(display, 80.0, settings.size, 0.0);
+    platform::position(&window, x, y, side, side)?;
+    window.show().map_err(|e| e.to_string())
+}
+#[tauri::command]
+fn desktop_status(window: WebviewWindow, state: tauri::State<Shared>) -> Result<String, String> {
+    allowed(&window, &["settings"])?;
+    let s = state.lock().map_err(|e| e.to_string())?;
+    Ok(if let Some(error) = &s.pet_error {
+        error.clone()
+    } else if s.hidden {
+        "Pet is hidden. Select Show / restart pet to bring it back.".into()
+    } else if s
+        .last_frame
+        .is_some_and(|t| t.elapsed() < Duration::from_secs(5))
+    {
+        "Pet animation is running.".into()
+    } else if s.started.elapsed() < Duration::from_secs(10) {
+        "Starting the desktop pet…".into()
+    } else {
+        "Pet animation has not responded. Select Show / restart pet to retry.".into()
+    })
+}
+#[tauri::command]
+fn restart_pet(
+    window: WebviewWindow,
+    app: tauri::AppHandle,
+    state: tauri::State<Shared>,
+) -> Result<(), String> {
+    allowed(&window, &["settings"])?;
+    {
+        let mut s = state.lock().map_err(|e| e.to_string())?;
+        s.hidden = false;
+        s.pet_error = None;
+        s.last_frame = None;
+        s.started = Instant::now();
+        s.shape.clear();
+    }
+    if let Some(bubble) = app.get_webview_window("bubble") {
+        bubble.hide().map_err(|e| e.to_string())?;
+    }
+    warm_pet(&app)?;
+    app.get_webview_window("pet")
+        .ok_or("Pet window missing")?
+        .reload()
+        .map_err(|e| e.to_string())
 }
 pub fn run() {
     tauri::Builder::default()
@@ -270,7 +353,7 @@ pub fn run() {
         }))
         .plugin(
             tauri_plugin_autostart::Builder::new()
-                .app_name("Miso")
+                .app_name("Miso") // Keep the original per-user startup key across upgrades.
                 .args(["--autostart"])
                 .build(),
         )
@@ -291,9 +374,15 @@ pub fn run() {
                     warning = Some(format!("Could not create local settings: {error}"));
                 }
             }
+            // Refresh the existing user startup entry if the installed path changed on upgrade.
+            if app.autolaunch().is_enabled().unwrap_or(false) {
+                if let Err(e) = app.autolaunch().enable() {
+                    warning = Some(format!("Could not refresh login startup: {e}"));
+                }
+            }
             let show_on_start =
                 warning.is_some() || (first_run && !std::env::args().any(|a| a == "--autostart"));
-            let displays = platform::displays().unwrap_or_default();
+            let displays = platform::displays(app.handle()).unwrap_or_default();
             app.manage(Mutex::new(DesktopState {
                 settings,
                 warning,
@@ -304,19 +393,23 @@ pub fn run() {
                 shape: vec![],
                 side: 0,
                 message: None,
+                started: Instant::now(),
+                last_frame: None,
+                pet_error: None,
             }));
             WebviewWindowBuilder::new(app, "settings", WebviewUrl::App("index.html".into()))
-                .title("Miso · a little company")
+                .title("MiniMates · a little company")
                 .inner_size(1080.0, 780.0)
                 .min_inner_size(760.0, 600.0)
                 .center()
                 .visible(show_on_start)
                 .build()?;
-            WebviewWindowBuilder::new(app, "pet", WebviewUrl::App("index.html?window=pet".into()))
-                .title("Miso")
+            WebviewWindowBuilder::new(app, "pet", WebviewUrl::App("index.html".into()))
+                .title("MiniMates")
                 .inner_size(128.0, 128.0)
                 .decorations(false)
                 .transparent(true)
+                .background_color(tauri::webview::Color(0, 0, 0, 0))
                 .shadow(false)
                 .always_on_top(true)
                 .skip_taskbar(true)
@@ -325,33 +418,45 @@ pub fn run() {
                 .focusable(false)
                 .visible(false)
                 .build()?;
-            let bubble = WebviewWindowBuilder::new(
-                app,
-                "bubble",
-                WebviewUrl::App("index.html?window=bubble".into()),
-            )
-            .title("Miso says")
-            .inner_size(280.0, 104.0)
-            .decorations(false)
-            .transparent(true)
-            .shadow(false)
-            .always_on_top(true)
-            .skip_taskbar(true)
-            .resizable(false)
-            .focused(false)
-            .focusable(false)
-            .visible(false)
-            .build()?;
+            let bubble =
+                WebviewWindowBuilder::new(app, "bubble", WebviewUrl::App("index.html".into()))
+                    .title("MiniMates says")
+                    .inner_size(280.0, 104.0)
+                    .decorations(false)
+                    .transparent(true)
+                    .background_color(tauri::webview::Color(0, 0, 0, 0))
+                    .shadow(false)
+                    .always_on_top(true)
+                    .skip_taskbar(true)
+                    .resizable(false)
+                    .focused(false)
+                    .focusable(false)
+                    .visible(false)
+                    .build()?;
             bubble.set_ignore_cursor_events(true)?;
+            platform::initialize(app.handle())?;
+            if let Err(error) = warm_pet(app.handle()) {
+                app.state::<Shared>()
+                    .lock()
+                    .map_err(|e| e.to_string())?
+                    .pet_error = Some(error);
+                show_settings(app.handle());
+            }
             use tauri::{
                 menu::{Menu, MenuItem, PredefinedMenuItem},
                 tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
             };
-            let settings_item =
-                MenuItem::with_id(app, "settings", "Open Miso settings", true, None::<&str>)?;
+            let settings_item = MenuItem::with_id(
+                app,
+                "settings",
+                "Open MiniMates settings",
+                true,
+                None::<&str>,
+            )?;
             let visible = MenuItem::with_id(app, "visible", "Hide / show pet", true, None::<&str>)?;
-            let sleep = MenuItem::with_id(app, "sleeping", "Let Miso sleep", true, None::<&str>)?;
-            let wake = MenuItem::with_id(app, "wake", "Wake Miso", true, None::<&str>)?;
+            let sleep =
+                MenuItem::with_id(app, "sleeping", "Let MiniMates sleep", true, None::<&str>)?;
+            let wake = MenuItem::with_id(app, "wake", "Wake MiniMates", true, None::<&str>)?;
             let snooze = MenuItem::with_id(
                 app,
                 "snooze",
@@ -360,7 +465,7 @@ pub fn run() {
                 None::<&str>,
             )?;
             let separator = PredefinedMenuItem::separator(app)?;
-            let quit = MenuItem::with_id(app, "quit", "Quit Miso", true, None::<&str>)?;
+            let quit = MenuItem::with_id(app, "quit", "Quit MiniMates", true, None::<&str>)?;
             let menu = Menu::with_items(
                 app,
                 &[
@@ -377,9 +482,9 @@ pub fn run() {
                 .icon(tauri::image::Image::from_bytes(include_bytes!(
                     "../icons/32x32.png"
                 ))?)
-                .tooltip("Miso · a little company")
+                .tooltip("MiniMates · a little company")
                 .menu(&menu)
-                .show_menu_on_left_click(false)
+                .show_menu_on_left_click(cfg!(target_os = "macos"))
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "settings" => show_settings(app),
                     "quit" => app.exit(0),
@@ -388,6 +493,7 @@ pub fn run() {
                         if let Ok(mut s) = state.lock() {
                             s.hidden = !s.hidden;
                             if s.hidden {
+                                platform::clear_input();
                                 for label in ["pet", "bubble"] {
                                     if let Some(w) = app.get_webview_window(label) {
                                         let _ = w.hide();
@@ -431,8 +537,12 @@ pub fn run() {
             bubble_message,
             pet_action,
             open_settings,
-            report_pet_error
+            report_pet_error,
+            input_status,
+            request_input_permission,
+            desktop_status,
+            restart_pet
         ])
         .run(tauri::generate_context!())
-        .expect("Miso could not start");
+        .expect("MiniMates could not start");
 }

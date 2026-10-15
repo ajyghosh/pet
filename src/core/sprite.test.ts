@@ -8,6 +8,7 @@ describe("original sprite and native hit region", () => {
     "sleeping",
     "jumping",
     "happy",
+    "drinking",
   ] as Animation[]) {
     it(`${animation}: hit region covers exactly the rendered pixels, both directions, every frame`, () => {
       for (let frame = 0; frame < 32; frame++)
@@ -32,17 +33,18 @@ describe("original sprite and native hit region", () => {
         }
     });
   }
-  it("uses distinct frames for all five animation states", () => {
+  it("uses distinct frames for all six animation states", () => {
     const animations = [
       "idle",
       "walking",
       "sleeping",
       "jumping",
       "happy",
+      "drinking",
     ] as Animation[];
     expect(
       new Set(animations.map((a) => JSON.stringify(sprite(a, 1, "ginger"))))
         .size,
-    ).toBe(5);
+    ).toBe(6);
   });
 });

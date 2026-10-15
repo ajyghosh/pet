@@ -1,0 +1,29 @@
+{
+  "id": "alex",
+  "name": "Alex",
+  "personality": "The everyday optimist",
+  "license": "MIT",
+  "artist": "Original MiniMates project artwork",
+  "frameWidth": 32,
+  "frameHeight": 32,
+  "framesPerAnimation": 32,
+  "frameDurationMs": 160,
+  "states": [
+    "idle",
+    "walking",
+    "sleeping",
+    "jumping",
+    "happy",
+    "drinking"
+  ],
+  "directions": [
+    "right",
+    "left"
+  ],
+  "outfits": [
+    "ginger",
+    "cream",
+    "slate"
+  ],
+  "layout": "Each state occupies two rows: right, then left. Frames advance across columns."
+}
