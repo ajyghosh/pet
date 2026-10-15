@@ -1,0 +1,214 @@
+{
+  "alloc-stdlib@0.3.0": {
+    "repository": "https://github.com/dropbox/rust-alloc-no-stdlib",
+    "commit": "0a81fd6928ea3b33c8cd484aa4575d50ffb98012",
+    "files": [
+      {
+        "file": "licenses/upstream/dropbox-rust-alloc-no-stdlib-0a81fd6928ea/LICENSE",
+        "source": "https://raw.githubusercontent.com/dropbox/rust-alloc-no-stdlib/0a81fd6928ea3b33c8cd484aa4575d50ffb98012/LICENSE"
+      }
+    ]
+  },
+  "selectors@0.38.0": {
+    "repository": "https://github.com/servo/stylo",
+    "commit": "572ecba2d1600e7c3d490586692a209faf703baa",
+    "files": [
+      {
+        "file": "licenses/upstream/servo-stylo-572ecba2d160/MPL-2.0.txt",
+        "source": "https://static.crates.io/crates/cssparser/cssparser-0.37.0.crate (LICENSE; canonical MPL-2.0 text)"
+      }
+    ]
+  },
+  "webview2-com@0.39.1": {
+    "repository": "https://github.com/wravery/webview2-rs",
+    "commit": "edc2caf886175ccaebe86078c9cfe1ae2a187328",
+    "files": [
+      {
+        "file": "licenses/upstream/wravery-webview2-rs-edc2caf88617/LICENSE",
+        "source": "https://raw.githubusercontent.com/wravery/webview2-rs/edc2caf886175ccaebe86078c9cfe1ae2a187328/LICENSE"
+      }
+    ]
+  },
+  "webview2-com-macros@0.8.1": {
+    "repository": "https://github.com/wravery/webview2-rs",
+    "commit": "dffa41a8a46d3f5565eefbff2de57d38d399f158",
+    "files": [
+      {
+        "file": "licenses/upstream/wravery-webview2-rs-dffa41a8a46d/LICENSE",
+        "source": "https://raw.githubusercontent.com/wravery/webview2-rs/dffa41a8a46d3f5565eefbff2de57d38d399f158/LICENSE"
+      }
+    ]
+  },
+  "webview2-com-sys@0.39.1": {
+    "repository": "https://github.com/wravery/webview2-rs",
+    "commit": "edc2caf886175ccaebe86078c9cfe1ae2a187328",
+    "files": [
+      {
+        "file": "licenses/upstream/wravery-webview2-rs-edc2caf88617/LICENSE",
+        "source": "https://raw.githubusercontent.com/wravery/webview2-rs/edc2caf886175ccaebe86078c9cfe1ae2a187328/LICENSE"
+      }
+    ]
+  },
+  "objc2-foundation@0.3.2": {
+    "repository": "https://github.com/madsmtm/objc2",
+    "commit": "7b1abfd750a2cacaea71d6a56ecfb83cb7de560b",
+    "files": [
+      {
+        "file": "licenses/upstream/madsmtm-objc2-7b1abfd750a2/LICENSE.md",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/7b1abfd750a2cacaea71d6a56ecfb83cb7de560b/LICENSE.md"
+      }
+    ]
+  },
+  "objc2@0.6.5": {
+    "repository": "https://github.com/madsmtm/objc2",
+    "commit": "d7d2fa23ceaa5e6096c923b081040e5d81b3b9df",
+    "files": [
+      {
+        "file": "licenses/upstream/madsmtm-objc2-d7d2fa23ceaa/LICENSE.md",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/d7d2fa23ceaa5e6096c923b081040e5d81b3b9df/LICENSE.md"
+      }
+    ]
+  },
+  "objc2-encode@4.1.0": {
+    "repository": "https://github.com/madsmtm/objc2",
+    "commit": "8d214f5477365ffcbcbb7de058c86ed9a518efb7",
+    "files": [
+      {
+        "file": "licenses/upstream/madsmtm-objc2-8d214f547736/LICENSE.md",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/8d214f5477365ffcbcbb7de058c86ed9a518efb7/LICENSE.md"
+      }
+    ]
+  },
+  "tauri-plugin@2.7.2": {
+    "repository": "https://github.com/tauri-apps/tauri",
+    "commit": "59b63ab500da9859f12d8888c3298bc29bba0b92",
+    "files": [
+      {
+        "file": "licenses/upstream/tauri-apps-tauri-59b63ab500da/LICENSE-APACHE-2.0",
+        "source": "https://raw.githubusercontent.com/tauri-apps/tauri/59b63ab500da9859f12d8888c3298bc29bba0b92/LICENSE-APACHE-2.0"
+      },
+      {
+        "file": "licenses/upstream/tauri-apps-tauri-59b63ab500da/LICENSE-MIT",
+        "source": "https://raw.githubusercontent.com/tauri-apps/tauri/59b63ab500da9859f12d8888c3298bc29bba0b92/LICENSE-MIT"
+      },
+      {
+        "file": "licenses/upstream/tauri-apps-tauri-59b63ab500da/LICENSE.spdx",
+        "source": "https://raw.githubusercontent.com/tauri-apps/tauri/59b63ab500da9859f12d8888c3298bc29bba0b92/LICENSE.spdx"
+      }
+    ]
+  },
+  "objc2-exception-helper@0.1.1": {
+    "repository": "https://github.com/madsmtm/objc2",
+    "commit": "8d214f5477365ffcbcbb7de058c86ed9a518efb7",
+    "files": [
+      {
+        "file": "licenses/upstream/madsmtm-objc2-8d214f547736/LICENSE.md",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/8d214f5477365ffcbcbb7de058c86ed9a518efb7/LICENSE.md"
+      }
+    ]
+  },
+  "objc2-app-kit@0.3.2": {
+    "repository": "https://github.com/madsmtm/objc2",
+    "commit": "7b1abfd750a2cacaea71d6a56ecfb83cb7de560b",
+    "files": [
+      {
+        "file": "licenses/upstream/madsmtm-objc2-7b1abfd750a2/LICENSE.md",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/7b1abfd750a2cacaea71d6a56ecfb83cb7de560b/LICENSE.md"
+      }
+    ]
+  },
+  "block2@0.6.2": {
+    "repository": "https://github.com/madsmtm/objc2",
+    "commit": "b4167b582b2f75f9a1be75495c41b765344fd03c",
+    "files": [
+      {
+        "file": "licenses/upstream/madsmtm-objc2-b4167b582b2f/LICENSE.md",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/b4167b582b2f75f9a1be75495c41b765344fd03c/LICENSE.md"
+      }
+    ]
+  },
+  "objc2-core-foundation@0.3.2": {
+    "repository": "https://github.com/madsmtm/objc2",
+    "commit": "7b1abfd750a2cacaea71d6a56ecfb83cb7de560b",
+    "files": [
+      {
+        "file": "licenses/upstream/madsmtm-objc2-7b1abfd750a2/LICENSE.md",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/7b1abfd750a2cacaea71d6a56ecfb83cb7de560b/LICENSE.md"
+      }
+    ]
+  },
+  "objc2-quartz-core@0.3.2": {
+    "repository": "https://github.com/madsmtm/objc2",
+    "commit": "7b1abfd750a2cacaea71d6a56ecfb83cb7de560b",
+    "files": [
+      {
+        "file": "licenses/upstream/madsmtm-objc2-7b1abfd750a2/LICENSE.md",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/7b1abfd750a2cacaea71d6a56ecfb83cb7de560b/LICENSE.md"
+      }
+    ]
+  },
+  "objc2-web-kit@0.3.2": {
+    "repository": "https://github.com/madsmtm/objc2",
+    "commit": "7b1abfd750a2cacaea71d6a56ecfb83cb7de560b",
+    "files": [
+      {
+        "file": "licenses/upstream/madsmtm-objc2-7b1abfd750a2/LICENSE.md",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/7b1abfd750a2cacaea71d6a56ecfb83cb7de560b/LICENSE.md"
+      }
+    ]
+  },
+  "dispatch2@0.3.1": {
+    "repository": "https://github.com/madsmtm/objc2",
+    "commit": "8852b424193ca41602281b3d7540d7c8ed51e49a",
+    "files": [
+      {
+        "file": "licenses/upstream/madsmtm-objc2-8852b424193c/LICENSE.md",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/8852b424193ca41602281b3d7540d7c8ed51e49a/LICENSE.md"
+      }
+    ]
+  },
+  "objc2-core-graphics@0.3.2": {
+    "repository": "https://github.com/madsmtm/objc2",
+    "commit": "7b1abfd750a2cacaea71d6a56ecfb83cb7de560b",
+    "files": [
+      {
+        "file": "licenses/upstream/madsmtm-objc2-7b1abfd750a2/LICENSE.md",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/7b1abfd750a2cacaea71d6a56ecfb83cb7de560b/LICENSE.md"
+      }
+    ]
+  },
+  "objc2-service-management@0.3.2": {
+    "repository": "https://github.com/madsmtm/objc2",
+    "commit": "7b1abfd750a2cacaea71d6a56ecfb83cb7de560b",
+    "files": [
+      {
+        "file": "licenses/upstream/madsmtm-objc2-7b1abfd750a2/LICENSE.md",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/7b1abfd750a2cacaea71d6a56ecfb83cb7de560b/LICENSE.md"
+      }
+    ]
+  },
+  "objc2-security@0.3.2": {
+    "repository": "https://github.com/madsmtm/objc2",
+    "commit": "7b1abfd750a2cacaea71d6a56ecfb83cb7de560b",
+    "files": [
+      {
+        "file": "licenses/upstream/madsmtm-objc2-7b1abfd750a2/LICENSE.md",
+        "source": "https://raw.githubusercontent.com/madsmtm/objc2/7b1abfd750a2cacaea71d6a56ecfb83cb7de560b/LICENSE.md"
+      }
+    ]
+  },
+  "mac-notification-sys@0.6.15": {
+    "repository": "https://github.com/h4llow3En/mac-notification-sys",
+    "commit": "deb559683962d314a7693478476bf8d052efa84e",
+    "files": [
+      {
+        "file": "licenses/upstream/h4llow3En-mac-notification-sys-deb559683962/LICENSE-Apache",
+        "source": "https://raw.githubusercontent.com/h4llow3En/mac-notification-sys/deb559683962d314a7693478476bf8d052efa84e/LICENSE-Apache"
+      },
+      {
+        "file": "licenses/upstream/h4llow3En-mac-notification-sys-deb559683962/LICENSE-MIT",
+        "source": "https://raw.githubusercontent.com/h4llow3En/mac-notification-sys/deb559683962d314a7693478476bf8d052efa84e/LICENSE-MIT"
+      }
+    ]
+  }
+}

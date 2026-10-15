@@ -1,5 +1,9 @@
 # Validation record
 
+Current **heykup pets 1.3.0-beta.1** fixes, reminder work and validation: [beta follow-up](BETA_FIXES.md). Older release results below do not validate the beta.
+
+The current offline manual-creator changes and their checks are recorded in [Phase 1 status](CREATOR_STATUS.md). Older release packaging results below do not validate the creator changes.
+
 ## MiniMates 1.2.0 — character collections and movement
 
 Validated on 15 October 2026: 132 playable character definitions (12 originals + 120 supplied original concepts), 396 PNG atlases, and 20 reference-only catalog entries. Every frame is checked against the renderer and native hit spans, including 64×64 3D frames and long-running frame wrap. Movement checks cover selected ranges, both home sides, reminder excursions/return, hover pause, narrow displays, and settings migration. Browser checks cover collection/style filters, selection persistence, unavailable references, and movement controls. Native smoke/compositor acceptance remains distinct from these automated checks.

@@ -252,7 +252,7 @@ pub fn initialize(app: &tauri::AppHandle) -> Result<(), String> {
     std::thread::spawn(move || {
         while let Ok(action) = rx.recv() {
             match action {
-                ClickAction::Settings => crate::show_settings(&app),
+                ClickAction::Settings => crate::show_quick_reminder(&app),
                 ClickAction::Happy => {
                     let _ = app.emit_to("pet", "pet-action", "happy");
                 }

@@ -1,20 +1,32 @@
-# MiniMates · little companions, real company
+# heykup pets · little companions, real company
 
-An offline Windows and macOS desktop companion built with **Tauri 2, React, TypeScript, and Rust**. Original pixel artwork and code are MIT licensed. Version 1.2.0 adds a character gallery and customizable walking areas. No account, backend, subscription, paid API, or paid assets.
+An offline Windows and macOS desktop companion built with **Tauri 2, React, TypeScript, and Rust**. Original pixel artwork and code are MIT licensed. Version **1.3.0-beta.1** adds manual character customization, quick and scheduled reminders, and the heykup brand theme. No account, backend, subscription, paid API, or paid assets.
 
-![MiniMates settings preview](docs/preview.png)
+![heykup pets settings preview](docs/preview.png)
 
 ## Characters and movement
 
-Choose from **132 original animated companions**, each with three color styles and six animation states. The first twelve are: Alex, Nova, Sage the wizard, Mochi the cat, Biscuit the corgi, Ember the fox, Clover the rabbit, Bao the panda, Pip the penguin, Sprout the frog, Bolt the robot, and Cinder the dragon. All PNG frames are included in `public/characters/`; the dependency-free `npm run icons` generator produces them from the same pixel data used for native click regions. No purchased or placeholder assets are used.
+Choose from **133 original animated companions**, each with three color styles and six animation states. The first twelve are: Alex, Nova, Sage the wizard, Mochi the cat, Biscuit the corgi, Ember the fox, Clover the rabbit, Bao the panda, Pip the penguin, Sprout the frog, Bolt the robot, and Cinder the dragon. All PNG frames are included in `public/characters/`; the dependency-free `npm run icons` generator produces them from the same pixel data used for native click regions. No purchased or placeholder assets are used.
 
-All **120 original concepts** from `MiniMates_Character_Collections` now have playable artwork: 70 pixel characters across Everyday Humans, Indian & Kerala, Fantasy & Adventure, and Special Desktop Characters; and 50 shaded Cute 3D characters across all five supplied 3D collections. The 20 licensed-character references remain searchable reference-only records with no desktop selection or bundled artwork. The supplied source catalog is preserved; generated manifests and `src/core/ready-characters.json` record the playable assets.
+**Maple**, in the **Soft Friends** collection, is a rounded, clay-style little bear with a cream belly and heykup coral scarf. Choose caramel, cream, or slate fur and preview all six animations. Its shaded sprites are rendered locally, with no model download or graphics runtime required.
+
+All **120 original concepts** from `assets/characters/collections` now have playable artwork: 70 pixel characters across Everyday Humans, Indian & Kerala, Fantasy & Adventure, and Special Desktop Characters; and 50 shaded Cute 3D characters across all five supplied 3D collections. The 20 licensed-character references remain searchable reference-only records with no desktop selection or bundled artwork. The supplied source catalog is preserved; generated manifests and `src/core/ready-characters.json` record the playable assets.
 
 The Cute 3D figures are original articulated ellipsoid models rendered with a depth buffer and studio lighting into 64×64 transparent frames. Pixel characters use 32×32 frames. Model and renderer code is in `src/core/collectionArtwork.ts`; no Blender installation, external models, GPU renderer, or online generation is required. The collection pack’s proposed signature actions are retained as concepts; this release implements the six shared animation states, not separate bespoke dance/signature sequences.
 
 The app now includes a separate **Preview studio** with walk, idle, wave, jump, drink-water and sleep controls, pause/play, and a day/night scene. Previewing never sends live desktop animation commands. Appearance changes preview immediately and apply to the desktop after Save.
 
-Later phases are **not implemented**: multiple active characters, per-character creator, ZIP pack imports, dragging, encounter behavior, full reminder actions/quiet hours, native notifications, fullscreen auto-hide, and battery/lock optimization. This release does not claim those features or mark native Windows acceptance testing complete.
+Later phases are **not implemented**: multiple active characters, photo intake/conversion, ZIP pack imports, dragging, encounter behavior, full reminder actions/quiet hours, fullscreen auto-hide, and battery/lock optimization. This release does not claim those features or mark native Windows acceptance testing complete.
+
+### Create a custom companion
+
+Open **Characters → Create Character → Create Manually**. Choose body, skin, face, eyes, brows, facial hair, hair, clothing, shoes and accessories. The live preview supports left/right views, six shared animations, pause, undo and reset. Reduced-motion preferences start the preview paused. Personality is a descriptive label; it does not change behavior.
+
+Select **Keep character** to stage it in **My Custom Characters**, then **Add to Desktop** and **Save changes**. Library edits use the same Save/Discard flow as other preferences. Up to 50 appearance presets are stored in the existing settings file, with one active companion. Preview/Edit/Rename, Duplicate, Export preset and Delete are available on each card. Deleting the selected character selects Alex; Discard restores the saved library and selection.
+
+Custom companions are original shaded ellipsoid figures using the existing animation and placement engines. They render locally to a 64×64 canvas from the same pixels as native hit regions, with a bounded pose cache. Existing bundled characters keep their PNG atlases. Export produces validated appearance JSON for this renderer (desktop exports go to Downloads without replacing existing files); it is not a standalone sprite pack, and preset/ZIP import is unavailable. Sitting, dancing and stretching animations, photo selection, local AI and model downloads are not implemented. No photo is requested or processed.
+
+See [creator implementation and validation](docs/CREATOR_STATUS.md) for scope and remaining native acceptance work.
 
 ### Choose your companion and walking area
 
@@ -31,7 +43,7 @@ Later phases are **not implemented**: multiple active characters, per-character 
 
 ## Upgrading from Miso / a companion that never appeared
 
-Quit the older app using its tray menu before installing MiniMates 1.2.0. The app identifier, settings paths, and legacy `Miso` user startup key are retained so upgrades can keep preferences. You can rename a retained companion in Appearance. Startup registration is refreshed to the installed executable when already enabled.
+Quit the older app using its tray menu before installing heykup pets 1.3.0-beta.1. The app identifier, settings paths, and legacy `Miso` user startup key are retained so upgrades can keep preferences. You can rename a retained companion in Appearance. Startup registration is refreshed to the installed executable when already enabled.
 
 The overlay now starts visibly from Rust while remaining fully click-through until its first valid character region. It selects the correct view using Tauri's native window label, rather than URL query routing. Settings show whether animation frames are arriving and include **Show / restart pet** to safely reposition and reload a stalled companion. Placement failures are displayed in this status area. These changes address startup failure modes; the originally reported invisible Windows pet still needs confirmation with the new installer on the affected machine.
 
@@ -46,10 +58,10 @@ If the companion is missing: open settings, choose **Desktop & startup → Follo
 - Completely click-through speech bubbles in their own non-activating window.
 - Click to greet, double-click to jump, right-click for settings; hovering pauses movement.
 - Editable water, stretch, and break intervals and messages; individual switches; 15-minute snooze.
-- 132 playable characters, collection/style filters, three color styles, name, five sizes, speed, monitor selection, home side, walking-area limits, three movement modes, and speech bubbles.
+- 133 playable characters, collection/style filters, three color styles, name, five sizes, speed, monitor selection, home side, walking-area limits, three movement modes, and speech bubbles.
 - Per-monitor work-area and DPI detection, negative desktop coordinates, taskbar edge and auto-hide detection, and hot-plug fallback to the primary display.
 - Windows tray / Mac menu-bar controls, single-instance behavior, close-to-tray settings, and optional per-user login startup.
-- Validated local JSON settings written atomically. No runtime network requests or external assets.
+- Validated local JSON settings written atomically. No runtime requests to external services or remote assets; license texts load from the packaged app.
 - Per-user Windows NSIS `.exe`, Mac `.app` / `.dmg`, offline WebView2 installer, cross-platform build CI, unit tests, browser tests, and native acceptance checklists.
 
 ## Run the preview
@@ -80,7 +92,7 @@ cargo test --locked --manifest-path src-tauri/Cargo.toml
 npm run desktop:dev
 ```
 
-The first native launch opens settings and the companion. Subsequent launches restore the pet; click the MiniMates tray icon to open settings. If Windows hides the tray icon in the overflow menu, open that menu to find it.
+The first native launch opens settings and the companion. Subsequent launches restore the pet; click the heykup pets tray icon to open settings. If Windows hides the tray icon in the overflow menu, open that menu to find it.
 
 Build installers:
 
@@ -91,14 +103,14 @@ npm run desktop:build -- -- --locked
 Outputs:
 
 ```text
-src-tauri/target/release/bundle/nsis/MiniMates_1.2.0_x64-setup.exe
+src-tauri/target/release/bundle/nsis/heykup-pets_1.3.0-beta.1_x64-setup.exe
 ```
 
-The installer runs in **current-user context**, installs under `%LOCALAPPDATA%`, and does not request administrator elevation. Launch it normally, without “Run as administrator.” The app manifest explicitly uses `asInvoker` with `uiAccess="false"`. MiniMates runs in the signed-in desktop session; it does not install a Windows service or use SYSTEM. Settings live in the user's profile and startup uses HKCU. The default MSI has been removed because it installs machine-wide. Organization policies can still block unapproved applications or runtime installation.
+The installer runs in **current-user context**, installs under `%LOCALAPPDATA%`, and does not request administrator elevation. Launch it normally, without “Run as administrator.” The app manifest explicitly uses `asInvoker` with `uiAccess="false"`. heykup pets runs in the signed-in desktop session; it does not install a Windows service or use SYSTEM. Settings live in the user's profile and startup uses HKCU. The default MSI has been removed because it installs machine-wide. Organization policies can still block unapproved applications or runtime installation.
 
 WebView2 supports non-elevated installation; see [Microsoft’s runtime distribution documentation](https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/distribution#installing-the-runtime-as-per-machine-or-per-user).
 
-The first build downloads build dependencies, bundling tools, and the offline WebView2 installer. **The resulting app and installer work without an internet connection.** Bundling WebView2 makes the installer substantially larger than the app executable. Installers are unsigned by default; Windows may show an unknown-publisher/SmartScreen prompt. A paid signing certificate is optional and is not required to build or use MiniMates.
+The first build downloads build dependencies, bundling tools, and the offline WebView2 installer. **The resulting app and installer work without an internet connection.** Bundling WebView2 makes the installer substantially larger than the app executable. Installers are unsigned by default; Windows may show an unknown-publisher/SmartScreen prompt. A paid signing certificate is optional and is not required to build or use heykup pets.
 
 ## Build and run on Mac
 
@@ -113,13 +125,13 @@ npm run desktop:dev
 npm run desktop:build -- -- --locked
 ```
 
-Tauri automatically merges `src-tauri/tauri.macos.conf.json`. Outputs are `src-tauri/target/release/bundle/macos/MiniMates.app` and `src-tauri/target/release/bundle/dmg/*.dmg`. The minimum configured macOS version is 11.0. Builds use a free ad-hoc signature; no Apple Developer subscription or signing secrets are needed. These builds are **not notarized**, so macOS may block a downloaded copy. Follow macOS's per-app Open Anyway flow only for a build you trust; do not disable Gatekeeper globally. Managed Macs may require IT approval.
+Tauri automatically merges `src-tauri/tauri.macos.conf.json`. Outputs are `src-tauri/target/release/bundle/macos/heykup-pets.app` and `src-tauri/target/release/bundle/dmg/*.dmg`. The minimum configured macOS version is 11.0. Builds use a free ad-hoc signature; no Apple Developer subscription or signing secrets are needed. These builds are **not notarized**, so macOS may block a downloaded copy. Follow macOS's per-app Open Anyway flow only for a build you trust; do not disable Gatekeeper globally. Managed Macs may require IT approval.
 
-For installation without writing to system folders, copy `MiniMates.app` to **`~/Applications`** (create that folder in your home directory if needed). The DMG's Applications shortcut points to `/Applications`; choose your own folder instead for a per-user install. Launch from its final location before enabling startup or granting permissions. Do not run from inside the DMG. Use the menu-bar companion icon → Open MiniMates settings.
+For installation without writing to system folders, copy `heykup-pets.app` to **`~/Applications`** (create that folder in your home directory if needed). The DMG's Applications shortcut points to `/Applications`; choose your own folder instead for a per-user install. Launch from its final location before enabling startup or granting permissions. Do not run from inside the DMG. Use the menu-bar companion icon → Open heykup pets settings.
 
-Mac desktop placement excludes the Dock and menu bar. Pet clicks are optional: open **Desktop & startup → Enable clicks**, then allow MiniMates in **System Settings → Privacy & Security → Accessibility** and restart if needed. macOS may require administrator approval to change Accessibility permissions. Without permission, walking, reminders, hover pause, settings and menu-bar controls work; clicks go through the entire companion. The app listens only for mouse buttons and does not read keyboard events. Rebuilding or moving an ad-hoc-signed app may require granting consent again.
+Mac desktop placement excludes the Dock and menu bar. Pet clicks are optional: open **Desktop & startup → Enable clicks**, then allow heykup pets in **System Settings → Privacy & Security → Accessibility** and restart if needed. macOS may require administrator approval to change Accessibility permissions. Without permission, walking, reminders, hover pause, settings and menu-bar controls work; clicks go through the entire companion. The app listens only for mouse buttons and does not read keyboard events. Rebuilding or moving an ad-hoc-signed app may require granting consent again.
 
-Startup uses a per-user LaunchAgent under `~/Library/LaunchAgents`. Disable “Meet me at sign-in” before uninstalling, quit using the menu bar, and move MiniMates.app to Trash. No system daemon is installed.
+Startup uses a per-user LaunchAgent under `~/Library/LaunchAgents`. Disable “Meet me at sign-in” before uninstalling, quit using the menu bar, and move heykup-pets.app to Trash. No system daemon is installed.
 
 ## Build both platforms with GitHub Actions
 
@@ -131,9 +143,9 @@ Startup uses a per-user LaunchAgent under `~/Library/LaunchAgents`. Disable “M
 
 | Artifact                        | Computer                       | Contents                                           |
 | ------------------------------- | ------------------------------ | -------------------------------------------------- |
-| `minimates-windows-x64`         | Windows 10/11 Intel or AMD x64 | Per-user `*-setup.exe`, including offline WebView2 |
-| `minimates-macos-apple-silicon` | Mac with Apple M-series chip   | `.dmg` and `.app.tar.gz`                           |
-| `minimates-macos-intel`         | Mac with Intel CPU             | `.dmg` and `.app.tar.gz`                           |
+| `heykup-pets-windows-x64`         | Windows 10/11 Intel or AMD x64 | Per-user `*-setup.exe`, including offline WebView2 |
+| `heykup-pets-macos-apple-silicon` | Mac with Apple M-series chip   | `.dmg` and `.app.tar.gz`                           |
+| `heykup-pets-macos-intel`         | Mac with Intel CPU             | `.dmg` and `.app.tar.gz`                           |
 
 Extract the downloaded artifact ZIP. Use the Windows setup executable or open the Mac DMG; the Mac tar archive is an alternative that preserves the app's executable permissions and symlinks. CI outputs use `src-tauri/target/<target-triple>/release/bundle/`. Artifacts expire after 30 days and are not GitHub Releases. Windows and Mac builds run independently, so one failed platform does not cancel the others.
 
@@ -141,7 +153,7 @@ The workflow requires no signing credentials or paid APIs. Standard [GitHub-host
 
 ## Use the installed app
 
-Run the setup executable, launch **MiniMates** from the Start menu, and save your preferences. After installation you do **not** need Node, Rust, Visual Studio, VS Code, or a terminal.
+Run the setup executable, launch **heykup pets** from the Start menu, and save your preferences. After installation you do **not** need Node, Rust, Visual Studio, VS Code, or a terminal.
 
 | Action                                 | Result                                                |
 | -------------------------------------- | ----------------------------------------------------- |
@@ -155,21 +167,37 @@ Run the setup executable, launch **MiniMates** from the Start menu, and save you
 | Desktop & startup → Meet me at sign-in | Register or remove per-user Windows startup           |
 | Save changes                           | Persist preferences and apply them to the desktop pet |
 
-Automatic startup is **off initially**; enabling it launches MiniMates quietly at sign-in. It uses the official Tauri autostart plugin's per-user Windows Run registration. The NSIS uninstaller removes that entry. Settings are retained on uninstall so reinstalls can restore preferences.
+Automatic startup is **off initially**; enabling it launches heykup pets quietly at sign-in. It uses the official Tauri autostart plugin's per-user Windows Run registration. The NSIS uninstaller removes that entry. Settings are retained on uninstall so reinstalls can restore preferences.
+
+## Quick and scheduled reminders
+
+Right-click the companion to open a quick reminder, or choose **Quick reminder…** from the tray/menu bar. On Mac, character clicks require the existing Accessibility consent; the tray entry works without it. You can also open **Reminders → Create reminder** from settings.
+
+Enter a title and message, select **In 5/15/30/60 minutes** or choose a local date/time, and optionally repeat at a minute interval. Speech bubbles and system notifications are both enabled initially and can be selected separately. **Schedule reminder** saves immediately, independently of the appearance Save/Discard bar. You can edit, pause, reschedule or delete up to 100 reminders. Use **Test system notification** to check your OS settings.
+
+Keep heykup pets running in the tray for delivery. It does not start a background service or wake a powered-off/sleeping computer. Overdue reminders are attempted after reopening/resuming; missed repeat intervals coalesce, and simultaneous overdue items produce a summary instead of a burst. One-off attempts are persisted before dispatch to avoid repeating after restart. OS Focus, notification permissions and platform delivery failures can suppress a notification; an attempt is not confirmation that it appeared. If the process exits between persisting an attempt and dispatching it, that attempt is not retried automatically. Speech bubbles follow companion visibility and the global bubbles switch. Snooze also postpones custom reminders while the app runs.
+
+The browser preview supports local reminder editing/persistence; it does not deliver system reminders. Windows notifications need an installed build. Calendar times are stored as timestamps; repeating reminders use fixed minute intervals rather than timezone-aware calendar recurrence.
+
+## Beta distribution and brand
+
+The displayed brand is **heykup pets** and downloadable bundles use **heykup-pets**. Colours were taken from [heykup.com](https://heykup.com/): coral `#f05a32`, rust `#d85a30`/`#993c1d`, warm cream `#fdf9f5`, and ink `#17191d`. No website, account integration, or remote hosting has been changed. Legacy app identity and settings/startup keys remain compatible with MiniMates/Miso upgrades.
+
+About includes complete third-party notices; installers also carry `LICENSE`, `THIRD_PARTY_NOTICES.md`, and generated `THIRD_PARTY_LICENSES.txt`. `npm run check:release` verifies version agreement, lockfile notice freshness and resource configuration. To regenerate after changing dependencies, install/fetch all three supported targets, then run `npm run notices`. The CI artifact includes `SHA256SUMS.txt` alongside the installer/archive. Use a committed beta tag and complete the native acceptance checklists before a public release. See [beta follow-up status](docs/BETA_FIXES.md).
 
 ## Reminders and local data
 
-Intervals range from 1 to 240 minutes. Timers use elapsed monotonic time, restart on app launch, and reset only when that reminder's configuration changes. Sleep animation does not disable reminders. Snooze pauses all reminder delivery for 15 minutes. Missed intervals combine into one reminder after suspend or snooze; no queue of overdue bubbles appears. Bubbles last seven seconds. Turning off speech bubbles silences all visual reminders. Hiding the pet from the tray hides bubbles too.
+Intervals range from 1 to 240 minutes. Timers use elapsed monotonic time, restart on app launch, and reset only when that reminder's configuration changes. Sleep animation does not disable reminders. Snooze pauses all reminder delivery for 15 minutes. Missed intervals combine into one reminder after suspend or snooze; no queue of overdue bubbles appears. Bubbles last seven seconds. Turning off speech bubbles silences bubble reminders; custom system notifications have their own switches. Hiding the pet from the tray hides bubbles too.
 
-Native settings: `%APPDATA%\com.miso.desktop\settings.json` on Windows; `~/Library/Application Support/com.miso.desktop/settings.json` on Mac. Use the tray to quit before manually editing this file. A malformed file is preserved, defaults are loaded, and settings show a warning; saving intentionally replaces the file. Browser preview settings use localStorage under `miso.settings.v1` and are separate from native settings. No analytics, log upload, or cloud storage is implemented.
+Native settings: `%APPDATA%\com.miso.desktop\settings.json` on Windows; `~/Library/Application Support/com.miso.desktop/settings.json` on Mac. Use the tray to quit before manually editing this file. A malformed file is preserved, defaults are loaded, and settings show a warning; saving intentionally replaces the file. Browser preview settings use localStorage under `miso.settings.v1` and are separate from native settings. No analytics, log upload, or cloud storage is implemented. Custom reminders live beside settings in `reminders.json`.
 
 ## Monitor and input behavior
 
 **Windows:** `EnumDisplayMonitors` and `GetMonitorInfoW` supply each monitor's physical bounds and available work area, including areas reserved by app bars. Explorer taskbar windows identify the taskbar edge; `ABM_GETAUTOHIDEBAREX` detects auto-hidden taskbars per display. Physical coordinates and monitor DPI are used for placement and region construction. Display layout is refreshed every two seconds, including after unlock or monitor hot-plug. Selecting a missing monitor falls back to the primary display without deleting the preference.
 
-On the usual bottom taskbar, the companion's feet sit four logical pixels above the work-area bottom. With top, left, or right taskbars, it still walks **horizontally at the bottom of the available work area**, away from the docked bar. On auto-hide taskbars, an extra reveal margin leaves the screen edge accessible. Expanding an auto-hidden taskbar can temporarily cover the pet; MiniMates does not force Explorer's taskbar open or closed.
+On the usual bottom taskbar, the companion's feet sit four logical pixels above the work-area bottom. With top, left, or right taskbars, it still walks **horizontally at the bottom of the available work area**, away from the docked bar. On auto-hide taskbars, an extra reveal margin leaves the screen edge accessible. Expanding an auto-hidden taskbar can temporarily cover the pet; heykup pets does not force Explorer's taskbar open or closed.
 
-The sprite's native hit region is a union of its opaque pixel spans, rebuilt only when the silhouette or scale changes. Speech bubbles never accept input. If a region or placement operation fails, MiniMates hides the overlay and reports the problem in settings. Settings are a normal interactive window. Secure desktops (UAC, lock screen), exclusive fullscreen applications, and other topmost windows can cover the companion; Windows does not guarantee a normal app can appear above those surfaces.
+The sprite's native hit region is a union of its opaque pixel spans, rebuilt only when the silhouette or scale changes. Speech bubbles never accept input. If a region or placement operation fails, heykup pets hides the overlay and reports the problem in settings. Settings are a normal interactive window. Secure desktops (UAC, lock screen), exclusive fullscreen applications, and other topmost windows can cover the companion; Windows does not guarantee a normal app can appear above those surfaces.
 
 **Mac:** `NSScreen.frame` / `visibleFrame` provide screen bounds and usable areas in global points. Backing scale is kept separate, so mixed Retina/non-Retina layouts and negative coordinates do not multiply screen origins incorrectly. Screens are refreshed every two seconds. Side Dock layouts keep the companion along the bottom of the remaining area; auto-hidden Docks leave a reveal margin. Both overlays always ignore mouse events. With permission, a mouse-only CoreGraphics event filter consumes clicks that start on opaque sprite spans. Hidden or stale frames fail open. Fullscreen Spaces, Stage Manager, and other floating windows need desktop acceptance testing; the app cannot promise visibility above every system surface.
 
@@ -209,8 +237,15 @@ scripts/generate-icons.mjs  Reproducible original PNG/ICO/ICNS generation
 .github/workflows/          Windows + Intel/Apple Silicon Mac builds
 ```
 
-No shell, filesystem, HTTP, or autostart commands are exposed directly to the frontend. Rust commands restrict caller window labels and validate inputs. The application has a local-only content security policy. The only frontend capability is listening to app events.
+No general shell, filesystem, HTTP, or autostart commands are exposed directly to the frontend. Rust commands restrict caller window labels and validate inputs. The application has a local-only content security policy. The only frontend capability is listening to app events.
 
 Technical references: [Tauri Windows installers](https://v2.tauri.app/distribute/windows-installer/), [Tauri autostart](https://v2.tauri.app/plugin/autostart/), [Tauri tray](https://v2.tauri.app/learn/system-tray/), [Microsoft MONITORINFO](https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-monitorinfo), [Microsoft SetWindowRgn](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowrgn), [Microsoft SHAppBarMessage](https://learn.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shappbarmessage).
 
 License: [MIT](LICENSE). See [third-party notices](THIRD_PARTY_NOTICES.md) for open-source dependencies and the free proprietary WebView2 prerequisite.
+
+
+### Hosting alongside heykup.com
+
+Host installer archives and `SHA256SUMS.txt` under a download path such as `/downloads/heykup-pets/` and link them from the existing heykup website. The desktop app does not need a hosted backend. Existing heykup account or office-planning data is not connected to pets.
+
+If you also want the browser preview under `/pets/`, run `npm run build -- --base=/pets/` and serve that `dist/` under `/pets/`. Sprite and notice URLs follow that base path. Run the normal `npm run build` again before a native package so its assets use the desktop app root. No DNS, hosting or existing-site changes are performed by these commands.

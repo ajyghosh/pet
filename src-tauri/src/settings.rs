@@ -13,6 +13,8 @@ pub struct Settings {
     pub name: String,
     #[serde(default = "default_character")]
     pub character: String,
+    #[serde(default, rename = "customCharacters")]
+    pub custom_characters: Vec<serde_json::Value>,
     pub coat: String,
     pub size: u32,
     pub speed: u32,
@@ -83,6 +85,7 @@ impl Default for Settings {
             version: 1,
             name: "Alex".into(),
             character: default_character(),
+            custom_characters: vec![],
             coat: "slate".into(),
             size: 80,
             speed: 45,
@@ -100,10 +103,16 @@ impl Default for Settings {
 }
 impl Settings {
     pub fn validate(&self) -> Result<(), String> {
-        if self.version != 1 || self.name.trim().is_empty() || self.name.chars().count() > 24 {
+        if self.version != 1 || self.name.trim().is_empty() || self.name.chars().count() > 80 {
             return Err("Invalid settings version or pet name".into());
         }
-        if !valid_character(&self.character) {
+        crate::custom_characters::validate(&self.custom_characters)?;
+        if !valid_character(&self.character)
+            && !self
+                .custom_characters
+                .iter()
+                .any(|c| c["id"] == self.character)
+        {
             return Err("Unknown or reference-only companion".into());
         }
         if !["left", "right"].contains(&self.home_side.as_str())
@@ -228,7 +237,7 @@ mod tests {
     #[test]
     fn collection_ids_validate_but_reference_entries_are_not_playable() {
         let catalog: serde_json::Value = serde_json::from_str(include_str!(
-            "../../MiniMates_Character_Collections/characters.json"
+            "../../assets/characters/collections/characters.json"
         ))
         .unwrap();
         let entries = catalog["characters"].as_array().unwrap();

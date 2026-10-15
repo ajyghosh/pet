@@ -1,3 +1,4 @@
+import { registerCustomCharacters } from "./core/customCharacters";
 import { spriteGrid, type CharacterId } from "./core/characters";
 import { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
@@ -46,6 +47,7 @@ export function PetWindow() {
     };
     async function start() {
       let settings = (await bootstrap()).settings;
+      registerCustomCharacters(settings.customCharacters);
       let displays = await monitors();
       if (disposed) return;
       let pet = createPet(),
@@ -96,8 +98,13 @@ export function PetWindow() {
           )
         )
           pet.excursion = null;
+        registerCustomCharacters(s.customCharacters ?? []);
         settings = s;
         clock.update(s, performance.now());
+      });
+      await subscribe<string>("custom-reminder-due", (text) => {
+        say(text);
+        pet = remind(pet, performance.now(), settings);
       });
       await subscribe<string>("pet-action", (a) => input.current(a));
       async function tick() {
@@ -167,7 +174,7 @@ export function PetWindow() {
       if (disposed) return;
       // Fail closed: hide the overlay if monitor positioning or shape updates fail.
       await invoke("report_pet_error", {
-        message: `MiniMates paused: ${String(error)}. Quit and reopen MiniMates to retry.`,
+        message: `heykup pets paused: ${String(error)}. Quit and reopen heykup pets to retry.`,
       }).catch(console.error);
     }
     void start().catch(fail);
@@ -190,7 +197,7 @@ export function PetWindow() {
       onDoubleClick={() => input.current("jumping")}
       onContextMenu={(e) => {
         e.preventDefault();
-        void invoke("open_settings");
+        void invoke("open_quick_reminder");
       }}
     >
       <PetSprite {...pose} />

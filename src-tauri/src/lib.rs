@@ -1,8 +1,11 @@
+mod custom_characters;
+mod custom_reminders;
 mod geometry;
 #[cfg(any(target_os = "macos", test))]
 mod hit_test;
 mod platform;
 mod settings;
+mod watchdog;
 
 use geometry::Display;
 use settings::Settings;
@@ -13,6 +16,7 @@ use std::{
 };
 use tauri::{Emitter, Manager, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 use tauri_plugin_autostart::ManagerExt;
+use tauri_plugin_notification::NotificationExt;
 
 struct DesktopState {
     settings: Settings,
@@ -103,6 +107,147 @@ fn save_settings(
     app.emit("settings-changed", &settings)
         .map_err(|e| e.to_string())?;
     Ok(settings)
+}
+#[tauri::command]
+fn export_character(
+    window: WebviewWindow,
+    app: tauri::AppHandle,
+    character: serde_json::Value,
+) -> Result<String, String> {
+    allowed(&window, &["settings"])?;
+    let directory = app.path().download_dir().map_err(|e| e.to_string())?;
+    custom_characters::export(&directory, &character)
+        .map(|path| path.to_string_lossy().into_owned())
+}
+type ReminderState = Mutex<custom_reminders::Store>;
+#[tauri::command]
+fn list_custom_reminders(
+    window: WebviewWindow,
+    state: tauri::State<ReminderState>,
+) -> Result<custom_reminders::Snapshot, String> {
+    allowed(&window, &["settings"])?;
+    Ok(state.lock().map_err(|e| e.to_string())?.snapshot())
+}
+#[tauri::command]
+fn save_custom_reminder(
+    window: WebviewWindow,
+    app: tauri::AppHandle,
+    state: tauri::State<ReminderState>,
+    reminder: custom_reminders::ScheduledReminder,
+) -> Result<custom_reminders::Snapshot, String> {
+    allowed(&window, &["settings"])?;
+    let mut store = state.lock().map_err(|e| e.to_string())?;
+    store.upsert(reminder, custom_reminders::now_ms())?;
+    let snapshot = store.snapshot();
+    drop(store);
+    let _ = app.emit_to("settings", "custom-reminders-changed", &snapshot);
+    Ok(snapshot)
+}
+#[tauri::command]
+fn delete_custom_reminder(
+    window: WebviewWindow,
+    app: tauri::AppHandle,
+    state: tauri::State<ReminderState>,
+    id: String,
+) -> Result<custom_reminders::Snapshot, String> {
+    allowed(&window, &["settings"])?;
+    let mut store = state.lock().map_err(|e| e.to_string())?;
+    store.delete(&id)?;
+    let snapshot = store.snapshot();
+    drop(store);
+    let _ = app.emit_to("settings", "custom-reminders-changed", &snapshot);
+    Ok(snapshot)
+}
+#[tauri::command]
+fn take_quick_reminder_request(
+    window: WebviewWindow,
+    state: tauri::State<ReminderState>,
+) -> Result<bool, String> {
+    allowed(&window, &["settings"])?;
+    let mut store = state.lock().map_err(|e| e.to_string())?;
+    Ok(std::mem::take(&mut store.open_editor))
+}
+pub(crate) fn show_quick_reminder(app: &tauri::AppHandle) {
+    if let Ok(mut store) = app.state::<ReminderState>().lock() {
+        store.open_editor = true;
+    }
+    show_settings(app);
+    let _ = app.emit_to("settings", "open-quick-reminder", ());
+}
+#[tauri::command]
+fn open_quick_reminder(window: WebviewWindow, app: tauri::AppHandle) -> Result<(), String> {
+    allowed(&window, &["pet"])?;
+    show_quick_reminder(&app);
+    Ok(())
+}
+#[tauri::command]
+fn test_notification(window: WebviewWindow, app: tauri::AppHandle) -> Result<(), String> {
+    allowed(&window, &["settings"])?;
+    app.notification().builder().title("heykup pets").body("Your reminder test. Notification settings and Focus modes are controlled by your operating system.").show().map_err(|e| e.to_string())
+}
+fn snooze_custom_reminders(app: &tauri::AppHandle) {
+    if let Ok(mut store) = app.state::<ReminderState>().lock() {
+        store.snoozed_until = custom_reminders::now_ms() + 15 * 60_000;
+    }
+}
+fn tick_custom_reminders(app: &tauri::AppHandle) {
+    let state = app.state::<ReminderState>();
+    let Ok(mut store) = state.try_lock() else {
+        return;
+    };
+    let due = match store.take_due(custom_reminders::now_ms()) {
+        Ok(due) => due,
+        Err(error) => {
+            let warning =
+                format!("Could not update reminders: {error}. Pending reminders will be retried.");
+            if store.warning.as_ref() != Some(&warning) {
+                store.warning = Some(warning);
+                let _ = app.emit_to("settings", "custom-reminders-changed", store.snapshot());
+            }
+            return;
+        }
+    };
+    if due.is_empty() {
+        return;
+    }
+    let snapshot = store.snapshot();
+    drop(store);
+    let _ = app.emit_to("settings", "custom-reminders-changed", &snapshot);
+    let notifications: Vec<_> = due.iter().filter(|r| r.system_notification).collect();
+    if let Some(first) = notifications.first() {
+        let (title, body) = if notifications.len() == 1 {
+            (first.title.clone(), first.message.clone())
+        } else {
+            (
+                format!("heykup pets · {} reminders", notifications.len()),
+                notifications
+                    .iter()
+                    .take(3)
+                    .map(|r| r.title.as_str())
+                    .collect::<Vec<_>>()
+                    .join(" · "),
+            )
+        };
+        if let Err(error) = app.notification().builder().title(title).body(body).show() {
+            let _ = app.emit_to(
+                "settings",
+                "native-error",
+                format!("Could not submit a system notification: {error}"),
+            );
+        }
+    }
+    let bubbles: Vec<_> = due.iter().filter(|r| r.bubble).collect();
+    if let Some(first) = bubbles.first() {
+        let message = if bubbles.len() == 1 {
+            first.message.clone()
+        } else {
+            format!(
+                "{} reminders due. Open Reminders to review them.",
+                bubbles.len()
+            )
+        };
+        let _ = app.emit_to("pet", "custom-reminder-due", message);
+    }
 }
 #[tauri::command]
 fn list_monitors(
@@ -256,6 +401,9 @@ fn pet_action(window: WebviewWindow, app: tauri::AppHandle, action: String) -> R
     {
         return Err("Unknown pet action".into());
     }
+    if action == "snooze" {
+        snooze_custom_reminders(&app);
+    }
     app.emit_to("pet", "pet-action", action)
         .map_err(|e| e.to_string())
 }
@@ -368,8 +516,64 @@ fn restart_pet(
         .reload()
         .map_err(|e| e.to_string())
 }
+/// Runs on the native main thread independently of the pet webview's timers.
+fn expire_stalled_pet(app: &tauri::AppHandle) {
+    let state = app.state::<Shared>();
+    let Ok(mut s) = state.try_lock() else {
+        return;
+    };
+    if s.hidden
+        || s.pet_error.is_some()
+        || !watchdog::expired(s.started, s.last_frame, Instant::now())
+    {
+        return;
+    }
+    platform::clear_input();
+    let mut recovery_errors = Vec::new();
+    if let Some(window) = app.get_webview_window("pet") {
+        // Disable interception before hiding; the next valid frame must reinstall input handling.
+        if let Err(error) = window.set_ignore_cursor_events(true) {
+            recovery_errors.push(error.to_string());
+        }
+        if let Err(error) = window.hide() {
+            recovery_errors.push(error.to_string());
+        }
+    }
+    if let Some(window) = app.get_webview_window("bubble") {
+        if let Err(error) = window.hide() {
+            recovery_errors.push(error.to_string());
+        }
+    }
+    s.last_frame = None;
+    s.shape.clear();
+    s.message = None;
+    let mut message = "Companion animation stopped responding. The overlay was disabled. Select Show / restart pet to retry.".to_owned();
+    if !recovery_errors.is_empty() {
+        message.push_str(&format!(" Recovery errors: {}", recovery_errors.join("; ")));
+    }
+    s.pet_error = Some(message.clone());
+    drop(s);
+    let _ = app.emit_to("settings", "native-error", message);
+}
+fn start_watchdog(app: &tauri::AppHandle) {
+    let app = app.clone();
+    std::thread::spawn(move || loop {
+        std::thread::sleep(Duration::from_secs(1));
+        let handle = app.clone();
+        if app
+            .run_on_main_thread(move || {
+                expire_stalled_pet(&handle);
+                tick_custom_reminders(&handle);
+            })
+            .is_err()
+        {
+            break;
+        }
+    });
+}
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
             show_settings(app)
         }))
@@ -381,6 +585,9 @@ pub fn run() {
         )
         .setup(|app| {
             let path = app.path().app_config_dir()?.join("settings.json");
+            app.manage(Mutex::new(custom_reminders::Store::load(
+                app.path().app_config_dir()?.join("reminders.json"),
+            )));
             let first_run = !path.exists();
             let (settings, mut warning) = match settings::load(&path) {
                 Ok(s) => (s, None),
@@ -421,14 +628,14 @@ pub fn run() {
                 pet_error: None,
             }));
             WebviewWindowBuilder::new(app, "settings", WebviewUrl::App("index.html".into()))
-                .title("MiniMates · a little company")
+                .title("heykup pets · a little company")
                 .inner_size(1080.0, 780.0)
                 .min_inner_size(760.0, 600.0)
                 .center()
                 .visible(show_on_start)
                 .build()?;
             WebviewWindowBuilder::new(app, "pet", WebviewUrl::App("index.html".into()))
-                .title("MiniMates")
+                .title("heykup pets")
                 .inner_size(128.0, 128.0)
                 .decorations(false)
                 .transparent(true)
@@ -443,7 +650,7 @@ pub fn run() {
                 .build()?;
             let bubble =
                 WebviewWindowBuilder::new(app, "bubble", WebviewUrl::App("index.html".into()))
-                    .title("MiniMates says")
+                    .title("heykup pets says")
                     .inner_size(220.0, 72.0)
                     .decorations(false)
                     .transparent(true)
@@ -458,6 +665,7 @@ pub fn run() {
                     .build()?;
             bubble.set_ignore_cursor_events(true)?;
             platform::initialize(app.handle())?;
+            start_watchdog(app.handle());
             if let Err(error) = warm_pet(app.handle()) {
                 app.state::<Shared>()
                     .lock()
@@ -472,14 +680,16 @@ pub fn run() {
             let settings_item = MenuItem::with_id(
                 app,
                 "settings",
-                "Open MiniMates settings",
+                "Open heykup pets settings",
                 true,
                 None::<&str>,
             )?;
+            let quick_reminder =
+                MenuItem::with_id(app, "quick-reminder", "Quick reminder…", true, None::<&str>)?;
             let visible = MenuItem::with_id(app, "visible", "Hide / show pet", true, None::<&str>)?;
             let sleep =
-                MenuItem::with_id(app, "sleeping", "Let MiniMates sleep", true, None::<&str>)?;
-            let wake = MenuItem::with_id(app, "wake", "Wake MiniMates", true, None::<&str>)?;
+                MenuItem::with_id(app, "sleeping", "Let heykup pets sleep", true, None::<&str>)?;
+            let wake = MenuItem::with_id(app, "wake", "Wake heykup pets", true, None::<&str>)?;
             let snooze = MenuItem::with_id(
                 app,
                 "snooze",
@@ -488,11 +698,12 @@ pub fn run() {
                 None::<&str>,
             )?;
             let separator = PredefinedMenuItem::separator(app)?;
-            let quit = MenuItem::with_id(app, "quit", "Quit MiniMates", true, None::<&str>)?;
+            let quit = MenuItem::with_id(app, "quit", "Quit heykup pets", true, None::<&str>)?;
             let menu = Menu::with_items(
                 app,
                 &[
                     &settings_item,
+                    &quick_reminder,
                     &visible,
                     &sleep,
                     &wake,
@@ -505,11 +716,12 @@ pub fn run() {
                 .icon(tauri::image::Image::from_bytes(include_bytes!(
                     "../icons/32x32.png"
                 ))?)
-                .tooltip("MiniMates · a little company")
+                .tooltip("heykup pets · a little company")
                 .menu(&menu)
                 .show_menu_on_left_click(cfg!(target_os = "macos"))
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "settings" => show_settings(app),
+                    "quick-reminder" => show_quick_reminder(app),
                     "quit" => app.exit(0),
                     "visible" => {
                         let state = app.state::<Shared>();
@@ -526,6 +738,9 @@ pub fn run() {
                         };
                     }
                     action => {
+                        if action == "snooze" {
+                            snooze_custom_reminders(app);
+                        }
                         let _ = app.emit_to("pet", "pet-action", action);
                     }
                 })
@@ -555,6 +770,13 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             bootstrap,
             save_settings,
+            export_character,
+            list_custom_reminders,
+            save_custom_reminder,
+            delete_custom_reminder,
+            take_quick_reminder_request,
+            open_quick_reminder,
+            test_notification,
             list_monitors,
             present_frame,
             bubble_message,
@@ -567,5 +789,5 @@ pub fn run() {
             restart_pet
         ])
         .run(tauri::generate_context!())
-        .expect("MiniMates could not start");
+        .expect("heykup pets could not start");
 }

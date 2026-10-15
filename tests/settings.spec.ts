@@ -100,7 +100,7 @@ test("desktop preferences and small-window layout work offline", async ({
     "Reminders",
     "Appearance",
     "Desktop & startup",
-    "About MiniMates",
+    "About heykup pets",
   ]) {
     await page.getByRole("button", { name: tab, exact: true }).click();
     expect(
@@ -126,7 +126,7 @@ test("all imported collections are available, 3D choice persists, and references
   await page.goto("/");
   await page.getByRole("button", { name: "Characters", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "Ready to join · 132" }),
+    page.getByRole("button", { name: "Ready to join · 133" }),
   ).toBeVisible();
   await page
     .getByLabel("Character collection")
@@ -190,7 +190,7 @@ test("character gallery filters, saves, and discards unsaved choices", async ({
     );
   }
   await page.getByRole("button", { name: "Animals", exact: true }).click();
-  await expect(page.locator(".character-card")).toHaveCount(7);
+  await expect(page.locator(".character-card")).toHaveCount(8);
   await page.getByLabel("Search characters").fill("fox");
   await expect(page.locator(".character-card")).toHaveCount(1);
   await page.getByRole("button", { name: "Choose Ember", exact: true }).click();
@@ -250,4 +250,24 @@ test("walking area and alert-only mode persist and enforce slider spacing", asyn
   await expect(page.getByLabel("Walking area right limit")).toHaveValue("100");
   await page.getByRole("button", { name: "Discard", exact: true }).click();
   await expect(page.getByLabel("Walking area left limit")).toHaveValue("30");
+});
+
+test("About exposes the packaged dependency notices and beta feature limits", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "About heykup pets", exact: true })
+    .click();
+  await page
+    .getByText("Third-party licenses and notices", { exact: true })
+    .click();
+  const notices = page.getByLabel("Third-party license texts", { exact: true });
+  await expect(notices).toContainText("Permission is hereby granted");
+  await expect(notices).toContainText("npm: react@");
+  await expect(notices).toContainText("cargo: tauri@");
+  await expect(notices).toContainText("Mozilla Public License Version 2.0");
+  await expect(
+    page.getByText(/Manual character customization is included/),
+  ).toBeVisible();
 });

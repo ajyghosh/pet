@@ -1,3 +1,4 @@
+import type { Appearance } from "./customCharacters";
 import type { Animation, Coat } from "./settings";
 import type { Run } from "./sprite";
 
@@ -32,10 +33,11 @@ export function collectionSprite(
   frame: number,
   coat: Coat,
   direction: number,
+  appearance?: Appearance,
 ): Run[] {
   const shapes: Shape[] = [];
   const h = hash(id),
-    role = id.split("--")[1] ?? id;
+    role = appearance ? "manual" : (id.split("--")[1] ?? id);
   const has = (pattern: RegExp) => pattern.test(role);
   const is3d = grid === 64;
   const phase = frame % 4,
@@ -50,14 +52,26 @@ export function collectionSprite(
     : animation === "idle"
       ? Math.sin(frame / 5) * 0.12
       : 0;
-  const female = has(/girl|woman|grandma|bride|princess|witch|saree|nurse/);
+  const female = appearance
+    ? ["bob", "long", "bun"].includes(appearance.hairStyle)
+    : has(/girl|woman|grandma|bride|princess|witch|saree|nurse/);
   const elder = has(/grandpa|grandma|elder/);
-  const skin = [0xd6a17d, 0xbf8464, 0x995f46, 0xe8b693, 0xad7353, 0xc78c66][
-    h % 6
-  ];
-  const hair = elder
-    ? 0xd6d2d8
-    : [0x302735, 0x392823, 0x65503a, 0x251e29][(h >>> 4) % 4];
+  const skin = appearance
+    ? [0xf4cfb4, 0xe8b693, 0xc78c66, 0xad7353, 0x88563c, 0x57372d][
+        ["fair", "light", "medium", "tan", "brown", "deep"].indexOf(
+          appearance.skinTone,
+        )
+      ]
+    : [0xd6a17d, 0xbf8464, 0x995f46, 0xe8b693, 0xad7353, 0xc78c66][h % 6];
+  const hair = appearance
+    ? [0x251e29, 0x392823, 0x76513b, 0xe6bf70, 0xcac7d0, 0xcf809f][
+        ["black", "dark-brown", "brown", "blonde", "silver", "rose"].indexOf(
+          appearance.hairColor,
+        )
+      ]
+    : elder
+      ? 0xd6d2d8
+      : [0x302735, 0x392823, 0x65503a, 0x251e29][(h >>> 4) % 4];
   // Each ID gets its own fabric color; styles change the accent without replacing identity.
   const fabric =
     (((80 + (h % 100)) << 16) |
@@ -69,7 +83,7 @@ export function collectionSprite(
   const white = 0xfff2df,
     ink = 0x292735,
     gold = 0xf1c16c;
-  let shirt = fabric,
+  let shirt = appearance ? hex(appearance.outfitColor) : fabric,
     pants = 0x3c425e;
   if (has(/doctor|nurse|scientist|chef|mundu|kasavu|wedding|village/))
     shirt = white;
@@ -136,29 +150,94 @@ export function collectionSprite(
     // Hair behind the face; a high ponytail/bun distinguishes longer hairstyles.
     if (female) {
       sphere(16, head + 1.3, -1, 7.1, 7.3, 2.5, hair);
-      ball(10, head - 4.2, 0, 2.4, hair);
+      if (!appearance || appearance.hairStyle === "bun")
+        ball(10, head - 4.2, 0, 2.4, hair);
     }
     if (has(/superhero|vampire|wizard|witch|magician|princess/))
       sphere(15, 23, -2, 8, 8, 1.4, accent);
     if (has(/hiker|explorer|traveller|student|school/))
       sphere(10.5, 20, -1.4, 3.4, 6, 2.8, accent);
+    if (appearance?.accessories.includes("bag"))
+      sphere(9, torso + 1, -1, 4, 5, 3, accent);
     limb(12, 24, 11 - stride, 29, 0, 2, pants);
     limb(20, 24, 21 + stride, 29, 0, 2, pants);
-    sphere(10.5 - stride, 30.3, 1, 3.1, 1.7, 2.5, fabric);
-    sphere(21.5 + stride, 30.3, 1, 3.1, 1.7, 2.5, fabric);
+    sphere(
+      10.5 - stride,
+      30.3,
+      1,
+      3.1,
+      1.7,
+      2.5,
+      appearance
+        ? ({
+            "white-sneakers": white,
+            "dark-boots": ink,
+            "coral-trainers": 0xe88877,
+          }[appearance.shoes] ?? white)
+        : fabric,
+    );
+    sphere(
+      21.5 + stride,
+      30.3,
+      1,
+      3.1,
+      1.7,
+      2.5,
+      appearance
+        ? ({
+            "white-sneakers": white,
+            "dark-boots": ink,
+            "coral-trainers": 0xe88877,
+          }[appearance.shoes] ?? white)
+        : fabric,
+    );
     sphere(10.5 - stride, 31.1, 1.4, 3.1, 0.7, 2.5, white);
     sphere(21.5 + stride, 31.1, 1.4, 3.1, 0.7, 2.5, white);
-    sphere(16, torso, 0, 6.1, sleep ? 4 : 6.3, 3.4, shirt);
+    sphere(
+      16,
+      torso,
+      0,
+      appearance?.base === "adult-slim-01"
+        ? 4.8
+        : appearance?.base === "adult-rounded-01"
+          ? 7.2
+          : 6.1,
+      sleep ? 4 : 6.3,
+      3.4,
+      shirt,
+    );
     if (
       has(
         /saree|kasavu|bride|princess|classical-dancer|grandma|dancer-performing/,
-      )
+      ) ||
+      (appearance && ["dress", "saree"].includes(appearance.outfit))
     ) {
       sphere(16, 26, 1, 7, 4.8, 3, shirt);
-      limb(11, torso - 3, 20, 27, 3, 1, gold);
-    } else if (has(/mundu|kerala-guy|kurta|village|wedding-groom/)) {
-      sphere(16, 26, 1, 5.8, 4.8, 3, white);
+      if (!appearance || appearance.outfit === "saree")
+        limb(11, torso - 3, 20, 27, 3, 1, gold);
+    } else if (
+      has(/mundu|kerala-guy|kurta|village|wedding-groom/) ||
+      (appearance && ["mundu", "kurta"].includes(appearance.outfit))
+    ) {
+      sphere(
+        16,
+        26,
+        1,
+        5.8,
+        4.8,
+        3,
+        appearance?.outfit === "kurta" ? shirt : white,
+      );
       limb(19, 23, 19, 30, 4, 0.6, gold);
+    }
+    if (appearance?.outfit === "jacket") {
+      limb(14, torso - 4, 14, torso + 4, 3.7, 0.7, white);
+      limb(18, torso - 4, 18, torso + 4, 3.7, 0.7, ink);
+    }
+    if (appearance?.outfit === "hoodie") {
+      sphere(16, torso - 4, 2, 5.5, 2.2, 2.5, shirt);
+      limb(14, torso - 3, 14, torso, 4, 0.3, white);
+      limb(18, torso - 3, 18, torso, 4, 0.3, white);
     }
     // Hands are articulated for walking, greeting, jumping, and water breaks.
     const ly = jump ? 13 : torso + 3 + (walk ? stride / 2 : 0);
@@ -172,16 +251,72 @@ export function collectionSprite(
     ball(8, ly + 1, 2, 1.8, bodySkin);
     limb(21, torso - 2, 25, ry, 1, 1.8, shirt);
     ball(25, ry, 2, 1.8, bodySkin);
-    sphere(16, head, 1.5, 6.4, 6.6, 4.5, faceSkin);
+    sphere(
+      16,
+      head,
+      1.5,
+      appearance?.faceShape === "oval"
+        ? 5.6
+        : appearance?.faceShape === "soft-square"
+          ? 6.9
+          : 6.4,
+      appearance?.faceShape === "oval" ? 7.2 : 6.6,
+      4.5,
+      faceSkin,
+    );
     ball(9.7, head + 1, 1, 1.4, bodySkin);
     ball(22.2, head + 1, 1, 1.4, bodySkin);
     // Rounded fringe sits on top of the head and leaves the face clear.
-    sphere(15, head - 4.6, 1.7, 6.2, 2.4, 4.1, hair);
-    sphere(10.7, head - 1.9, 2, 1.7, 3.3, 3, hair);
+    if (appearance?.hairStyle !== "bald") {
+      sphere(
+        appearance?.hairStyle === "side-part" ? 17 : 15,
+        head - 4.6,
+        1.7,
+        6.2,
+        appearance?.hairStyle === "short-wavy" ? 2.8 : 2.4,
+        4.1,
+        hair,
+      );
+      sphere(10.7, head - 1.9, 2, 1.7, 3.3, 3, hair);
+      if (appearance?.hairStyle === "long")
+        sphere(23, head + 4, 0, 1.8, 7, 2.5, hair);
+    }
     if (female) sphere(21.6, head - 1.2, 2, 1.2, 3.7, 2.5, hair);
     for (const x of [13.2, 19.3]) {
-      sphere(x, head + 0.8, 5.65, 0.75, closed ? 0.22 : 1.15, 0.6, ink);
+      sphere(
+        x,
+        head + 0.8,
+        5.65,
+        appearance?.eyeStyle === "almond" ? 1.1 : 0.75,
+        closed ? 0.22 : appearance?.eyeStyle === "almond" ? 0.7 : 1.15,
+        0.6,
+        ink,
+      );
       if (!closed) ball(x - 0.15, head + 0.4, 6.2, 0.23, 0xffffff);
+    }
+    if (appearance) {
+      for (const x of [13.2, 19.3])
+        sphere(
+          x,
+          head - 1,
+          5.8,
+          1.1,
+          appearance.browStyle === "straight" ? 0.18 : 0.38,
+          0.3,
+          hair,
+        );
+      if (appearance.facialHair === "beard")
+        sphere(16.5, head + 4.7, 5.5, 3.8, 1.7, 1, hair);
+      if (appearance.facialHair === "moustache")
+        sphere(16.5, head + 3.2, 6.2, 2, 0.6, 0.5, hair);
+      if (appearance.accessories.includes("hat")) {
+        sphere(16, head - 5, 3, 8, 0.7, 3, accent);
+        sphere(16, head - 6, 2, 5, 2, 3, shirt);
+      }
+      if (appearance.accessories.includes("headphones")) {
+        sphere(16, head - 5, 2, 7, 0.7, 4, ink);
+        for (const x of [9, 23]) sphere(x, head, 2, 1.5, 2.8, 2, accent);
+      }
     }
     sphere(16.8, head + 2.4, 5.8, 0.8, 0.65, 0.8, faceSkin);
     sphere(
@@ -194,6 +329,7 @@ export function collectionSprite(
       happy ? white : 0x86594e,
     );
     if (
+      appearance?.accessories.includes("glasses") ||
       elder ||
       has(/scientist|developer|manager|teacher|bookworm|detective/)
     ) {
@@ -388,7 +524,131 @@ export function collectionSprite(
       sphere(25, 13, 1, 2.5, 0.4, 0.4, accent);
     }
   };
-  figure();
+  if (id === "soft-bear") {
+    // Soft clay bear: broad rounded forms and matte studio shading. Coordinates
+    // share the same depth buffer and opaque-pixel hit regions as other pets.
+    const fur =
+      coat === "cream" ? 0xead6b9 : coat === "slate" ? 0x9199a6 : 0xc99462;
+    const cream = 0xffe9cd,
+      coral = 0xf05a32,
+      nose = 0x443027;
+    const t = (frame / 32) * Math.PI * 2;
+    const stride = walk ? Math.sin(t * 4) * 1.5 : 0;
+    const breathe = Math.sin(t) * 0.18;
+    const bounce = walk ? Math.cos(t * 8) * 0.25 : breathe;
+    const headY = sleep ? 23 : 11.2 + bounce;
+    const headX = sleep ? 21.2 : 16;
+    // Tail and feet sit behind the belly; sleeping curls the silhouette sideways.
+    ball(sleep ? 6.5 : 22, sleep ? 26 : 24, -1, 2.7, fur);
+    sphere(
+      sleep ? 13 : 16,
+      sleep ? 25.8 : 23 + bounce,
+      0,
+      sleep ? 9 : 7.5,
+      sleep ? 5.1 : 7.1,
+      4.2,
+      fur,
+    );
+    for (const [x, step] of [
+      [11, stride],
+      [21, -stride],
+    ]) {
+      sphere(x, sleep ? 30 : 30.3 + step * 0.15, 2, 3.3, 2.1, 3, fur);
+      sphere(x, sleep ? 30.5 : 30.8 + step * 0.15, 4.5, 1.8, 0.8, 0.6, cream);
+    }
+    sphere(
+      sleep ? 13 : 16,
+      sleep ? 26.3 : 24 + bounce,
+      4,
+      sleep ? 5.7 : 4.7,
+      sleep ? 3.1 : 4.8,
+      1.5,
+      cream,
+    );
+    const leftY = sleep ? 26 : jump ? 14 : 23 + stride;
+    const rightY = sleep
+      ? 27
+      : happy
+        ? 12 + Math.sin(t * 4)
+        : jump
+          ? 14
+          : drink
+            ? 17
+            : 23 - stride;
+    limb(
+      sleep ? 9 : 10.2,
+      sleep ? 25 : 20 + bounce,
+      sleep ? 14 : 7.3,
+      leftY,
+      2,
+      2.3,
+      fur,
+    );
+    limb(
+      sleep ? 20 : 21.8,
+      sleep ? 25 : 20 + bounce,
+      sleep ? 24 : 25,
+      rightY,
+      2,
+      2.3,
+      fur,
+    );
+    // Big circular ears with inset peach pads, then a generously rounded head.
+    for (const x of [headX - 6.2, headX + 6.2]) {
+      ball(x, headY - 5.5, 0, 3.4, fur);
+      sphere(x, headY - 5.5, 2.8, 1.8, 1.9, 0.7, 0xe3af90);
+    }
+    sphere(headX, headY, 1, 8.4, 7.3, 5.2, fur);
+    sphere(headX, headY + 2.5, 5.7, 4.5, 2.8, 1.3, cream);
+    for (const x of [headX - 3.2, headX + 3.2]) {
+      sphere(x, headY - 0.1, 5.85, 0.65, closed ? 0.19 : 0.85, 0.45, nose);
+      if (!closed) ball(x - 0.17, headY - 0.4, 6.2, 0.2, white);
+      sphere(
+        x + (x < headX ? -1 : 1),
+        headY + 1.9,
+        5.8,
+        1.1,
+        0.55,
+        0.25,
+        0xdfa18a,
+      );
+    }
+    sphere(headX, headY + 1.8, 7, 1.2, 0.8, 0.55, nose);
+    limb(headX, headY + 2.4, headX, headY + 3.1, 7, 0.19, nose);
+    sphere(
+      headX,
+      headY + 3.3,
+      6.9,
+      happy ? 1.2 : 0.75,
+      happy ? 0.45 : 0.18,
+      0.25,
+      nose,
+    );
+    // A coral scarf remains recognizable across all three fur colours.
+    sphere(
+      sleep ? 15 : 16,
+      sleep ? 26 : 18 + bounce,
+      5.1,
+      sleep ? 3 : 5.7,
+      1.2,
+      1.2,
+      coral,
+    );
+    sphere(
+      sleep ? 11 : 19.5,
+      sleep ? 27 : 21 + bounce,
+      5.6,
+      1.3,
+      sleep ? 1.2 : 3.1,
+      0.8,
+      coral,
+    );
+    if (drink) {
+      sphere(24, 18, 5, 2, 2.6, 1.6, cream);
+      sphere(24, 15.8, 5, 1.8, 0.5, 1.4, 0x79513c);
+      limb(23, 16, 21, 15, 6.5, 0.28, coral);
+    }
+  } else figure();
   if (has(/tiny-couple/)) {
     offsetX = 14;
     figure();

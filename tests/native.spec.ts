@@ -5,9 +5,14 @@ async function mockNative(
   label: string,
   failFrame = false,
   settings = defaults,
+  saveDelay = 0,
+  quickRequest = false,
 ) {
   await page.addInitScript(
-    ({ label, settings, failFrame }) => {
+    ({ label, settings, failFrame, saveDelay, quickRequest }) => {
+      let pendingQuick = quickRequest;
+      let scheduled: import("../src/core/scheduledReminders").ScheduledReminder[] =
+        [];
       const w = window as unknown as Record<string, unknown>;
       w.isTauri = true;
       w.calls = [];
@@ -44,13 +49,41 @@ async function mockNative(
           }
           if (cmd === "desktop_status")
             return "Pet animation has not responded. Select Show / restart pet to retry.";
+          if (cmd === "save_settings") {
+            await new Promise((resolve) => setTimeout(resolve, saveDelay));
+            return (args as { settings: typeof settings }).settings;
+          }
+          if (cmd === "take_quick_reminder_request") {
+            const pending = pendingQuick;
+            pendingQuick = false;
+            return pending;
+          }
+          if (cmd === "list_custom_reminders")
+            return { reminders: scheduled, warning: null, snoozedUntil: 0 };
+          if (cmd === "save_custom_reminder") {
+            const { reminder } = args as {
+              reminder: (typeof scheduled)[number];
+            };
+            scheduled = [
+              ...scheduled.filter((r) => r.id !== reminder.id),
+              reminder,
+            ];
+            return { reminders: scheduled, warning: null, snoozedUntil: 0 };
+          }
+          if (cmd === "delete_custom_reminder") {
+            scheduled = scheduled.filter(
+              (r) => r.id !== (args as { id: string }).id,
+            );
+            return { reminders: scheduled, warning: null, snoozedUntil: 0 };
+          }
           if (cmd === "input_status") return true;
+          if (cmd === "export_character") return "/test/Downloads/preset.json";
           if (cmd === "plugin:event|listen") return 1;
           return null;
         },
       };
     },
-    { label, settings, failFrame },
+    { label, settings, failFrame, saveDelay, quickRequest },
   );
 }
 test("packaged pet uses native identity without a query and submits frames", async ({
@@ -153,4 +186,160 @@ test("high-resolution 3D companions submit 64-pixel hit masks within a parked ar
       ),
     )
     .toMatchObject({ grid: 64, x: 880 });
+});
+
+test("custom native companion renders canvas and submits the same 64px hit spans", async ({
+  page,
+}) => {
+  const { newCustomCharacter, registerCustomCharacters } =
+    await import("../src/core/customCharacters");
+  const { silhouette, sprite } = await import("../src/core/sprite");
+  const custom = newCustomCharacter();
+  custom.name = "Custom native";
+  custom.appearance.accessories = ["hat", "glasses"];
+  registerCustomCharacters([custom]);
+  await mockNative(page, "pet", false, {
+    ...structuredClone(defaults),
+    character: custom.id,
+    customCharacters: [custom],
+  });
+  await page.goto("/");
+  await expect(page.locator("canvas")).toBeVisible();
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as unknown as { calls: { cmd: string }[] }).calls.filter(
+            (c) => c.cmd === "present_frame",
+          ).length,
+      ),
+    )
+    .toBeGreaterThan(2);
+  const submitted = await page.evaluate(() => {
+    const calls = (
+      window as unknown as {
+        calls: {
+          cmd: string;
+          args: { frame: { grid: number; rows: number[][] } };
+        }[];
+      }
+    ).calls;
+    return calls.find((c) => c.cmd === "present_frame")!.args.frame;
+  });
+  expect(submitted.grid).toBe(64);
+  // Startup stays idle for four seconds. Match against the complete wrapped idle cycle.
+  expect(
+    Array.from({ length: 32 }, (_, frame) =>
+      silhouette(sprite("idle", frame, "slate", 1, custom.id)),
+    ),
+  ).toContainEqual(submitted.rows);
+  registerCustomCharacters([]);
+});
+
+test("desktop preset export uses the restricted native command", async ({
+  page,
+}) => {
+  const { newCustomCharacter } = await import("../src/core/customCharacters");
+  const custom = newCustomCharacter();
+  await mockNative(page, "settings", false, {
+    ...structuredClone(defaults),
+    customCharacters: [custom],
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Characters", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Export preset", exact: true })
+    .click();
+  await expect(
+    page.getByText("Exported to /test/Downloads/preset.json", { exact: true }),
+  ).toBeVisible();
+  const exported = await page.evaluate(
+    () =>
+      (
+        window as unknown as {
+          calls: { cmd: string; args: { character: unknown } }[];
+        }
+      ).calls.find((c) => c.cmd === "export_character")!.args.character,
+  );
+  expect(exported).toEqual(custom);
+});
+
+test("newer edits survive a pending native save and remain unsaved", async ({
+  page,
+}) => {
+  await mockNative(page, "settings", false, defaults, 1500);
+  await page.goto("/");
+  await page.getByRole("button", { name: "Appearance", exact: true }).click();
+  const name = page.getByLabel("Your companion’s name");
+  await name.fill("Submitted name");
+  await page.getByRole("button", { name: "Save changes", exact: true }).click();
+  await name.fill("Newer draft");
+  await expect(
+    page.getByRole("button", { name: "Save changes", exact: true }),
+  ).toBeEnabled();
+  await expect(name).toHaveValue("Newer draft");
+  await page.getByRole("button", { name: "Discard", exact: true }).click();
+  await expect(name).toHaveValue("Submitted name");
+});
+
+test("pet right-click opens the quick reminder bridge", async ({ page }) => {
+  await mockNative(page, "pet");
+  await page.goto("/");
+  await page.locator(".native-pet").click({ button: "right" });
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        (window as unknown as { calls: { cmd: string }[] }).calls.some(
+          (c) => c.cmd === "open_quick_reminder",
+        ),
+      ),
+    )
+    .toBe(true);
+});
+test("pending quick reminder opens its form and schedules both alerts through native storage", async ({
+  page,
+}) => {
+  await mockNative(page, "settings", false, defaults, 0, true);
+  await page.goto("/");
+  await page.getByLabel("Reminder title", { exact: true }).fill("Team call");
+  await page
+    .getByLabel("Reminder message", { exact: true })
+    .fill("Join the office call");
+  await page.getByRole("button", { name: "In 5 minutes", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Schedule reminder", exact: true })
+    .click();
+  await expect(
+    page.getByRole("article", { name: "Reminder Team call", exact: true }),
+  ).toBeVisible();
+  const reminder = await page.evaluate(
+    () =>
+      (
+        window as unknown as {
+          calls: {
+            cmd: string;
+            args: {
+              reminder: {
+                dueAt: number;
+                bubble: boolean;
+                systemNotification: boolean;
+              };
+            };
+          }[];
+        }
+      ).calls.find((c) => c.cmd === "save_custom_reminder")!.args.reminder,
+  );
+  expect(reminder.bubble).toBe(true);
+  expect(reminder.systemNotification).toBe(true);
+  expect(reminder.dueAt - Date.now()).toBeGreaterThan(250000);
+  await page
+    .getByRole("button", { name: "Test system notification", exact: true })
+    .click();
+  expect(
+    await page.evaluate(() =>
+      (window as unknown as { calls: { cmd: string }[] }).calls.some(
+        (c) => c.cmd === "test_notification",
+      ),
+    ),
+  ).toBe(true);
 });

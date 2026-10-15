@@ -1,3 +1,4 @@
+import type { CustomCharacter } from "../core/customCharacters";
 import { useEffect, useRef, useState } from "react";
 import { Moon, Sun, Pause, Play, Monitor } from "lucide-react";
 import { PetSprite } from "./PetSprite";
@@ -14,12 +15,18 @@ export const animations: { id: Animation; label: string }[] = [
 export function CompanionPreview({
   settings,
   expanded = false,
+  customCharacter,
+  facing,
 }: {
   settings: Settings;
   expanded?: boolean;
+  customCharacter?: CustomCharacter;
+  facing?: number;
 }) {
   const [animation, setAnimation] = useState<Animation>("walking");
-  const [paused, setPaused] = useState(false);
+  const [paused, setPaused] = useState(
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
   const [night, setNight] = useState(false);
   const [time, setTime] = useState(0);
   const stage = useRef<HTMLDivElement>(null);
@@ -123,7 +130,8 @@ export function CompanionPreview({
             frame={Math.floor(time / 160)}
             coat={settings.coat}
             character={settings.character}
-            direction={animation === "walking" ? direction : 1}
+            direction={facing ?? (animation === "walking" ? direction : 1)}
+            customCharacter={customCharacter}
           />
         </div>
         <div className="preview-taskbar" aria-hidden="true">

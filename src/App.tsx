@@ -1,3 +1,9 @@
+import { CustomReminders } from "./components/CustomReminders";
+import { takeQuickReminderRequest } from "./api";
+import { version as appVersion } from "../package.json";
+import { LicenseNotices } from "./components/LicenseNotices";
+import { registerCustomCharacters } from "./core/customCharacters";
+import { CustomCharacterLibrary } from "./components/CustomCharacterLibrary";
 import { characters, characterInfo, type CharacterId } from "./core/characters";
 import { CharacterGallery } from "./components/CharacterGallery";
 import { MovementSettings } from "./components/MovementSettings";
@@ -109,6 +115,7 @@ function Toggle({
   );
 }
 export default function App() {
+  const [quickRequest, setQuickRequest] = useState(0);
   const [tab, setTab] = useState<Tab>("companion");
   const [settings, setSettings] = useState<Settings>(structuredClone(defaults));
   const [saved, setSaved] = useState<Settings>(structuredClone(defaults));
@@ -126,6 +133,7 @@ export default function App() {
   const [animation, setAnimation] = useState<Animation>("idle"),
     [frame, setFrame] = useState(0);
   const mac = platform === "macos";
+  registerCustomCharacters(settings.customCharacters);
   const dirty = JSON.stringify(settings) !== JSON.stringify(saved);
   useEffect(() => {
     let active = true;
@@ -179,6 +187,42 @@ export default function App() {
     };
   }, []);
   useEffect(() => {
+    let active = true;
+    let off: (() => void) | undefined;
+    let checking = false;
+    const check = () => {
+      // Do not consume a request from an effect that StrictMode has already unmounted.
+      void Promise.resolve().then(async () => {
+        if (!active || checking) return;
+        checking = true;
+        try {
+          const requested = await takeQuickReminderRequest();
+          if (active && requested) {
+            setTab("reminders");
+            setQuickRequest((n) => n + 1);
+          }
+        } catch {
+          /* A regular refresh retries unavailable native state. */
+        } finally {
+          checking = false;
+        }
+      });
+    };
+    check();
+    window.addEventListener("focus", check);
+    void on("open-quick-reminder", check).then((cleanup) => {
+      if (active) off = cleanup;
+      else cleanup();
+    });
+    const timer = setInterval(check, 3000);
+    return () => {
+      active = false;
+      off?.();
+      clearInterval(timer);
+      window.removeEventListener("focus", check);
+    };
+  }, []);
+  useEffect(() => {
     const timer = setInterval(() => setFrame((f) => f + 1), 160);
     return () => clearInterval(timer);
   }, []);
@@ -208,9 +252,12 @@ export default function App() {
   async function save() {
     setBusy(true);
     setError("");
+    const submitted = settings;
     try {
-      const s = await saveSettings(settings);
-      setSettings(s);
+      const s = await saveSettings(submitted);
+      setSettings((current) =>
+        JSON.stringify(current) === JSON.stringify(submitted) ? s : current,
+      );
       setSaved(s);
       setNotice(
         native
@@ -259,7 +306,9 @@ export default function App() {
     setSettings((s) => ({
       ...s,
       character,
-      name: characters.some((c) => c.name === s.name)
+      name: [...characters, ...s.customCharacters].some(
+        (c) => c.name === s.name,
+      )
         ? characterInfo(character).name
         : s.name,
     }));
@@ -303,13 +352,13 @@ export default function App() {
         <button
           className="brand"
           onClick={() => setTab("companion")}
-          aria-label="MiniMates home"
+          aria-label="heykup pets home"
         >
           <span className="brand-mark">
             <Users size={23} />
           </span>
           <span>
-            mini<span>mates</span>
+            heykup <span>pets</span>
             <small>YOUR DESKTOP, ALIVE.</small>
           </span>
         </button>
@@ -357,7 +406,7 @@ export default function App() {
             onClick={() => setTab("about")}
           >
             <Info size={18} />
-            About MiniMates
+            About heykup pets
           </button>
           <div className="local-badge">
             <ShieldCheck size={15} />
@@ -417,7 +466,7 @@ export default function App() {
             <div className="preview-note">
               <Monitor size={16} />
               <span>
-                You’re exploring the browser preview. Install MiniMates for
+                You’re exploring the browser preview. Install heykup pets for
                 companions on your actual desktop.
               </span>
             </div>
@@ -576,6 +625,7 @@ export default function App() {
           )}
           {tab === "reminders" && (
             <>
+              <CustomReminders quickRequest={quickRequest} />
               <div className="reminder-toolbar">
                 <div>
                   <Bell size={18} />
@@ -664,17 +714,24 @@ export default function App() {
                 <VolumeX size={17} />
                 <span>
                   Gentle visual reminders. No alarms, no guilt. Turning off
-                  speech bubbles also silences reminders.
+                  speech bubbles silences bubble alerts. Custom system
+                  notifications use their own reminder switches.
                 </span>
               </div>
             </>
           )}
           {tab === "characters" && (
-            <CharacterGallery
-              settings={settings}
-              frame={frame}
-              onSelect={chooseCharacter}
-            />
+            <>
+              <CustomCharacterLibrary
+                settings={settings}
+                onChange={setSettings}
+              />
+              <CharacterGallery
+                settings={settings}
+                frame={frame}
+                onSelect={chooseCharacter}
+              />
+            </>
           )}
           {tab === "appearance" && (
             <div className="appearance-grid">
@@ -691,7 +748,7 @@ export default function App() {
                 </label>
                 <input
                   id="pet-name"
-                  maxLength={24}
+                  maxLength={80}
                   value={settings.name}
                   onChange={(e) => change("name", e.target.value)}
                 />
@@ -844,7 +901,7 @@ export default function App() {
                         : "Enable companion clicks (optional)"}
                     </b>
                     <small>
-                      Allow MiniMates in System Settings → Privacy &amp;
+                      Allow heykup pets in System Settings → Privacy &amp;
                       Security → Accessibility. Restart if needed. Walking,
                       reminders and menu-bar controls work without permission.
                     </small>
@@ -856,7 +913,7 @@ export default function App() {
                       void requestInputPermission()
                         .then(() =>
                           setNotice(
-                            "Allow MiniMates in macOS Accessibility settings, then return here.",
+                            "Allow heykup pets in macOS Accessibility settings, then return here.",
                           ),
                         )
                         .catch((e) => setError(String(e)));
@@ -881,7 +938,7 @@ export default function App() {
               <span className="about-icon">
                 <Users size={35} />
               </span>
-              <div className="eyebrow">MEET MINIMATES</div>
+              <div className="eyebrow">MEET HEYKUP PETS</div>
               <h2>A little more company.</h2>
               <p>
                 Original animals and characters, friendly reminders, and a
@@ -902,14 +959,19 @@ export default function App() {
                   Windows + Mac
                 </span>
               </div>
+              <LicenseNotices />
               <div className="phase-note">
-                <b>132 companions · One little friend at a time</b>
+                <b>
+                  {characters.length} companions · One little friend at a time
+                </b>
                 <p>
-                  Choose from 132 original characters, each with three color
-                  styles and six animation states. Pick a walking area, park on
-                  either side, or move only for reminders. Multiple simultaneous
-                  companions, creator, ZIP pack imports, and fullscreen
-                  auto-hide are planned phases and are not available yet.
+                  Choose from {characters.length} original characters, each with
+                  three color styles and six animation states. Pick a walking
+                  area, park on either side, or move only for reminders.
+                  Multiple simultaneous companions, photo creation, ZIP pack
+                  imports, and fullscreen auto-hide are not available in this
+                  beta. Manual character customization is included in Characters
+                  → Create Character.
                 </p>
               </div>
               <p className="field-help">
@@ -923,7 +985,7 @@ export default function App() {
             <span>
               <Heart size={12} />A little company goes a long way.
             </span>
-            <span>MiniMates · 1.2</span>
+            <span>heykup pets · {appVersion}</span>
           </footer>
         </div>
         <div className={`save-bar ${dirty ? "has-changes" : ""}`}>

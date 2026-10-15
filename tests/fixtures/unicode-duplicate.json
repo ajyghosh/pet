@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "custom-unicode-copy",
+  "name": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa🙂 copy",
+  "style": "cute-3d",
+  "source": "manual",
+  "appearance": {
+    "base": "adult-neutral-01",
+    "skinTone": "medium",
+    "hairStyle": "short-wavy",
+    "hairColor": "dark-brown",
+    "outfit": "blue-shirt-jeans",
+    "shoes": "white-sneakers",
+    "accessories": [],
+    "faceShape": "round",
+    "eyeStyle": "round",
+    "browStyle": "soft",
+    "facialHair": "none",
+    "outfitColor": "#6386db"
+  },
+  "animations": {},
+  "personality": "friendly",
+  "license": "user-created"
+}

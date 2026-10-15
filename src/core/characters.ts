@@ -1,5 +1,6 @@
+import { getCustomCharacter } from "./customCharacters.ts";
 import readyIds from "./ready-characters.json" with { type: "json" };
-import seed from "../../MiniMates_Character_Collections/characters.json" with { type: "json" };
+import seed from "../../assets/characters/collections/characters.json" with { type: "json" };
 /** Original bundled characters. IDs are persisted in both browser and native settings. */
 const originals = [
   {
@@ -105,9 +106,18 @@ const seen = new Set<string>(originalIds);
 export const characterDefinitions: Character[] = [
   ...originals.map((c) => ({
     ...c,
-    collection: "MiniMates Originals",
+    collection: "heykup pets Originals",
     style: "pixel-art" as const,
   })),
+  {
+    id: "soft-bear",
+    name: "Maple",
+    kind: "Animals",
+    description: "Soft little bear · warm hugs, gentle company",
+    color: "#f6e7d7",
+    collection: "Soft Friends",
+    style: "cute-3d",
+  },
   ...seed.characters
     .filter((c) => {
       if (c.asset_status !== "planned" || seen.has(c.id)) return false;
@@ -130,6 +140,17 @@ export const characters = characterDefinitions.filter(
 );
 const byId = new Map(characterDefinitions.map((c) => [c.id, c]));
 export function characterInfo(id: CharacterId): Character {
+  const custom = getCustomCharacter(id);
+  if (custom)
+    return {
+      id,
+      name: custom.name,
+      description: custom.personality,
+      collection: "My Custom Characters",
+      kind: "People",
+      style: "cute-3d",
+      color: "#fbe5ef",
+    };
   return byId.get(id) ?? characters[0];
 }
 export function spriteGrid(id: CharacterId) {

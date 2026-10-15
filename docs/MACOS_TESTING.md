@@ -2,7 +2,7 @@
 
 Run against the installed release build on Intel and Apple Silicon. Record macOS version, CPU, monitor arrangement, scales, Dock settings, and results. Compilation and browser tests do not validate desktop behavior.
 
-- [ ] Copy MiniMates.app to `~/Applications` as a standard user and launch. No developer tools are needed. The app has a menu-bar icon and no Dock tile.
+- [ ] Copy heykup-pets.app to `~/Applications` as a standard user and launch. No developer tools are needed. The app has a menu-bar icon and no Dock tile.
 - [ ] Without Accessibility permission, confirm walking, speech bubbles, reminders, hover pause, and menu-bar controls work. All clicks, including over the companion, reach underlying apps. Launching alone does not prompt for permission.
 - [ ] Enable clicks explicitly in settings; grant Accessibility consent to the installed copy, restarting if needed. Verify the enabled status in settings.
 - [ ] In each animation and direction, click opaque companion pixels (happy), double-click (jump), and right-click (settings). Underlying apps must not receive those clicks.
@@ -15,9 +15,9 @@ Run against the installed release build on Intel and Apple Silicon. Record macOS
 - [ ] Disconnect the selected display; the companion falls back to the primary. Change the primary display, resolution, and Dock position while running.
 - [ ] Test Mission Control, Spaces, fullscreen, Stage Manager, lock/unlock, and sleep/resume. Check for invisible input interception and document visibility limitations.
 - [ ] Set each reminder to one minute; verify custom messages, persistence, snooze, and bubble-disable behavior. Restart the app offline.
-- [ ] Enable startup only after moving the app to its final folder. Sign out/in: one companion appears without opening settings. Disable startup and repeat: MiniMates does not start.
+- [ ] Enable startup only after moving the app to its final folder. Sign out/in: one companion appears without opening settings. Disable startup and repeat: heykup pets does not start.
 - [ ] Launch a second instance: only one companion remains and settings open.
-- [ ] Disable startup, quit, and remove MiniMates.app. Confirm no per-user LaunchAgent remains enabled. Settings may be retained.
+- [ ] Disable startup, quit, and remove heykup-pets.app. Confirm no per-user LaunchAgent remains enabled. Settings may be retained.
 
 Ad-hoc signatures are not notarization. Test the downloaded artifact's Gatekeeper flow separately from a local build. Managed systems may require IT approval for downloaded applications or Accessibility permission; do not disable system protections to bypass policy.
 
@@ -31,3 +31,16 @@ Ad-hoc signatures are not notarization. Test the downloaded artifact's Gatekeepe
 - Choose left/right home with 25–75% limits. Check Stay in place and Only move for reminders. Trigger a reminder: the latter walks inward, waves, and returns home in about six seconds. Hover pauses it; a sleeping companion returns to sleep.
 - Free walking must stay within the area, including on negative-coordinate displays and after DPI changes/unplugging a monitor. Try a large companion in a very narrow area: it must park safely within the work area.
 - Check compact bubbles with normal, 120-character, Unicode, and multiline messages. Clicks through bubble and transparent character pixels must reach underlying applications.
+
+
+## 1.3 beta creator, reminders and recovery
+
+- [ ] Manual character creation/edit/duplicate/delete persists, including emoji names. Create from Photo is disabled and explicitly unavailable in beta.
+- [ ] Right-click the companion (with consent on Mac) and use tray → Quick reminder. Both open the reminder form; create a one-minute reminder with both alert methods.
+- [ ] Close settings and verify the scheduled bubble and system notification. Test notification settings/Focus suppression, and confirm the UI does not claim OS presentation was guaranteed.
+- [ ] Hide the companion: its bubble remains hidden, while selected system notifications still work. Test repeat intervals, pause, edit, reschedule, delete and 15-minute snooze.
+- [ ] Quit through the tray before a reminder is due, wait, reopen and verify one catch-up attempt. Restart again: a completed one-off must not attempt again. Test multiple overdue reminders and summary behavior.
+- [ ] Custom reminders persist independently of appearance Save/Discard. Damaged reminder JSON is preserved until an explicit reminder save.
+- [ ] Simulate a hung/failed pet webview: native recovery disables its input and hides it after the heartbeat deadline. Custom system reminders continue. Show / restart pet restores correct input after a valid frame.
+- [ ] About loads full third-party license texts offline; the installed app also contains LICENSE, THIRD_PARTY_NOTICES.md and THIRD_PARTY_LICENSES.txt. Verify downloaded artifacts against SHA256SUMS.txt.
+- [ ] Record CPU/RSS at startup, 30 and 60 minutes with settings closed, a full custom library, a 3D gallery, and repeated edits. Include OS/build/display details and any sustained growth.

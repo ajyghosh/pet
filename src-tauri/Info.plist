@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
+  <key>CFBundleDisplayName</key><string>heykup pets</string>
   <key>LSUIElement</key><true/>
   <key>NSHighResolutionCapable</key><true/>
   <key>NSAccessibilityUsageDescription</key>
-  <string>MiniMates uses mouse clicks only over the visible character for greetings, jumping, and opening settings. It does not read keyboard events.</string>
+  <string>heykup pets uses mouse clicks only over the visible character for greetings, jumping, and opening settings. It does not read keyboard events.</string>
 </dict></plist>

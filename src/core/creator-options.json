@@ -1,0 +1,21 @@
+{
+  "base": ["adult-neutral-01", "adult-slim-01", "adult-rounded-01"],
+  "skinTone": ["fair", "light", "medium", "tan", "brown", "deep"],
+  "faceShape": ["round", "oval", "soft-square"],
+  "eyeStyle": ["round", "almond"],
+  "browStyle": ["soft", "straight"],
+  "facialHair": ["none", "moustache", "beard"],
+  "hairStyle": ["short-wavy", "side-part", "bob", "long", "bun", "bald"],
+  "hairColor": ["black", "dark-brown", "brown", "blonde", "silver", "rose"],
+  "outfit": [
+    "blue-shirt-jeans",
+    "jacket",
+    "hoodie",
+    "dress",
+    "saree",
+    "kurta",
+    "mundu"
+  ],
+  "shoes": ["white-sneakers", "dark-boots", "coral-trainers"],
+  "accessories": ["glasses", "hat", "headphones", "bag"]
+}

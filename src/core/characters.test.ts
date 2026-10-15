@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { characters, referenceCharacters, spriteGrid } from "./characters";
-import seed from "../../MiniMates_Character_Collections/characters.json";
+import seed from "../../assets/characters/collections/characters.json";
 import { normalizeSettings } from "./settings";
 describe("complete character collections", () => {
   it("includes every original concept once and keeps references unavailable", () => {
-    expect(characters).toHaveLength(132);
-    expect(new Set(characters.map((c) => c.id)).size).toBe(132);
-    expect(characters.filter((c) => c.style === "cute-3d")).toHaveLength(50);
+    expect(characters).toHaveLength(133);
+    expect(new Set(characters.map((c) => c.id)).size).toBe(133);
+    expect(characters.filter((c) => c.style === "cute-3d")).toHaveLength(51);
     expect(referenceCharacters).toHaveLength(20);
     for (const c of seed.characters) {
       expect(characters.some((ready) => ready.id === c.id)).toBe(

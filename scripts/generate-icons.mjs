@@ -3,9 +3,16 @@ import { deflateSync } from "node:zlib";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { characterDefinitions, spriteGrid } from "../src/core/characters.ts";
 import { sprite } from "../src/core/sprite.ts";
+// Generate one new companion without rewriting unrelated artwork or app icons.
+const characterArg = process.argv.find((arg) => arg.startsWith("--character="));
+const selectedId = characterArg?.slice("--character=".length);
+if (selectedId && !characterDefinitions.some((c) => c.id === selectedId))
+  throw new Error(`Unknown character: ${selectedId}`);
 const pixels = Array.from({ length: 32 }, () => Array(32).fill(null));
 for (const r of sprite("idle", 0, "slate"))
-  for (let x = r.x; x < r.x + r.width; x++) pixels[r.y][x] = r.color;
+  for (let x = r.x; x < r.x + r.width; x++)
+    pixels[r.y][x] =
+      { "#5479ef": "#f05a32", "#9bb7ff": "#e87050" }[r.color] ?? r.color;
 function crc32(data) {
   let crc = 0xffffffff;
   for (const byte of data) {
@@ -47,57 +54,67 @@ function png(size) {
     chunk("IEND", Buffer.alloc(0)),
   ]);
 }
-mkdirSync("src-tauri/icons", { recursive: true });
-const sizes = [32, 128, 256],
-  images = sizes.map(png);
-sizes.forEach((s, i) =>
-  writeFileSync(`src-tauri/icons/${s}x${s}.png`, images[i]),
-);
-writeFileSync("src-tauri/icons/icon.png", images[1]);
-const header = Buffer.alloc(6);
-header.writeUInt16LE(1, 2);
-header.writeUInt16LE(sizes.length, 4);
-let offset = 6 + 16 * sizes.length;
-const entries = sizes.map((size, i) => {
-  const b = Buffer.alloc(16);
-  b[0] = size % 256;
-  b[1] = size % 256;
-  b.writeUInt16LE(1, 4);
-  b.writeUInt16LE(32, 6);
-  b.writeUInt32LE(images[i].length, 8);
-  b.writeUInt32LE(offset, 12);
-  offset += images[i].length;
-  return b;
-});
-writeFileSync(
-  "src-tauri/icons/icon.ico",
-  Buffer.concat([header, ...entries, ...images]),
-);
-const macImages = [
-  ["ic07", 128],
-  ["ic08", 256],
-  ["ic09", 512],
-  ["ic10", 1024],
-].map(([type, size]) => {
-  const data = png(size);
-  const header = Buffer.alloc(8);
-  header.write(type, 0, 4, "ascii");
-  header.writeUInt32BE(data.length + 8, 4);
-  return Buffer.concat([header, data]);
-});
-const macHeader = Buffer.alloc(8);
-macHeader.write("icns", 0, 4, "ascii");
-macHeader.writeUInt32BE(
-  8 + macImages.reduce((sum, data) => sum + data.length, 0),
-  4,
-);
-writeFileSync(
-  "src-tauri/icons/icon.icns",
-  Buffer.concat([macHeader, ...macImages]),
-);
+if (!selectedId) {
+  mkdirSync("src-tauri/icons", { recursive: true });
+  const sizes = [32, 128, 256],
+    images = sizes.map(png);
+  sizes.forEach((s, i) =>
+    writeFileSync(`src-tauri/icons/${s}x${s}.png`, images[i]),
+  );
+  writeFileSync("src-tauri/icons/icon.png", images[1]);
+  mkdirSync("public", { recursive: true });
+  writeFileSync("public/heykup-pets.png", images[1]);
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(1, 2);
+  header.writeUInt16LE(sizes.length, 4);
+  let offset = 6 + 16 * sizes.length;
+  const entries = sizes.map((size, i) => {
+    const b = Buffer.alloc(16);
+    b[0] = size % 256;
+    b[1] = size % 256;
+    b.writeUInt16LE(1, 4);
+    b.writeUInt16LE(32, 6);
+    b.writeUInt32LE(images[i].length, 8);
+    b.writeUInt32LE(offset, 12);
+    offset += images[i].length;
+    return b;
+  });
+  writeFileSync(
+    "src-tauri/icons/icon.ico",
+    Buffer.concat([header, ...entries, ...images]),
+  );
+  const macImages = [
+    ["ic07", 128],
+    ["ic08", 256],
+    ["ic09", 512],
+    ["ic10", 1024],
+  ].map(([type, size]) => {
+    const data = png(size);
+    const header = Buffer.alloc(8);
+    header.write(type, 0, 4, "ascii");
+    header.writeUInt32BE(data.length + 8, 4);
+    return Buffer.concat([header, data]);
+  });
+  const macHeader = Buffer.alloc(8);
+  macHeader.write("icns", 0, 4, "ascii");
+  macHeader.writeUInt32BE(
+    8 + macImages.reduce((sum, data) => sum + data.length, 0),
+    4,
+  );
+  writeFileSync(
+    "src-tauri/icons/icon.icns",
+    Buffer.concat([macHeader, ...macImages]),
+  );
+  if (process.argv.includes("--app-only")) {
+    console.log("Generated heykup pets application icons.");
+    process.exit(0);
+  }
+}
 const states = ["idle", "walking", "sleeping", "jumping", "happy", "drinking"];
 mkdirSync("public/characters", { recursive: true });
-for (const character of characterDefinitions) {
+for (const character of characterDefinitions.filter(
+  (c) => !selectedId || c.id === selectedId,
+)) {
   for (const coat of ["ginger", "cream", "slate"]) {
     const grid = spriteGrid(character.id);
     const width = grid * 32,
@@ -162,12 +179,14 @@ writeFileSync(
   "src/core/ready-characters.json",
   JSON.stringify(
     characterDefinitions
-      .filter((c) => c.collection !== "MiniMates Originals")
+      .filter((c) => c.collection !== "heykup pets Originals")
       .map((c) => c.id),
     null,
     2,
   ) + "\n",
 );
 console.log(
-  "Generated original MiniMates character sprite sheets, PNG, ICO, and ICNS assets.",
+  selectedId
+    ? `Generated character atlases and manifest: ${selectedId}.`
+    : "Generated original character sprite sheets and application icons.",
 );

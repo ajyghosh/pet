@@ -2129,3 +2129,274 @@ html[data-window="bubble"] body {
   font-size: 12px;
   color: #79688c;
 }
+
+.custom-library {
+  margin-bottom: 24px;
+}
+.custom-library > p,
+.character-editor > p {
+  color: var(--muted, #66677d);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.creator-paths,
+.creator-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.character-editor {
+  border-top: 1px solid #e5e5ef;
+  padding-top: 16px;
+  margin-top: 16px;
+}
+.creator-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+.creator-fields label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.creator-fields input,
+.creator-fields select {
+  min-width: 0;
+  width: 100%;
+}
+.creator-fields input[type="color"] {
+  height: 40px;
+  padding: 4px;
+}
+.character-editor fieldset {
+  border: 1px solid #e5e5ef;
+  border-radius: 12px;
+  margin: 16px 0;
+  padding: 12px;
+}
+.accessory-choice {
+  display: inline-flex;
+  gap: 6px;
+  margin: 6px 16px 6px 0;
+  align-items: center;
+}
+.accessory-choice input {
+  width: auto;
+}
+.custom-character-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+.custom-character-card {
+  border: 1px solid #e5e5ef;
+  border-radius: 16px;
+  padding: 16px;
+  overflow-wrap: anywhere;
+}
+.custom-character-art {
+  width: 96px;
+  height: 96px;
+  margin: auto;
+}
+.custom-character-card h3 {
+  margin: 8px 0;
+}
+.custom-character-card p {
+  font-size: 13px;
+}
+button:disabled {
+  cursor: default;
+}
+@media (prefers-reduced-motion: reduce) {
+  .custom-library * {
+    scroll-behavior: auto;
+    transition: none;
+  }
+}
+
+.license-notices {
+  margin: 20px 0;
+  text-align: left;
+}
+.license-notices summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.license-notices pre {
+  max-height: 320px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+  line-height: 1.6;
+  background: #f6f5fa;
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.custom-reminders {
+  margin-bottom: 24px;
+}
+.reminder-editor {
+  margin: 16px 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+}
+.reminder-editor legend {
+  font-weight: 700;
+  padding: 0 8px;
+}
+.custom-reminder-list article {
+  border-top: 1px solid var(--line);
+  padding: 16px 0;
+}
+.custom-reminder-list h3 {
+  margin-bottom: 6px;
+}
+
+/* Brand tokens sampled from https://heykup.com/ on 15 October 2026. */
+:root {
+  --ink: #17191d;
+  --muted: #646b78;
+  --purple: #d85a30;
+  --line: #e8d9d1;
+  --heykup-accent: #f05a32;
+  --heykup-dark: #993c1d;
+  color: #17191d;
+  background: #fdf9f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.sidebar {
+  background: #fff8f2;
+  color: #646b78;
+  border-right: 1px solid var(--line);
+}
+.brand {
+  color: #17191d;
+  font-size: 23px;
+  letter-spacing: -1px;
+}
+.brand > span > span {
+  color: #993c1d;
+  font-weight: 650;
+}
+.brand-mark {
+  background: linear-gradient(145deg, #f05a32, #d85a30);
+  color: white;
+  box-shadow: 0 4px 16px #993c1d24;
+}
+.brand small,
+.nav-caption {
+  color: #726155;
+}
+.nav-item:hover {
+  background: #fae8df;
+}
+.nav-item.selected {
+  background: #a4432b;
+  box-shadow: 0 4px 18px #993c1d18;
+}
+.sidebar-note {
+  background: linear-gradient(145deg, #fff0e8, #f7e4d8);
+  border-color: #edd5c7;
+  color: #3b2f29;
+}
+.sidebar-note p,
+.sidebar-note > span,
+.sidebar-note h3 {
+  color: #726155;
+}
+.local-badge {
+  color: #726155;
+}
+.primary-button {
+  background: #a4432b;
+  border-color: #a4432b;
+  box-shadow: 0 3px 10px #993c1d24;
+}
+.primary-button:hover {
+  background: #993c1d;
+}
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline-color: #e87050;
+}
+.main-content,
+.app-shell {
+  background-color: #fdf9f5;
+}
+.preview-stage {
+  background: linear-gradient(135deg, #fff5ef 0%, #fbe4da 55%, #f6d4c6 100%);
+}
+.preview-stage.night {
+  background: linear-gradient(135deg, #29201e, #49302b 65%, #653c30);
+}
+.library-tabs button[aria-pressed="true"],
+.gallery-filters button[aria-pressed="true"],
+.preview-controls button[aria-pressed="true"] {
+  background: #fae8df;
+  color: #993c1d;
+  border-color: #d85a30;
+}
+.character-card.chosen {
+  border-color: #d85a30;
+  box-shadow: 0 0 0 2px #d85a301c;
+}
+.character-check,
+.live-dot,
+.toggle.on {
+  background: #d85a30;
+}
+.license-notices pre {
+  background: #fff3eb;
+}
+
+/* Keep interactive states and supporting copy in the heykup palette too. */
+.primary-button:not(:disabled):hover {
+  background: #993c1d;
+}
+.secondary-button:hover {
+  background: #fff0e8;
+  border-color: #dcaf99;
+}
+.eyebrow,
+.text-button,
+.profile-description,
+.preview-caption,
+.field-help {
+  color: #726155;
+}
+.eyebrow {
+  color: #993c1d;
+}
+.preview-top,
+.stage-copy,
+.stage-copy p,
+.preview-controls button,
+.sidebar-note > span {
+  color: #726155;
+}
+.preview-stage.night .stage-copy,
+.preview-stage.night .stage-copy p {
+  color: #f6d4c6;
+}
+.preview-controls button[aria-pressed="true"] {
+  color: #993c1d;
+}
+.info-banner,
+.browser-notice {
+  background: #fff0e8;
+  border-color: #edd5c7;
+  color: #8a452d;
+}
+.creator-actions button[aria-pressed="true"] {
+  background: #fff0e8;
+  border-color: #d85a30;
+  color: #993c1d;
+}

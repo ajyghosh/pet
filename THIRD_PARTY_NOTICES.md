@@ -23,4 +23,11 @@ Microsoft WebView2 and the Windows SDK are free Microsoft components, **not open
 
 macOS, AppKit, CoreGraphics, and the system WebKit framework are Apple platform components, not bundled open-source libraries. Miso uses the frameworks supplied with macOS; no paid Apple service is required to build or run an ad-hoc-signed copy.
 
-`public/characters/*.json` documents each character's atlas layout and MIT license. 132 original characters, six animation states, two facing directions, and three color styles are shipped (396 PNG atlases). The user-supplied `MiniMates_Character_Collections` folder contains 140 concept records, not source artwork. Original procedural models/sprites were created here for its 120 planned original concepts. Its 20 named licensed-character references remain catalog text only, with no bundled character artwork or playable assets. The original Miso artwork remains available in Git history under the same license.
+`public/characters/*.json` documents each character's atlas layout and MIT license. 133 original characters, six animation states, two facing directions, and three color styles are shipped (399 PNG atlases). The user-supplied `assets/characters/collections` folder contains 140 concept records, not source artwork. Original procedural models/sprites were created here for its 120 planned original concepts. Its 20 named licensed-character references remain catalog text only, with no bundled character artwork or playable assets. The original Miso artwork remains available in Git history under the same license.
+
+
+## Beta distribution bundle
+
+heykup pets retains the original MiniMates/Miso artwork attribution above. Complete notices for the locked npm runtime packages and the union of normal/build Rust dependencies on Windows x64, Mac Intel and Mac Apple Silicon are generated in `THIRD_PARTY_LICENSES.txt`. This includes the official notification plugin and its platform backends. The file is accessible from About and bundled with the app together with this overview and the project license. Some listed components are build tools rather than code in every binary.
+
+Run `npm run notices` after fetching the supported targets. Upstream license texts omitted from crate archives are preserved under `licenses/upstream`, with exact source commits/URLs in `licenses/overrides.json`. `licenses/manifest.json` records resolved versions, notice hashes and lockfile hashes. `npm run check:release` fails if the bundle is stale. Unmodified source archives for MPL-2.0 components are linked in the generated notices.

@@ -26,15 +26,15 @@ jobs:
           - name: Windows x64
             runner: windows-latest
             target: x86_64-pc-windows-msvc
-            artifact: minimates-windows-x64
+            artifact: heykup-pets-windows-x64
           - name: Mac Apple Silicon
             runner: macos-15
             target: aarch64-apple-darwin
-            artifact: minimates-macos-apple-silicon
+            artifact: heykup-pets-macos-apple-silicon
           - name: Mac Intel
             runner: macos-15-intel
             target: x86_64-apple-darwin
-            artifact: minimates-macos-intel
+            artifact: heykup-pets-macos-intel
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -69,14 +69,21 @@ jobs:
           ARTIFACT_NAME: ${{ matrix.artifact }}
         run: |
           bundle="src-tauri/target/$BUILD_TARGET/release/bundle"
-          codesign --verify --deep --strict "$bundle/macos/MiniMates.app"
-          tar -czf "$bundle/$ARTIFACT_NAME.app.tar.gz" -C "$bundle/macos" MiniMates.app
+          codesign --verify --deep --strict "$bundle/macos/heykup-pets.app"
+          tar -czf "$bundle/$ARTIFACT_NAME.app.tar.gz" -C "$bundle/macos" heykup-pets.app
+      - name: Generate installer checksums
+        shell: bash
+        env:
+          BUILD_TARGET: ${{ matrix.target }}
+        run: node scripts/release-checksums.mjs "src-tauri/target/$BUILD_TARGET/release/bundle"
       - name: Upload per-user Windows installer
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
-          path: src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*-setup.exe
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*-setup.exe
+            src-tauri/target/${{ matrix.target }}/release/bundle/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 30
       - name: Upload Mac installers
@@ -87,5 +94,6 @@ jobs:
           path: |
             src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
             src-tauri/target/${{ matrix.target }}/release/bundle/*.app.tar.gz
+            src-tauri/target/${{ matrix.target }}/release/bundle/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 30
