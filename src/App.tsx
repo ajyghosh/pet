@@ -1,3 +1,6 @@
+import { characters, characterInfo, type CharacterId } from "./core/characters";
+import { CharacterGallery } from "./components/CharacterGallery";
+import { MovementSettings } from "./components/MovementSettings";
 import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
@@ -48,7 +51,13 @@ import { PetSprite } from "./components/PetSprite";
 import { CompanionPreview } from "./components/CompanionPreview";
 
 type Tab =
-  "companion" | "preview" | "reminders" | "appearance" | "desktop" | "about";
+  | "companion"
+  | "characters"
+  | "preview"
+  | "reminders"
+  | "appearance"
+  | "desktop"
+  | "about";
 const reminderMeta = {
   water: {
     title: "Drink water",
@@ -246,10 +255,23 @@ export default function App() {
       setRestarting(false);
     }
   }
+  function chooseCharacter(character: CharacterId) {
+    setSettings((s) => ({
+      ...s,
+      character,
+      name: characters.some((c) => c.name === s.name)
+        ? characterInfo(character).name
+        : s.name,
+    }));
+  }
   const currentDisplay =
     displays.find((d) => d.id === settings.monitor) ??
     displays.find((d) => d.primary);
   const headings = {
+    characters: [
+      "Find your kind of company.",
+      "Tiny paws, friendly faces, and a little imagination. Who’s joining you today?",
+    ],
     companion: [
       "Small company. Big day.",
       "A little personality for your desktop. A little more room for you.",
@@ -264,14 +286,14 @@ export default function App() {
     ],
     appearance: [
       "A look that feels like you.",
-      "One original human companion. Three colorful ways to make them yours.",
+      "A name, a color, and a pace that feels right.",
     ],
     desktop: [
       "Right at home on your desktop.",
       "Choose where your companion lives and when they join you.",
     ],
     about: [
-      "Little humans. Real company.",
+      "Little companions. Real company.",
       "Made for your desktop. Built to stay yours.",
     ],
   };
@@ -296,6 +318,7 @@ export default function App() {
           {(
             [
               { id: "companion", label: "My companion", icon: Users },
+              { id: "characters", label: "Characters", icon: Users },
               { id: "preview", label: "Preview studio", icon: Play },
               { id: "reminders", label: "Reminders", icon: Bell },
               { id: "appearance", label: "Appearance", icon: Palette },
@@ -326,7 +349,7 @@ export default function App() {
             <br />
             The little things add up.
           </p>
-          <span>ONE LITTLE HUMAN, ON YOUR SIDE.</span>
+          <span>A LITTLE FRIEND, ON YOUR SIDE.</span>
         </div>
         <div className="sidebar-bottom">
           <button
@@ -433,6 +456,7 @@ export default function App() {
                       animation={animation}
                       frame={frame}
                       coat={settings.coat}
+                      character={settings.character}
                     />
                     <span className="avatar-spark">✦</span>
                   </div>
@@ -444,7 +468,7 @@ export default function App() {
                   </p>
                   <span className="personality-tag">
                     <Sparkles size={12} />
-                    The everyday optimist
+                    {characterInfo(settings.character).description}
                   </span>
                   <div className="quick-actions">
                     <button onClick={() => void play("happy")}>
@@ -470,6 +494,12 @@ export default function App() {
                       {animation === "sleeping" ? "Wake up" : "Nap time"}
                     </button>
                   </div>
+                  <button
+                    className="profile-edit"
+                    onClick={() => setTab("characters")}
+                  >
+                    Choose character <ChevronRight size={15} />
+                  </button>
                   <button
                     className="profile-edit"
                     onClick={() => setTab("appearance")}
@@ -639,6 +669,13 @@ export default function App() {
               </div>
             </>
           )}
+          {tab === "characters" && (
+            <CharacterGallery
+              settings={settings}
+              frame={frame}
+              onSelect={chooseCharacter}
+            />
+          )}
           {tab === "appearance" && (
             <div className="appearance-grid">
               <section className="settings-card">
@@ -767,19 +804,10 @@ export default function App() {
                   </div>
                 </div>
               )}
-              <div className="setting-row">
-                <div>
-                  <b>Room to roam</b>
-                  <small>
-                    Walk, pause, and turn around at the screen’s edge.
-                  </small>
-                </div>
-                <Toggle
-                  label="Roam along the taskbar"
-                  checked={settings.roaming}
-                  onChange={(v) => change("roaming", v)}
-                />
-              </div>
+              <MovementSettings
+                settings={settings}
+                onChange={(patch) => setSettings((s) => ({ ...s, ...patch }))}
+              />
               <div className="setting-row">
                 <div>
                   <b>Something to say</b>
@@ -854,11 +882,11 @@ export default function App() {
                 <Users size={35} />
               </span>
               <div className="eyebrow">MEET MINIMATES</div>
-              <h2>A little more human.</h2>
+              <h2>A little more company.</h2>
               <p>
-                Original miniature humans, friendly reminders, and a desktop
-                that feels like yours. Built with Tauri, React, and Rust. Free
-                to use, open source, and completely offline.
+                Original animals and characters, friendly reminders, and a
+                desktop that feels like yours. Built with Tauri, React, and
+                Rust. Free to use, open source, and completely offline.
               </p>
               <div className="about-badges">
                 <span>
@@ -875,13 +903,13 @@ export default function App() {
                 </span>
               </div>
               <div className="phase-note">
-                <b>Phase 1 · Your first companion</b>
+                <b>132 companions · One little friend at a time</b>
                 <p>
-                  This version includes one original animated human, three
-                  outfits, six animation states, preview, reminders, and desktop
-                  controls. The 50-character library, multiple companions,
-                  creator, ZIP pack imports, and fullscreen auto-hide are
-                  planned phases and are not available yet.
+                  Choose from 132 original characters, each with three color
+                  styles and six animation states. Pick a walking area, park on
+                  either side, or move only for reminders. Multiple simultaneous
+                  companions, creator, ZIP pack imports, and fullscreen
+                  auto-hide are planned phases and are not available yet.
                 </p>
               </div>
               <p className="field-help">
@@ -895,7 +923,7 @@ export default function App() {
             <span>
               <Heart size={12} />A little company goes a long way.
             </span>
-            <span>MiniMates · Phase 1</span>
+            <span>MiniMates · 1.2</span>
           </footer>
         </div>
         <div className={`save-bar ${dirty ? "has-changes" : ""}`}>

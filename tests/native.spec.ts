@@ -1,6 +1,11 @@
 import { test, expect, type Page } from "@playwright/test";
 import { defaults } from "../src/core/settings";
-async function mockNative(page: Page, label: string, failFrame = false) {
+async function mockNative(
+  page: Page,
+  label: string,
+  failFrame = false,
+  settings = defaults,
+) {
   await page.addInitScript(
     ({ label, settings, failFrame }) => {
       const w = window as unknown as Record<string, unknown>;
@@ -45,7 +50,7 @@ async function mockNative(page: Page, label: string, failFrame = false) {
         },
       };
     },
-    { label, settings: defaults, failFrame },
+    { label, settings, failFrame },
   );
 }
 test("packaged pet uses native identity without a query and submits frames", async ({
@@ -54,9 +59,7 @@ test("packaged pet uses native identity without a query and submits frames", asy
   await mockNative(page, "pet");
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-window", "pet");
-  await expect(
-    page.getByRole("img", { name: "MiniMates human companion" }),
-  ).toBeVisible();
+  await expect(page.getByRole("img", { name: "Alex companion" })).toBeVisible();
   await expect
     .poll(() =>
       page.evaluate(
@@ -117,4 +120,37 @@ test("settings provides recovery and preview sends no live animation actions", a
         ).length,
     ),
   ).toBe(0);
+});
+
+test("high-resolution 3D companions submit 64-pixel hit masks within a parked area", async ({
+  page,
+}) => {
+  await mockNative(page, "pet", false, {
+    ...defaults,
+    character: "cute-3d-humans-office-work--doctor",
+    roaming: false,
+    homeSide: "right",
+    walkStart: 25,
+    walkEnd: 75,
+  });
+  await page.goto("/");
+  await expect(page.locator(".native-pet .pixel-pet")).toHaveAttribute(
+    "data-character",
+    "cute-3d-humans-office-work--doctor",
+  );
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (
+            window as unknown as {
+              calls: {
+                cmd: string;
+                args: { frame?: { grid: number; x: number; rows: number[][] } };
+              }[];
+            }
+          ).calls.find((c) => c.cmd === "present_frame")?.args.frame,
+      ),
+    )
+    .toMatchObject({ grid: 64, x: 880 });
 });

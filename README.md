@@ -1,20 +1,37 @@
-# MiniMates · little humans, real company
+# MiniMates · little companions, real company
 
-An offline Windows and macOS desktop companion built with **Tauri 2, React, TypeScript, and Rust**. Original pixel artwork and code are MIT licensed. Version 1.1.0 evolves the original Miso cat into MiniMates. No account, backend, subscription, paid API, or paid assets.
+An offline Windows and macOS desktop companion built with **Tauri 2, React, TypeScript, and Rust**. Original pixel artwork and code are MIT licensed. Version 1.2.0 adds a character gallery and customizable walking areas. No account, backend, subscription, paid API, or paid assets.
 
 ![MiniMates settings preview](docs/preview.png)
 
-## Phase 1 scope
+## Characters and movement
 
-This is the first MiniMates human companion release: **one original animated human (Alex), three outfit palettes, and six usable animation states**. All PNG frames are included in `public/characters/`; the dependency-free `npm run icons` generator produces them from the same pixel data used for native click regions. No purchased or placeholder assets are used.
+Choose from **132 original animated companions**, each with three color styles and six animation states. The first twelve are: Alex, Nova, Sage the wizard, Mochi the cat, Biscuit the corgi, Ember the fox, Clover the rabbit, Bao the panda, Pip the penguin, Sprout the frog, Bolt the robot, and Cinder the dragon. All PNG frames are included in `public/characters/`; the dependency-free `npm run icons` generator produces them from the same pixel data used for native click regions. No purchased or placeholder assets are used.
+
+All **120 original concepts** from `MiniMates_Character_Collections` now have playable artwork: 70 pixel characters across Everyday Humans, Indian & Kerala, Fantasy & Adventure, and Special Desktop Characters; and 50 shaded Cute 3D characters across all five supplied 3D collections. The 20 licensed-character references remain searchable reference-only records with no desktop selection or bundled artwork. The supplied source catalog is preserved; generated manifests and `src/core/ready-characters.json` record the playable assets.
+
+The Cute 3D figures are original articulated ellipsoid models rendered with a depth buffer and studio lighting into 64×64 transparent frames. Pixel characters use 32×32 frames. Model and renderer code is in `src/core/collectionArtwork.ts`; no Blender installation, external models, GPU renderer, or online generation is required. The collection pack’s proposed signature actions are retained as concepts; this release implements the six shared animation states, not separate bespoke dance/signature sequences.
 
 The app now includes a separate **Preview studio** with walk, idle, wave, jump, drink-water and sleep controls, pause/play, and a day/night scene. Previewing never sends live desktop animation commands. Appearance changes preview immediately and apply to the desktop after Save.
 
-Later phases are **not implemented**: 50-character library, multiple active characters, per-character creator, ZIP pack imports, dragging, encounter behavior, full reminder actions/quiet hours, native notifications, fullscreen auto-hide, and battery/lock optimization. This release does not claim those features or mark native Windows acceptance testing complete.
+Later phases are **not implemented**: multiple active characters, per-character creator, ZIP pack imports, dragging, encounter behavior, full reminder actions/quiet hours, native notifications, fullscreen auto-hide, and battery/lock optimization. This release does not claim those features or mark native Windows acceptance testing complete.
 
-### Upgrading from Miso / a companion that never appeared
+### Choose your companion and walking area
 
-Quit the older app using its tray menu before installing MiniMates 1.1.0. The app identifier, settings paths, and legacy `Miso` user startup key are retained so upgrades can keep preferences. You can rename a retained companion in Appearance. Startup registration is refreshed to the installed executable when already enabled.
+- Open settings from the Windows tray or Mac menu bar, then **Characters**. Filter by Animals, People, or Fantasy, select a companion, try its animation preview, and **Save changes**. Your custom name is preserved; built-in names follow the character selection.
+- **Appearance** changes colors, name, size, and speed. Saving updates the live companion; Discard restores your last saved choice.
+- **Desktop & startup → When to walk** offers **Walk freely**, **Stay in place**, and **Only move for reminders**.
+- Choose a **Home side** (left or right) and set the walking area's **Left limit** and **Right limit** using percentage sliders. The highlighted strip previews that area on your chosen display. The range stays relative to the work area when resolution or scaling changes. If the range is narrower than the character, it parks at the nearest position that fits the display.
+- In reminder-only mode, a reminder causes a short walk inward, a wave, and a return home in about six seconds. Hovering pauses the excursion. A sleeping companion returns to sleep afterward. **Preview reminder movement** simulates this without sending a live reminder; use Reminders → Test for a real desktop reminder after saving.
+- Reminder bubbles are now 220 logical pixels wide with smaller text. Short messages use compact bubbles; longer messages expand vertically to remain readable.
+
+![Character gallery](docs/characters.png)
+
+![Cute 3D collection](docs/characters-3d.png)
+
+## Upgrading from Miso / a companion that never appeared
+
+Quit the older app using its tray menu before installing MiniMates 1.2.0. The app identifier, settings paths, and legacy `Miso` user startup key are retained so upgrades can keep preferences. You can rename a retained companion in Appearance. Startup registration is refreshed to the installed executable when already enabled.
 
 The overlay now starts visibly from Rust while remaining fully click-through until its first valid character region. It selects the correct view using Tauri's native window label, rather than URL query routing. Settings show whether animation frames are arriving and include **Show / restart pet** to safely reposition and reload a stalled companion. Placement failures are displayed in this status area. These changes address startup failure modes; the originally reported invisible Windows pet still needs confirmation with the new installer on the affected machine.
 
@@ -24,12 +41,12 @@ If the companion is missing: open settings, choose **Desktop & startup → Follo
 
 - A transparent, borderless, non-activating, always-on-top pet window, separate from settings.
 - Horizontal walking just above the bottom taskbar or Mac Dock; idle, walking, sleeping, jumping, waving, and drinking-water animation states.
-- A Win32 window region derived from the exact opaque sprite pixels. Transparent areas are outside the native window, so clicks reach the application underneath. This does not rely on CSS `pointer-events` or cursor polling on Windows.
+- A Win32 window region derived from the exact opaque 32×32 or 64×64 sprite pixels. Transparent areas are outside the native window, so clicks reach the application underneath. This does not rely on CSS `pointer-events` or cursor polling on Windows.
 - macOS AppKit work-area detection and fully click-through overlays, with optional character-only mouse handling after Accessibility consent.
 - Completely click-through speech bubbles in their own non-activating window.
 - Click to greet, double-click to jump, right-click for settings; hovering pauses movement.
 - Editable water, stretch, and break intervals and messages; individual switches; 15-minute snooze.
-- Three outfits, companion name, five sizes, walking speed, monitor selection, roaming and bubble switches.
+- 132 playable characters, collection/style filters, three color styles, name, five sizes, speed, monitor selection, home side, walking-area limits, three movement modes, and speech bubbles.
 - Per-monitor work-area and DPI detection, negative desktop coordinates, taskbar edge and auto-hide detection, and hot-plug fallback to the primary display.
 - Windows tray / Mac menu-bar controls, single-instance behavior, close-to-tray settings, and optional per-user login startup.
 - Validated local JSON settings written atomically. No runtime network requests or external assets.
@@ -74,7 +91,7 @@ npm run desktop:build -- -- --locked
 Outputs:
 
 ```text
-src-tauri/target/release/bundle/nsis/MiniMates_1.1.0_x64-setup.exe
+src-tauri/target/release/bundle/nsis/MiniMates_1.2.0_x64-setup.exe
 ```
 
 The installer runs in **current-user context**, installs under `%LOCALAPPDATA%`, and does not request administrator elevation. Launch it normally, without “Run as administrator.” The app manifest explicitly uses `asInvoker` with `uiAccess="false"`. MiniMates runs in the signed-in desktop session; it does not install a Windows service or use SYSTEM. Settings live in the user's profile and startup uses HKCU. The default MSI has been removed because it installs machine-wide. Organization policies can still block unapproved applications or runtime installation.
@@ -176,7 +193,7 @@ Browser and logic tests cannot prove native compositor or taskbar/Dock behavior.
 ```text
 src/App.tsx                 Settings UI and browser preview
 src/PetWindow.tsx           Native pet and bubble webviews, timers and interaction
-src/core/                  Original human pixel artwork, motion, settings, reminders, tests
+src/core/                  Original character pixel artwork, motion, settings, reminders, tests
 public/characters/         Original PNG animation atlases and Alex metadata
 src/components/CompanionPreview.tsx  Independent interactive preview studio
 src/api.ts                 Small typed Tauri bridge / local browser adapter

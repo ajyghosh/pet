@@ -1,0 +1,1267 @@
+{
+  "project": "MiniMates",
+  "description": "Character catalog definitions; no rendered assets included",
+  "count": 140,
+  "characters": [
+    {
+      "id": "everyday-humans--office-guy",
+      "name": "Office Guy",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--office-girl",
+      "name": "Office Girl",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--software-developer",
+      "name": "Software Developer",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--businesswoman",
+      "name": "Businesswoman",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--school-boy",
+      "name": "School Boy",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--school-girl",
+      "name": "School Girl",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--grandpa",
+      "name": "Grandpa",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "walk with a cane",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--grandma",
+      "name": "Grandma",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--doctor",
+      "name": "Doctor",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--nurse",
+      "name": "Nurse",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--chef",
+      "name": "Chef",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--police-officer",
+      "name": "Police Officer",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--firefighter",
+      "name": "Firefighter",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--fitness-trainer",
+      "name": "Fitness Trainer",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--dancer",
+      "name": "Dancer",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--photographer",
+      "name": "Photographer",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "take a picture",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--scientist",
+      "name": "Scientist",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--college-student",
+      "name": "College Student",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--gamer",
+      "name": "Gamer",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "everyday-humans--musician",
+      "name": "Musician",
+      "collection": "Everyday Humans",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "indian-kerala--kerala-guy-in-mundu",
+      "name": "Kerala Guy in Mundu",
+      "collection": "Indian & Kerala",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "indian-kerala--kerala-woman-in-kasavu-saree",
+      "name": "Kerala Woman in Kasavu Saree",
+      "collection": "Indian & Kerala",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "indian-kerala--kathakali-performer",
+      "name": "Kathakali Performer",
+      "collection": "Indian & Kerala",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "indian-kerala--theyyam-inspired-performer",
+      "name": "Theyyam-inspired Performer",
+      "collection": "Indian & Kerala",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "indian-kerala--auto-rickshaw-driver",
+      "name": "Auto-rickshaw Driver",
+      "collection": "Indian & Kerala",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "indian-kerala--chai-seller",
+      "name": "Chai Seller",
+      "collection": "Indian & Kerala",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "indian-kerala--cricket-player",
+      "name": "Cricket Player",
+      "collection": "Indian & Kerala",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "indian-kerala--classical-dancer",
+      "name": "Classical Dancer",
+      "collection": "Indian & Kerala",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "indian-kerala--indian-wedding-groom",
+      "name": "Indian Wedding Groom",
+      "collection": "Indian & Kerala",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "indian-kerala--indian-wedding-bride",
+      "name": "Indian Wedding Bride",
+      "collection": "Indian & Kerala",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "indian-kerala--college-boy",
+      "name": "College Boy",
+      "collection": "Indian & Kerala",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "indian-kerala--college-girl",
+      "name": "College Girl",
+      "collection": "Indian & Kerala",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "indian-kerala--farmer",
+      "name": "Farmer",
+      "collection": "Indian & Kerala",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "indian-kerala--street-food-seller",
+      "name": "Street Food Seller",
+      "collection": "Indian & Kerala",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "indian-kerala--traditional-village-elder",
+      "name": "Traditional Village Elder",
+      "collection": "Indian & Kerala",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "fantasy-adventure--ninja",
+      "name": "Ninja",
+      "collection": "Fantasy & Adventure",
+      "style": "pixel-art",
+      "signature_action": "dash",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "fantasy-adventure--samurai",
+      "name": "Samurai",
+      "collection": "Fantasy & Adventure",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "fantasy-adventure--pirate",
+      "name": "Pirate",
+      "collection": "Fantasy & Adventure",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "fantasy-adventure--knight",
+      "name": "Knight",
+      "collection": "Fantasy & Adventure",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "fantasy-adventure--wizard",
+      "name": "Wizard",
+      "collection": "Fantasy & Adventure",
+      "style": "pixel-art",
+      "signature_action": "cast sparkles",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "fantasy-adventure--witch",
+      "name": "Witch",
+      "collection": "Fantasy & Adventure",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "fantasy-adventure--vampire",
+      "name": "Vampire",
+      "collection": "Fantasy & Adventure",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "fantasy-adventure--zombie",
+      "name": "Zombie",
+      "collection": "Fantasy & Adventure",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "fantasy-adventure--cowboy",
+      "name": "Cowboy",
+      "collection": "Fantasy & Adventure",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "fantasy-adventure--astronaut",
+      "name": "Astronaut",
+      "collection": "Fantasy & Adventure",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "fantasy-adventure--robot",
+      "name": "Robot",
+      "collection": "Fantasy & Adventure",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "fantasy-adventure--superhero",
+      "name": "Superhero",
+      "collection": "Fantasy & Adventure",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "fantasy-adventure--princess",
+      "name": "Princess",
+      "collection": "Fantasy & Adventure",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "fantasy-adventure--detective",
+      "name": "Detective",
+      "collection": "Fantasy & Adventure",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "fantasy-adventure--space-explorer",
+      "name": "Space Explorer",
+      "collection": "Fantasy & Adventure",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--tiny-builder",
+      "name": "Tiny Builder",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "pretend to repair the taskbar",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--window-cleaner",
+      "name": "Window Cleaner",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--sleepy-employee",
+      "name": "Sleepy Employee",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--coffee-guy",
+      "name": "Coffee Guy",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--delivery-boy",
+      "name": "Delivery Boy",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--gamer-with-console",
+      "name": "Gamer with Console",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--photographer-with-camera",
+      "name": "Photographer with Camera",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--musician-with-guitar",
+      "name": "Musician with Guitar",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--yoga-girl",
+      "name": "Yoga Girl",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "stretch",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--tiny-couple",
+      "name": "Tiny Couple",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--bookworm",
+      "name": "Bookworm",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--painter",
+      "name": "Painter",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--gardener",
+      "name": "Gardener",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--mechanic",
+      "name": "Mechanic",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--magician",
+      "name": "Magician",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--runner",
+      "name": "Runner",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--skater",
+      "name": "Skater",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--chef-cooking",
+      "name": "Chef Cooking",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--dancer-performing",
+      "name": "Dancer Performing",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "special-desktop-characters--explorer-with-map",
+      "name": "Explorer with Map",
+      "collection": "Special Desktop Characters",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "licensed-character-references--mario",
+      "name": "Mario",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--luigi",
+      "name": "Luigi",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--spider-man",
+      "name": "Spider-Man",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--batman",
+      "name": "Batman",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--naruto",
+      "name": "Naruto",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--luffy",
+      "name": "Luffy",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--goku",
+      "name": "Goku",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--wednesday-addams",
+      "name": "Wednesday Addams",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--tom",
+      "name": "Tom",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--jerry",
+      "name": "Jerry",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--shinchan",
+      "name": "Shinchan",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--doraemon",
+      "name": "Doraemon",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--pikachu",
+      "name": "Pikachu",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--mickey-mouse",
+      "name": "Mickey Mouse",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--donald-duck",
+      "name": "Donald Duck",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--spongebob",
+      "name": "SpongeBob",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--sonic",
+      "name": "Sonic",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--superman",
+      "name": "Superman",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--iron-man",
+      "name": "Iron Man",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "licensed-character-references--captain-america",
+      "name": "Captain America",
+      "collection": "Licensed Character References",
+      "style": "pixel-art",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "reference_only",
+      "rights_note": "Reference only; verify licensing before any use or distribution"
+    },
+    {
+      "id": "cute-3d-humans-office-work--office-boy",
+      "name": "Office Boy",
+      "collection": "Cute 3D Humans \u2014 Office & Work",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-office-work--office-girl",
+      "name": "Office Girl",
+      "collection": "Cute 3D Humans \u2014 Office & Work",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-office-work--developer",
+      "name": "Developer",
+      "collection": "Cute 3D Humans \u2014 Office & Work",
+      "style": "cute-3d",
+      "signature_action": "type on a tiny laptop",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-office-work--businesswoman",
+      "name": "Businesswoman",
+      "collection": "Cute 3D Humans \u2014 Office & Work",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-office-work--manager",
+      "name": "Manager",
+      "collection": "Cute 3D Humans \u2014 Office & Work",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-office-work--designer",
+      "name": "Designer",
+      "collection": "Cute 3D Humans \u2014 Office & Work",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-office-work--scientist",
+      "name": "Scientist",
+      "collection": "Cute 3D Humans \u2014 Office & Work",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-office-work--teacher",
+      "name": "Teacher",
+      "collection": "Cute 3D Humans \u2014 Office & Work",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-office-work--doctor",
+      "name": "Doctor",
+      "collection": "Cute 3D Humans \u2014 Office & Work",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-office-work--nurse",
+      "name": "Nurse",
+      "collection": "Cute 3D Humans \u2014 Office & Work",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-casual-lifestyle--casual-girl",
+      "name": "Casual Girl",
+      "collection": "Cute 3D Humans \u2014 Casual & Lifestyle",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-casual-lifestyle--hoodie-boy",
+      "name": "Hoodie Boy",
+      "collection": "Cute 3D Humans \u2014 Casual & Lifestyle",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-casual-lifestyle--coffee-girl",
+      "name": "Coffee Girl",
+      "collection": "Cute 3D Humans \u2014 Casual & Lifestyle",
+      "style": "cute-3d",
+      "signature_action": "sip coffee",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-casual-lifestyle--gamer-boy",
+      "name": "Gamer Boy",
+      "collection": "Cute 3D Humans \u2014 Casual & Lifestyle",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-casual-lifestyle--music-girl",
+      "name": "Music Girl",
+      "collection": "Cute 3D Humans \u2014 Casual & Lifestyle",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-casual-lifestyle--bookworm",
+      "name": "Bookworm",
+      "collection": "Cute 3D Humans \u2014 Casual & Lifestyle",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-casual-lifestyle--skater-girl",
+      "name": "Skater Girl",
+      "collection": "Cute 3D Humans \u2014 Casual & Lifestyle",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-casual-lifestyle--photographer",
+      "name": "Photographer",
+      "collection": "Cute 3D Humans \u2014 Casual & Lifestyle",
+      "style": "cute-3d",
+      "signature_action": "take a picture",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-casual-lifestyle--traveller",
+      "name": "Traveller",
+      "collection": "Cute 3D Humans \u2014 Casual & Lifestyle",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-casual-lifestyle--student",
+      "name": "Student",
+      "collection": "Cute 3D Humans \u2014 Casual & Lifestyle",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-indian-kerala--kerala-guy",
+      "name": "Kerala Guy",
+      "collection": "Cute 3D Humans \u2014 Indian & Kerala",
+      "style": "cute-3d",
+      "signature_action": "adjust mundu",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-indian-kerala--kerala-girl",
+      "name": "Kerala Girl",
+      "collection": "Cute 3D Humans \u2014 Indian & Kerala",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-indian-kerala--kathakali-artist",
+      "name": "Kathakali Artist",
+      "collection": "Cute 3D Humans \u2014 Indian & Kerala",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-indian-kerala--classical-dancer",
+      "name": "Classical Dancer",
+      "collection": "Cute 3D Humans \u2014 Indian & Kerala",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-indian-kerala--chai-seller",
+      "name": "Chai Seller",
+      "collection": "Cute 3D Humans \u2014 Indian & Kerala",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-indian-kerala--cricket-boy",
+      "name": "Cricket Boy",
+      "collection": "Cute 3D Humans \u2014 Indian & Kerala",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-indian-kerala--saree-girl",
+      "name": "Saree Girl",
+      "collection": "Cute 3D Humans \u2014 Indian & Kerala",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-indian-kerala--kurta-boy",
+      "name": "Kurta Boy",
+      "collection": "Cute 3D Humans \u2014 Indian & Kerala",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-indian-kerala--farmer",
+      "name": "Farmer",
+      "collection": "Cute 3D Humans \u2014 Indian & Kerala",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-indian-kerala--auto-driver",
+      "name": "Auto Driver",
+      "collection": "Cute 3D Humans \u2014 Indian & Kerala",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fitness-adventure--fitness-girl",
+      "name": "Fitness Girl",
+      "collection": "Cute 3D Humans \u2014 Fitness & Adventure",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fitness-adventure--yoga-girl",
+      "name": "Yoga Girl",
+      "collection": "Cute 3D Humans \u2014 Fitness & Adventure",
+      "style": "cute-3d",
+      "signature_action": "stretch",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fitness-adventure--runner-boy",
+      "name": "Runner Boy",
+      "collection": "Cute 3D Humans \u2014 Fitness & Adventure",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fitness-adventure--cyclist",
+      "name": "Cyclist",
+      "collection": "Cute 3D Humans \u2014 Fitness & Adventure",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fitness-adventure--football-player",
+      "name": "Football Player",
+      "collection": "Cute 3D Humans \u2014 Fitness & Adventure",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fitness-adventure--astronaut",
+      "name": "Astronaut",
+      "collection": "Cute 3D Humans \u2014 Fitness & Adventure",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fitness-adventure--explorer-girl",
+      "name": "Explorer Girl",
+      "collection": "Cute 3D Humans \u2014 Fitness & Adventure",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fitness-adventure--hiker",
+      "name": "Hiker",
+      "collection": "Cute 3D Humans \u2014 Fitness & Adventure",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fitness-adventure--dancer-boy",
+      "name": "Dancer Boy",
+      "collection": "Cute 3D Humans \u2014 Fitness & Adventure",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fitness-adventure--martial-artist",
+      "name": "Martial Artist",
+      "collection": "Cute 3D Humans \u2014 Fitness & Adventure",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fun-special--grandpa",
+      "name": "Grandpa",
+      "collection": "Cute 3D Humans \u2014 Fun & Special",
+      "style": "cute-3d",
+      "signature_action": "walk with a cane",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fun-special--grandma",
+      "name": "Grandma",
+      "collection": "Cute 3D Humans \u2014 Fun & Special",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fun-special--sleepy-guy",
+      "name": "Sleepy Guy",
+      "collection": "Cute 3D Humans \u2014 Fun & Special",
+      "style": "cute-3d",
+      "signature_action": "yawn",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fun-special--chef-girl",
+      "name": "Chef Girl",
+      "collection": "Cute 3D Humans \u2014 Fun & Special",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fun-special--magician",
+      "name": "Magician",
+      "collection": "Cute 3D Humans \u2014 Fun & Special",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fun-special--tiny-builder",
+      "name": "Tiny Builder",
+      "collection": "Cute 3D Humans \u2014 Fun & Special",
+      "style": "cute-3d",
+      "signature_action": "pretend to repair the taskbar",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fun-special--gardener",
+      "name": "Gardener",
+      "collection": "Cute 3D Humans \u2014 Fun & Special",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fun-special--superhero-girl",
+      "name": "Superhero Girl",
+      "collection": "Cute 3D Humans \u2014 Fun & Special",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fun-special--rockstar",
+      "name": "Rockstar",
+      "collection": "Cute 3D Humans \u2014 Fun & Special",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    },
+    {
+      "id": "cute-3d-humans-fun-special--pajama-girl",
+      "name": "Pajama Girl",
+      "collection": "Cute 3D Humans \u2014 Fun & Special",
+      "style": "cute-3d",
+      "signature_action": "wave or perform a themed action",
+      "asset_status": "planned",
+      "rights_note": "Create original artwork or use properly licensed assets"
+    }
+  ]
+}

@@ -18,6 +18,7 @@ pub struct HitState {
     pub x: f64,
     pub y: f64,
     pub side: f64,
+    pub grid: u32,
     pub rows: Vec<[i32; 3]>,
     pub updated: Option<Instant>,
     pub visible: bool,
@@ -28,15 +29,16 @@ impl HitState {
     pub fn contains(&self, x: f64, y: f64, now: Instant) -> bool {
         if !self.visible
             || self.side <= 0.0
+            || ![32, 64].contains(&self.grid)
             || self
                 .updated
                 .is_none_or(|t| now.saturating_duration_since(t) > FRAME_TIMEOUT)
         {
             return false;
         }
-        let px = (x - self.x) * 32.0 / self.side;
-        let py = (y - self.y) * 32.0 / self.side;
-        if !(0.0..32.0).contains(&px) || !(0.0..32.0).contains(&py) {
+        let px = (x - self.x) * self.grid as f64 / self.side;
+        let py = (y - self.y) * self.grid as f64 / self.side;
+        if !(0.0..self.grid as f64).contains(&px) || !(0.0..self.grid as f64).contains(&py) {
             return false;
         }
         self.rows.iter().any(|[left, row, width]| {
@@ -96,11 +98,24 @@ mod tests {
             x: -100.0,
             y: 20.0,
             side: 128.0,
+            grid: 32,
             rows: vec![[8, 8, 16]],
             updated: Some(now),
             visible: true,
             ..Default::default()
         }
+    }
+    #[test]
+    fn high_resolution_sprites_keep_exact_pixel_boundaries() {
+        let now = Instant::now();
+        let mut state = sample(now);
+        state.grid = 64;
+        state.rows = vec![[16, 16, 32]];
+        assert!(state.contains(-67.0, 53.0, now));
+        assert!(!state.contains(-69.0, 53.0, now));
+        assert!(!state.contains(-67.0, 55.0, now));
+        state.grid = 0;
+        assert!(!state.contains(-67.0, 53.0, now));
     }
     #[test]
     fn transparent_pixels_and_negative_screen_coordinates() {

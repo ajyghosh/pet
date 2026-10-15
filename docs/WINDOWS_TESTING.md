@@ -48,3 +48,11 @@ If a native error hides the pet, quit via the tray and reopen it after resolving
 
 - [ ] Verify desktop status changes from starting to running. Use Show / restart pet after hiding or a simulated failure; confirm it recovers without a rectangular input blocker.
 - [ ] Preview all six animations, pause/play, and day/night. The live desktop character must not change animation when only preview controls are used.
+
+## Character gallery and movement (1.2)
+
+- Upgrade with existing settings: confirm name, reminders, and startup are retained. Choose characters from all collections (including 32×32 pixel and 64×64 3D sprites), save, and verify its live sprite and exact click-through region; check both directions and every state.
+- Restart the app: confirm character, color, movement mode, home side, and area limits persist.
+- Choose left/right home with 25–75% limits. Check Stay in place and Only move for reminders. Trigger a reminder: the latter walks inward, waves, and returns home in about six seconds. Hover pauses it; a sleeping companion returns to sleep.
+- Free walking must stay within the area, including on negative-coordinate displays and after DPI changes/unplugging a monitor. Try a large companion in a very narrow area: it must park safely within the work area.
+- Check compact bubbles with normal, 120-character, Unicode, and multiline messages. Clicks through bubble and transparent character pixels must reach underlying applications.

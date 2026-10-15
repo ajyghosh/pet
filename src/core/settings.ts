@@ -1,3 +1,4 @@
+import { characters, type CharacterId } from "./characters";
 export const reminderKinds = ["water", "stretch", "break"] as const;
 export type ReminderKind = (typeof reminderKinds)[number];
 export type Animation =
@@ -11,24 +12,34 @@ export interface Reminder {
 export interface Settings {
   version: 1;
   name: string;
+  character: CharacterId;
   coat: Coat;
   size: number;
   speed: number;
   monitor: string;
   autostart: boolean;
   roaming: boolean;
+  alertsOnly: boolean;
+  homeSide: "left" | "right";
+  walkStart: number;
+  walkEnd: number;
   bubbles: boolean;
   reminders: Record<ReminderKind, Reminder>;
 }
 export const defaults: Settings = {
   version: 1,
   name: "Alex",
+  character: "alex",
   coat: "slate",
   size: 80,
   speed: 45,
   monitor: "primary",
   autostart: false,
   roaming: true,
+  alertsOnly: false,
+  homeSide: "left",
+  walkStart: 0,
+  walkEnd: 100,
   bubbles: true,
   reminders: {
     water: {
@@ -64,6 +75,9 @@ export function normalizeSettings(value: unknown): Settings {
   return {
     version: 1,
     name: str(v.name, defaults.name, 24),
+    character: characters.some((c) => c.id === v.character)
+      ? (v.character as CharacterId)
+      : defaults.character,
     coat: ["ginger", "cream", "slate"].includes(String(v.coat))
       ? (v.coat as Coat)
       : defaults.coat,
@@ -74,6 +88,10 @@ export function normalizeSettings(value: unknown): Settings {
     monitor: str(v.monitor, "primary", 128),
     autostart: bool(v.autostart, false),
     roaming: bool(v.roaming, true),
+    alertsOnly: bool(v.alertsOnly, false),
+    homeSide: v.homeSide === "right" ? "right" : "left",
+    walkStart: num(v.walkStart, 0, 0, 90),
+    walkEnd: num(v.walkEnd, 100, num(v.walkStart, 0, 0, 90) + 10, 100),
     bubbles: bool(v.bubbles, true),
     reminders: Object.fromEntries(
       reminderKinds.map((kind) => {

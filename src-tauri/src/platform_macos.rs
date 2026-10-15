@@ -176,6 +176,7 @@ pub fn sync_input(
     side: i32,
     rows: &[[i32; 3]],
     visible: bool,
+    grid: u32,
 ) -> Result<Option<bool>, String> {
     let app = window.app_handle().clone();
     let window = window.clone();
@@ -194,6 +195,7 @@ pub fn sync_input(
         state.y = y as f64;
         state.side = side as f64;
         state.rows = rows;
+        state.grid = grid;
         state.visible = visible && ns.isVisible() && ns.isOnActiveSpace();
         state.updated = Some(now);
         Ok(Some(state.contains(

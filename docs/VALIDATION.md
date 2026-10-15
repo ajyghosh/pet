@@ -1,5 +1,24 @@
 # Validation record
 
+## MiniMates 1.2.0 — character collections and movement
+
+Validated on 15 October 2026: 132 playable character definitions (12 originals + 120 supplied original concepts), 396 PNG atlases, and 20 reference-only catalog entries. Every frame is checked against the renderer and native hit spans, including 64×64 3D frames and long-running frame wrap. Movement checks cover selected ranges, both home sides, reminder excursions/return, hover pause, narrow displays, and settings migration. Browser checks cover collection/style filters, selection persistence, unavailable references, and movement controls. Native smoke/compositor acceptance remains distinct from these automated checks.
+
+| 1.2.0 check | Result |
+| --- | --- |
+| Unit and exhaustive sprite/atlas tests | 1,341 passed across 6 files |
+| TypeScript and Vite production build | Passed |
+| Browser tests, including mocked native 64×64 frames | 10 passed |
+| Rust tests, including settings migration, collection allowlist, geometry and hit routing | 11 passed |
+| Rust clippy with warnings denied | Passed |
+| Visual inspection | Original animals, pixel collections, Cute 3D collections, gallery filters and movement area inspected |
+| Native installer builds | New GitHub Actions run required for 1.2.0; prior-release results below do not validate this release |
+
+The shaded figures use original procedural geometry, not imported 3D models. Each ready character has three atlas files and an MIT manifest. Reference-only IDs are rejected by both settings layers. Frame numbers wrap identically in the renderer and PNG atlas, preventing hit-mask drift after extended runtime.
+
+## Previous release: 1.1.0
+
+
 Development host: macOS 13.7.8 Intel, not Windows. Checked on 15 October 2026.
 
 | Check                                                                  | Result                                                                                                 |

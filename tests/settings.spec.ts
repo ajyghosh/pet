@@ -119,3 +119,135 @@ test("desktop preferences and small-window layout work offline", async ({
   await page.getByRole("button", { name: "Save changes" }).click();
   expect(external).toEqual([]);
 });
+
+test("all imported collections are available, 3D choice persists, and references cannot be selected", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Characters", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Ready to join · 132" }),
+  ).toBeVisible();
+  await page
+    .getByLabel("Character collection")
+    .selectOption("Cute 3D Humans — Office & Work");
+  await page.getByLabel("Character art style").selectOption("cute-3d");
+  await expect(page.locator(".character-card")).toHaveCount(10);
+  await page
+    .getByRole("button", { name: "Choose Doctor", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Save changes" }).click();
+  await page.reload();
+  await expect(page.locator(".profile-avatar .pixel-pet")).toHaveAttribute(
+    "data-character",
+    "cute-3d-humans-office-work--doctor",
+  );
+  await page.getByRole("button", { name: "Characters", exact: true }).click();
+  await page.getByLabel("Character collection").selectOption("Indian & Kerala");
+  await expect(page.locator(".character-card")).toHaveCount(15);
+  await page.getByRole("button", { name: "Reference ideas · 20" }).click();
+  await expect(page.locator(".reference-card")).toHaveCount(20);
+  await expect(page.locator(".character-card")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Save changes" }),
+  ).toBeDisabled();
+});
+
+test("character gallery filters, saves, and discards unsaved choices", async ({
+  page,
+}) => {
+  const missing: string[] = [];
+  page.on("response", (r) => {
+    if (r.url().includes("/characters/") && r.status() >= 400)
+      missing.push(r.url());
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Characters", exact: true }).click();
+  await expect(page.locator(".character-card")).toHaveCount(24);
+  for (const name of [
+    "Nova",
+    "Sage",
+    "Mochi",
+    "Biscuit",
+    "Ember",
+    "Clover",
+    "Bao",
+    "Pip",
+    "Sprout",
+    "Bolt",
+    "Cinder",
+    "Alex",
+  ]) {
+    await page
+      .getByRole("button", { name: `Choose ${name}`, exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: `Choose ${name}`, exact: true }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator(".gallery-preview .pixel-pet")).toHaveAttribute(
+      "aria-label",
+      `${name} companion`,
+    );
+  }
+  await page.getByRole("button", { name: "Animals", exact: true }).click();
+  await expect(page.locator(".character-card")).toHaveCount(7);
+  await page.getByLabel("Search characters").fill("fox");
+  await expect(page.locator(".character-card")).toHaveCount(1);
+  await page.getByRole("button", { name: "Choose Ember", exact: true }).click();
+  await page.getByRole("button", { name: "Save changes" }).click();
+  await page.reload();
+  await expect(page.locator(".profile-avatar .pixel-pet")).toHaveAttribute(
+    "data-character",
+    "fox",
+  );
+  await expect(
+    page.getByRole("heading", { name: "Ember", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Characters", exact: true }).click();
+  await page.getByRole("button", { name: "Choose Bao", exact: true }).click();
+  await page.getByRole("button", { name: "Discard", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Choose Ember", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await page.setViewportSize({ width: 760, height: 700 });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  expect(missing).toEqual([]);
+});
+
+test("walking area and alert-only mode persist and enforce slider spacing", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Desktop & startup", exact: true })
+    .click();
+  await page.getByLabel("When to walk").selectOption("alerts");
+  await page.getByRole("button", { name: "Park on the right" }).click();
+  await page.getByLabel("Walking area left limit").fill("30");
+  await page.getByLabel("Walking area right limit").fill("65");
+  await expect(page.getByLabel("Walking area from 30% to 65%")).toBeVisible();
+  await page.getByRole("button", { name: "Preview reminder movement" }).click();
+  await expect(page.locator(".walking-map-pet .pixel-pet")).toHaveCSS(
+    "background-image",
+    /alex-slate.png/,
+  );
+  await page.getByRole("button", { name: "Save changes" }).click();
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Desktop & startup", exact: true })
+    .click();
+  await expect(page.getByLabel("When to walk")).toHaveValue("alerts");
+  await expect(
+    page.getByRole("button", { name: "Park on the right" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByLabel("Walking area left limit")).toHaveValue("30");
+  await expect(page.getByLabel("Walking area right limit")).toHaveValue("65");
+  await page.getByLabel("Walking area left limit").fill("90");
+  await expect(page.getByLabel("Walking area right limit")).toHaveValue("100");
+  await page.getByRole("button", { name: "Discard", exact: true }).click();
+  await expect(page.getByLabel("Walking area left limit")).toHaveValue("30");
+});

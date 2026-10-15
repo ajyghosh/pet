@@ -1,6 +1,6 @@
 # Assets and dependencies
 
-All MiniMates human sprites, PNG animation atlases, scenery, and application icons were created for this project. They are covered by the repository's MIT license. No downloaded artwork, proprietary animation packs, fonts, paid APIs, or asset subscriptions are used. System fonts are used without bundling font files.
+All MiniMates human, animal, robot, and dragon sprites, PNG animation atlases, scenery, and application icons were created for this project. They are covered by the repository's MIT license. No downloaded artwork, proprietary animation packs, fonts, paid APIs, or asset subscriptions are used. System fonts are used without bundling font files.
 
 Direct open-source dependencies:
 
@@ -23,4 +23,4 @@ Microsoft WebView2 and the Windows SDK are free Microsoft components, **not open
 
 macOS, AppKit, CoreGraphics, and the system WebKit framework are Apple platform components, not bundled open-source libraries. Miso uses the frameworks supplied with macOS; no paid Apple service is required to build or run an ad-hoc-signed copy.
 
-`public/characters/alex.json` documents the included human atlas layout and MIT license. Six animation states and three outfits are shipped; this is one character, not a claimed 50-character collection. The original Miso artwork remains available in Git history under the same license.
+`public/characters/*.json` documents each character's atlas layout and MIT license. 132 original characters, six animation states, two facing directions, and three color styles are shipped (396 PNG atlases). The user-supplied `MiniMates_Character_Collections` folder contains 140 concept records, not source artwork. Original procedural models/sprites were created here for its 120 planned original concepts. Its 20 named licensed-character references remain catalog text only, with no bundled character artwork or playable assets. The original Miso artwork remains available in Git history under the same license.

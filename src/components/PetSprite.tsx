@@ -1,3 +1,4 @@
+import { characterInfo, type CharacterId } from "../core/characters";
 import type { Animation, Coat } from "../core/settings";
 export const atlasStates: Animation[] = [
   "idle",
@@ -13,21 +14,24 @@ export function PetSprite({
   frame = 0,
   coat = "slate",
   direction = 1,
+  character = "alex",
 }: {
   animation?: Animation;
   frame?: number;
   coat?: Coat;
   direction?: number;
+  character?: CharacterId;
 }) {
   const column = ((frame % 32) + 32) % 32;
   const row = atlasStates.indexOf(animation) * 2 + (direction < 0 ? 1 : 0);
   return (
     <div
-      className="pixel-pet"
+      className={`pixel-pet ${characterInfo(character).style === "cute-3d" ? "rendered-pet" : ""}`}
       role="img"
-      aria-label="MiniMates human companion"
+      aria-label={`${characterInfo(character).name} companion`}
+      data-character={character}
       style={{
-        backgroundImage: `url(/characters/alex-${coat}.png)`,
+        backgroundImage: `url(/characters/${character}-${coat}.png)`,
         backgroundRepeat: "no-repeat",
         backgroundSize: "3200% 1200%",
         backgroundPosition: `${(column / 31) * 100}% ${(row / 11) * 100}%`,

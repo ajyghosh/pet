@@ -146,6 +146,7 @@ mod win {
         window: &tauri::WebviewWindow,
         rows: &[[i32; 3]],
         side: i32,
+        grid: u32,
     ) -> Result<(), String> {
         let hwnd = window.hwnd().map_err(|e| e.to_string())?.0;
         unsafe {
@@ -155,7 +156,7 @@ mod win {
             }
             for [x, y, w] in rows {
                 // Round shared boundaries identically, including fractional DPI scales.
-                let px = |v: i32| (v as f64 * side as f64 / 32.0).round() as i32;
+                let px = |v: i32| (v as f64 * side as f64 / grid as f64).round() as i32;
                 let run = CreateRectRgn(px(*x), px(*y), px(x + w), px(y + 1));
                 if run.is_null() {
                     DeleteObject(region);
@@ -238,6 +239,7 @@ pub fn sync_input(
     _: i32,
     _: &[[i32; 3]],
     _: bool,
+    _: u32,
 ) -> Result<Option<bool>, String> {
     Ok(None)
 }

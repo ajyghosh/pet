@@ -420,7 +420,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 13px 17px;
+  padding: 7px 10px;
   height: 48px;
 }
 .preview-top > span {
@@ -1376,19 +1376,20 @@ html[data-window="bubble"] body {
 .native-bubble {
   height: calc(100vh - 12px);
   margin: 5px 6px 7px;
-  padding: 13px 17px;
+  padding: 7px 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 1px solid #ddd4f0;
-  border-radius: 15px;
+  border-radius: 11px;
   background: #fffaff;
-  color: #78648f;
-  font-size: 13px;
-  line-height: 1.5;
+  color: #534565;
+  font-size: 12px;
+  line-height: 16px;
   text-align: center;
   position: relative;
   overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 .native-bubble:after {
   content: "";
@@ -1831,4 +1832,300 @@ html[data-window="bubble"] body {
   .toggle span {
     transition: none;
   }
+}
+
+/* Companion library: original local sprites with one shared animation clock. */
+.gallery-toolbar,
+.gallery-filters,
+.gallery-search,
+.area-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.gallery-toolbar {
+  justify-content: space-between;
+}
+.gallery-filters button {
+  border: 1px solid #e1dcec;
+  background: white;
+  border-radius: 20px;
+  padding: 9px 16px;
+  color: #665b7b;
+  cursor: pointer;
+}
+.gallery-filters button[aria-pressed="true"] {
+  background: #6b4ce6;
+  color: white;
+  border-color: #6b4ce6;
+}
+.gallery-search {
+  padding: 8px 12px;
+  border: 1px solid #e1dcec;
+  background: white;
+  border-radius: 12px;
+}
+.gallery-search input {
+  background: transparent;
+  border: 0;
+  min-width: 0;
+  outline-offset: 4px;
+}
+.gallery-hint,
+.walking-area > p {
+  font-size: 12px;
+  color: #746a85;
+  line-height: 1.6;
+}
+.character-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.character-card {
+  min-width: 0;
+  text-align: left;
+  background: white;
+  border: 2px solid transparent;
+  border-radius: 18px;
+  padding: 7px 7px 15px;
+  box-shadow: 0 3px 16px #25164b08;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    transform 0.15s;
+}
+.character-card:hover {
+  transform: translateY(-3px);
+  border-color: #c8b6fa;
+}
+.character-card.chosen {
+  border-color: #7952e8;
+}
+.character-card:focus-visible {
+  outline: 3px solid #b395ff;
+  outline-offset: 3px;
+}
+.character-art {
+  height: 148px;
+  border-radius: 12px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.character-kind {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  color: #544769;
+  font-size: 10px;
+  background: #ffffffb0;
+  padding: 4px 7px;
+  border-radius: 8px;
+}
+.character-check {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  background: #7952e8;
+  color: white;
+  display: grid;
+  place-items: center;
+}
+.character-sprite {
+  width: 96px;
+  height: 96px;
+  z-index: 1;
+  margin-top: 17px;
+}
+.character-ground {
+  position: absolute;
+  width: 76px;
+  height: 10px;
+  bottom: 16px;
+  background: #30244b14;
+  border-radius: 50%;
+}
+.character-card strong {
+  display: block;
+  margin: 12px 8px 5px;
+  color: #302b45;
+  font-size: 16px;
+}
+.character-description {
+  display: block;
+  margin: 0 8px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #776d88;
+}
+.gallery-preview {
+  margin: 30px 0;
+}
+.gallery-empty {
+  padding: 30px;
+  text-align: center;
+}
+.walking-area {
+  padding: 18px 0;
+}
+.walking-area h3 {
+  font-size: 15px;
+}
+.walking-map {
+  height: 115px;
+  position: relative;
+  overflow: hidden;
+  background: #efedf5;
+  border: 1px solid #e0d9ee;
+  border-radius: 12px;
+  margin: 18px 0;
+}
+.walking-map-range {
+  position: absolute;
+  bottom: 0;
+  height: 100%;
+  border-inline: 2px dashed #9a7ae4;
+  background: #dbcefb;
+}
+.walking-map-pet {
+  position: absolute;
+  bottom: 12px;
+  aspect-ratio: 1;
+}
+.walking-map-label {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  color: #6d5793;
+}
+.area-sliders {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin: 16px 0;
+}
+.area-sliders label {
+  font-size: 12px;
+  color: #5f5278;
+}
+.area-sliders b {
+  float: right;
+}
+.area-sliders input {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  accent-color: #7952e8;
+}
+.movement-settings .segmented {
+  margin: 0;
+}
+@media (max-width: 1100px) {
+  .character-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .character-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .gallery-search {
+    width: 100%;
+  }
+  .movement-settings .setting-row {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .area-sliders {
+    gap: 15px;
+  }
+}
+.rendered-pet {
+  image-rendering: auto;
+}
+.movement-settings .segmented {
+  min-width: 160px;
+}
+.library-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.library-tabs button {
+  border: 1px solid #ddd4ed;
+  background: white;
+  color: #71647f;
+  padding: 12px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.library-tabs button[aria-pressed="true"] {
+  color: #6540cc;
+  background: #ede5ff;
+  border-color: #aa8ded;
+  font-weight: 650;
+}
+.collection-filters {
+  display: flex;
+  gap: 16px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+.collection-filters label {
+  display: grid;
+  gap: 6px;
+  font-size: 11px;
+  color: #79688c;
+  max-width: 100%;
+}
+.collection-filters select {
+  border: 1px solid #e0d9ed;
+  background: white;
+  color: #463b56;
+  border-radius: 10px;
+  padding: 10px;
+  max-width: 100%;
+}
+.reference-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+.reference-card {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 18px;
+  border: 1px solid #e2deed;
+  border-radius: 14px;
+  background: white;
+  color: #8a769f;
+}
+.reference-card h3 {
+  font-size: 14px;
+  margin: 0 0 6px;
+  color: #554762;
+}
+.reference-card span {
+  font-size: 11px;
+}
+.gallery-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #79688c;
 }

@@ -22,6 +22,7 @@ struct DesktopState {
     refreshed: Instant,
     hidden: bool,
     shape: Vec<[i32; 3]>,
+    grid: u32,
     side: i32,
     message: Option<String>,
     started: Instant,
@@ -120,6 +121,7 @@ struct Frame {
     x: f64,
     lift: f64,
     rows: Vec<[i32; 3]>,
+    grid: u32,
     message: Option<String>,
 }
 #[tauri::command]
@@ -133,10 +135,17 @@ fn present_frame(
     if !frame.x.is_finite()
         || !frame.lift.is_finite()
         || frame.x.abs() > 100000.0
+        || ![32, 64].contains(&frame.grid)
         || frame.rows.is_empty()
         || frame.rows.len() > 1024
         || frame.rows.iter().any(|[x, y, w]| {
-            *x < 0 || *x >= 32 || *y < 0 || *y >= 32 || *w <= 0 || *w > 32 || x + w > 32
+            *x < 0
+                || *x >= frame.grid as i32
+                || *y < 0
+                || *y >= frame.grid as i32
+                || *w <= 0
+                || *w > frame.grid as i32
+                || x + w > frame.grid as i32
         })
     {
         return Err("Invalid sprite frame".into());
@@ -161,13 +170,20 @@ fn present_frame(
         .or_else(|| s.displays.first())
         .ok_or("No monitors available")?
         .clone();
-    let (x, y, side) = geometry::placement(&display, frame.x, s.settings.size, frame.lift);
+    let (left, right) = geometry::walking_bounds(&display, &s.settings);
+    let (x, y, side) = geometry::placement(
+        &display,
+        frame.x.clamp(left, right),
+        s.settings.size,
+        frame.lift,
+    );
     let resized = platform::position(&window, x, y, side, side)?;
     // A region is applied BEFORE a hidden pet is shown; no rectangular input blocker at startup.
-    if s.shape != frame.rows || s.side != side || resized {
+    if s.shape != frame.rows || s.side != side || s.grid != frame.grid || resized {
         #[cfg(windows)]
-        platform::shape(&window, &frame.rows, side)?;
+        platform::shape(&window, &frame.rows, side, frame.grid)?;
         s.shape = frame.rows.clone();
+        s.grid = frame.grid;
         s.side = side;
     }
     if !s.hidden && !window.is_visible().map_err(|e| e.to_string())? {
@@ -186,9 +202,9 @@ fn present_frame(
         app.emit_to("bubble", "bubble-message", &message)
             .map_err(|e| e.to_string())?;
     }
-    if message.is_some() {
-        let bw = (280.0 * display.coordinate_scale).round() as i32;
-        let bh = (104.0 * display.coordinate_scale).round() as i32;
+    if let Some(text) = message.as_deref() {
+        let bw = (220.0 * display.coordinate_scale).round() as i32;
+        let bh = (geometry::bubble_height(text) * display.coordinate_scale).round() as i32;
         let bx = (x + side / 2 - bw / 2).clamp(
             display.work.left,
             (display.work.right - bw).max(display.work.left),
@@ -200,7 +216,7 @@ fn present_frame(
     } else if bubble.is_visible().map_err(|e| e.to_string())? {
         bubble.hide().map_err(|e| e.to_string())?;
     }
-    let hover = platform::sync_input(&window, x, y, side, &frame.rows, !s.hidden)?;
+    let hover = platform::sync_input(&window, x, y, side, &frame.rows, !s.hidden, frame.grid)?;
     // Startup is fully click-through until a valid native silhouette is installed.
     #[cfg(windows)]
     if s.last_frame.is_none() {
@@ -299,7 +315,13 @@ fn warm_pet(app: &tauri::AppHandle) -> Result<(), String> {
         .or_else(|| displays.iter().find(|d| d.primary))
         .or_else(|| displays.first())
         .ok_or("No desktop monitor is available")?;
-    let (x, y, side) = geometry::placement(display, 80.0, settings.size, 0.0);
+    let (left, right) = geometry::walking_bounds(display, &settings);
+    let home = if settings.home_side == "right" {
+        right
+    } else {
+        left
+    };
+    let (x, y, side) = geometry::placement(display, home, settings.size, 0.0);
     platform::position(&window, x, y, side, side)?;
     window.show().map_err(|e| e.to_string())
 }
@@ -391,6 +413,7 @@ pub fn run() {
                 refreshed: Instant::now(),
                 hidden: false,
                 shape: vec![],
+                grid: 32,
                 side: 0,
                 message: None,
                 started: Instant::now(),
@@ -421,7 +444,7 @@ pub fn run() {
             let bubble =
                 WebviewWindowBuilder::new(app, "bubble", WebviewUrl::App("index.html".into()))
                     .title("MiniMates says")
-                    .inner_size(280.0, 104.0)
+                    .inner_size(220.0, 72.0)
                     .decorations(false)
                     .transparent(true)
                     .background_color(tauri::webview::Color(0, 0, 0, 0))

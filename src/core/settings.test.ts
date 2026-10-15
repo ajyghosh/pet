@@ -26,8 +26,33 @@ describe("settings resilience", () => {
   it("roundtrips valid settings without changing user choices", () => {
     const s = structuredClone(defaults);
     s.name = "Pixel";
+    s.character = "fox";
+    s.walkStart = 20;
+    s.walkEnd = 70;
+    s.homeSide = "right";
+    s.alertsOnly = true;
     s.reminders.break.minutes = 22;
     s.bubbles = false;
     expect(normalizeSettings(JSON.parse(JSON.stringify(s)))).toEqual(s);
   });
+});
+
+it("migrates old preferences and normalizes unknown characters and crossed limits", () => {
+  const old = { name: "My Miso", coat: "cream", roaming: false };
+  const s = normalizeSettings(old);
+  expect(s.character).toBe("alex");
+  expect(s.name).toBe(old.name);
+  expect(s.roaming).toBe(false);
+  expect(s.walkStart).toBe(0);
+  expect(s.walkEnd).toBe(100);
+  const invalid = normalizeSettings({
+    character: "../../evil",
+    homeSide: "top",
+    walkStart: 95,
+    walkEnd: 5,
+  });
+  expect(invalid.character).toBe("alex");
+  expect(invalid.homeSide).toBe("left");
+  expect(invalid.walkStart).toBe(90);
+  expect(invalid.walkEnd).toBe(100);
 });

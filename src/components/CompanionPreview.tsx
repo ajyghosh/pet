@@ -122,6 +122,7 @@ export function CompanionPreview({
             animation={animation}
             frame={Math.floor(time / 160)}
             coat={settings.coat}
+            character={settings.character}
             direction={animation === "walking" ? direction : 1}
           />
         </div>

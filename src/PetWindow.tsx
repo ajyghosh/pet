@@ -1,7 +1,14 @@
+import { spriteGrid, type CharacterId } from "./core/characters";
 import { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { bootstrap, monitors, on, type Display } from "./api";
-import { advance, createPet, interact } from "./core/engine";
+import {
+  advance,
+  createPet,
+  interact,
+  remind,
+  walkingBounds,
+} from "./core/engine";
 import { ReminderClock } from "./core/reminders";
 import {
   defaults,
@@ -17,8 +24,15 @@ export function PetWindow() {
     animation: Animation;
     frame: number;
     coat: Coat;
+    character: CharacterId;
     direction: number;
-  }>({ animation: "idle", frame: 0, coat: "slate", direction: 1 });
+  }>({
+    animation: "idle",
+    frame: 0,
+    coat: "slate",
+    character: "alex",
+    direction: 1,
+  });
   const hover = useRef(false);
   const input = useRef<(action: string) => void>(() => {});
   useEffect(() => {
@@ -37,6 +51,7 @@ export function PetWindow() {
       let pet = createPet(),
         last = performance.now(),
         nextMonitorCheck = last + 2000;
+      let positioned = false;
       pet.nextDecision = last + 4000;
       const clock = new ReminderClock(settings, last);
       let message: string | null =
@@ -55,11 +70,7 @@ export function PetWindow() {
         }
         if (a.startsWith("reminder:")) {
           say(settings.reminders[a.slice(9) as ReminderKind].message);
-          pet = interact(
-            pet,
-            a === "reminder:water" ? "drinking" : "idle",
-            now,
-          );
+          pet = remind(pet, now, settings, a === "reminder:water");
           return;
         }
         const animation = a === "wake" ? "idle" : (a as Animation);
@@ -70,6 +81,21 @@ export function PetWindow() {
         if (animation === "jumping") say("A tiny leap of joy!");
       };
       await subscribe<typeof defaults>("settings-changed", (s) => {
+        if (
+          [
+            "roaming",
+            "alertsOnly",
+            "homeSide",
+            "walkStart",
+            "walkEnd",
+            "monitor",
+          ].some(
+            (key) =>
+              s[key as keyof typeof s] !==
+              settings[key as keyof typeof settings],
+          )
+        )
+          pet.excursion = null;
         settings = s;
         clock.update(s, performance.now());
       });
@@ -88,6 +114,10 @@ export function PetWindow() {
           displays[0];
         if (!d) throw new Error("No desktop monitor is available.");
         const width = (d.work.right - d.work.left) / d.coordinateScale;
+        if (!positioned) {
+          pet.x = walkingBounds(width, settings).home;
+          positioned = true;
+        }
         pet = advance(
           pet,
           now,
@@ -99,7 +129,7 @@ export function PetWindow() {
         const reminder = clock.tick(now);
         if (reminder) {
           say(settings.reminders[reminder].message);
-          pet = interact(pet, reminder === "water" ? "drinking" : "idle", now);
+          pet = remind(pet, now, settings, reminder === "water");
         }
         if (now >= messageUntil) message = null;
         const nextRuns = sprite(
@@ -107,11 +137,13 @@ export function PetWindow() {
           Math.floor(now / 160),
           settings.coat,
           pet.direction,
+          settings.character,
         );
         setPose({
           animation: pet.animation,
           frame: Math.floor(now / 160),
           coat: settings.coat,
+          character: settings.character,
           direction: pet.direction,
         });
         const nativeHover = await invoke<boolean | null>("present_frame", {
@@ -119,6 +151,7 @@ export function PetWindow() {
             x: pet.x,
             lift: pet.lift,
             rows: silhouette(nextRuns),
+            grid: spriteGrid(settings.character),
             message,
           },
         });

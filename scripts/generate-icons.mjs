@@ -1,6 +1,7 @@
 // Original Miso artwork; dependency-free PNG/ICO encoder. Run with Node 22+.
 import { deflateSync } from "node:zlib";
 import { mkdirSync, writeFileSync } from "node:fs";
+import { characterDefinitions, spriteGrid } from "../src/core/characters.ts";
 import { sprite } from "../src/core/sprite.ts";
 const pixels = Array.from({ length: 32 }, () => Array(32).fill(null));
 for (const r of sprite("idle", 0, "slate"))
@@ -96,63 +97,77 @@ writeFileSync(
 );
 const states = ["idle", "walking", "sleeping", "jumping", "happy", "drinking"];
 mkdirSync("public/characters", { recursive: true });
-for (const coat of ["ginger", "cream", "slate"]) {
-  const width = 32 * 32,
-    height = states.length * 2 * 32;
-  const scan = Buffer.alloc((width * 4 + 1) * height);
-  states.forEach((state, index) => {
-    for (const direction of [1, -1])
-      for (let frame = 0; frame < 32; frame++) {
-        const row = index * 2 + (direction < 0 ? 1 : 0);
-        for (const r of sprite(state, frame, coat, direction))
-          for (let x = r.x; x < r.x + r.width; x++) {
-            const o =
-              (row * 32 + r.y) * (width * 4 + 1) + 1 + (frame * 32 + x) * 4;
-            scan[o] = parseInt(r.color.slice(1, 3), 16);
-            scan[o + 1] = parseInt(r.color.slice(3, 5), 16);
-            scan[o + 2] = parseInt(r.color.slice(5, 7), 16);
-            scan[o + 3] = 255;
-          }
-      }
-  });
-  const head = Buffer.alloc(13);
-  head.writeUInt32BE(width);
-  head.writeUInt32BE(height, 4);
-  head[8] = 8;
-  head[9] = 6;
+for (const character of characterDefinitions) {
+  for (const coat of ["ginger", "cream", "slate"]) {
+    const grid = spriteGrid(character.id);
+    const width = grid * 32,
+      height = states.length * 2 * grid;
+    const scan = Buffer.alloc((width * 4 + 1) * height);
+    states.forEach((state, index) => {
+      for (const direction of [1, -1])
+        for (let frame = 0; frame < 32; frame++) {
+          const row = index * 2 + (direction < 0 ? 1 : 0);
+          for (const r of sprite(state, frame, coat, direction, character.id))
+            for (let x = r.x; x < r.x + r.width; x++) {
+              const o =
+                (row * grid + r.y) * (width * 4 + 1) +
+                1 +
+                (frame * grid + x) * 4;
+              scan[o] = parseInt(r.color.slice(1, 3), 16);
+              scan[o + 1] = parseInt(r.color.slice(3, 5), 16);
+              scan[o + 2] = parseInt(r.color.slice(5, 7), 16);
+              scan[o + 3] = 255;
+            }
+        }
+    });
+    const head = Buffer.alloc(13);
+    head.writeUInt32BE(width);
+    head.writeUInt32BE(height, 4);
+    head[8] = 8;
+    head[9] = 6;
+    writeFileSync(
+      `public/characters/${character.id}-${coat}.png`,
+      Buffer.concat([
+        Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+        chunk("IHDR", head),
+        chunk("IDAT", deflateSync(scan)),
+        chunk("IEND", Buffer.alloc(0)),
+      ]),
+    );
+  }
   writeFileSync(
-    `public/characters/alex-${coat}.png`,
-    Buffer.concat([
-      Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
-      chunk("IHDR", head),
-      chunk("IDAT", deflateSync(scan)),
-      chunk("IEND", Buffer.alloc(0)),
-    ]),
+    `public/characters/${character.id}.json`,
+    JSON.stringify(
+      {
+        ...character,
+        assetStatus: "ready",
+        license: "MIT",
+        artist: "Original MiniMates project artwork",
+        frameWidth: spriteGrid(character.id),
+        frameHeight: spriteGrid(character.id),
+        framesPerAnimation: 32,
+        frameDurationMs: 160,
+        states,
+        directions: ["right", "left"],
+        outfits: ["ginger", "cream", "slate"],
+        layout:
+          "Each state occupies two rows: right, then left. Frames advance across columns.",
+      },
+      null,
+      2,
+    ) + "\n",
   );
 }
 writeFileSync(
-  "public/characters/alex.json",
+  "src/core/ready-characters.json",
   JSON.stringify(
-    {
-      id: "alex",
-      name: "Alex",
-      personality: "The everyday optimist",
-      license: "MIT",
-      artist: "Original MiniMates project artwork",
-      frameWidth: 32,
-      frameHeight: 32,
-      framesPerAnimation: 32,
-      frameDurationMs: 160,
-      states,
-      directions: ["right", "left"],
-      outfits: ["ginger", "cream", "slate"],
-      layout:
-        "Each state occupies two rows: right, then left. Frames advance across columns.",
-    },
+    characterDefinitions
+      .filter((c) => c.collection !== "MiniMates Originals")
+      .map((c) => c.id),
     null,
     2,
   ) + "\n",
 );
 console.log(
-  "Generated original MiniMates human sprite sheets, PNG, ICO, and ICNS assets.",
+  "Generated original MiniMates character sprite sheets, PNG, ICO, and ICNS assets.",
 );

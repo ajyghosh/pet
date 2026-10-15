@@ -1,7 +1,11 @@
 {
   "id": "alex",
   "name": "Alex",
-  "personality": "The everyday optimist",
+  "kind": "People",
+  "description": "Your everyday optimist",
+  "color": "#e4eaff",
+  "collection": "MiniMates Originals",
+  "style": "pixel-art",
   "license": "MIT",
   "artist": "Original MiniMates project artwork",
   "frameWidth": 32,
@@ -25,5 +29,6 @@
     "cream",
     "slate"
   ],
-  "layout": "Each state occupies two rows: right, then left. Frames advance across columns."
+  "layout": "Each state occupies two rows: right, then left. Frames advance across columns.",
+  "assetStatus": "ready"
 }
