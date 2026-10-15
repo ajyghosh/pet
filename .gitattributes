@@ -1,0 +1,13 @@
+# Keep source and build metadata consistent across Windows and macOS checkouts.
+* text=auto eol=lf
+
+# Preserve upstream notices verbatim, including their original mixed line endings.
+THIRD_PARTY_LICENSES.txt -text
+licenses/upstream/** -text
+
+# Generated artwork and archives are binary.
+*.png -text
+*.ico -text
+*.icns -text
+*.zip -text
+*.gz -text

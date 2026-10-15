@@ -9,6 +9,8 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 const read = (name) => fs.readFileSync(path.join(root, name), "utf8");
 const digest = (value) =>
   crypto.createHash("sha256").update(value).digest("hex");
+// Source lockfiles use canonical LF; upstream license text stays byte-exact.
+const digestSource = (text) => digest(text.replace(/\r\n/g, "\n"));
 const lock = JSON.parse(read("package-lock.json"));
 const overrides = JSON.parse(read("licenses/overrides.json"));
 const cargoHome = process.env.CARGO_HOME || path.join(os.homedir(), ".cargo");
@@ -156,8 +158,8 @@ fs.writeFileSync(
   path.join(root, "licenses/manifest.json"),
   JSON.stringify(
     {
-      npmLockSha256: digest(read("package-lock.json")),
-      cargoLockSha256: digest(read("src-tauri/Cargo.lock")),
+      npmLockSha256: digestSource(read("package-lock.json")),
+      cargoLockSha256: digestSource(read("src-tauri/Cargo.lock")),
       noticesSha256: digest(output),
       targets,
       packages: records,

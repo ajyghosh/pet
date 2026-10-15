@@ -3,6 +3,8 @@ import crypto from "node:crypto";
 const read = (name) =>
   fs.readFileSync(new URL(`../${name}`, import.meta.url), "utf8");
 const digest = (text) => crypto.createHash("sha256").update(text).digest("hex");
+// Source lockfiles use canonical LF; upstream license text stays byte-exact.
+const digestSource = (text) => digest(text.replace(/\r\n/g, "\n"));
 const pkg = JSON.parse(read("package.json"));
 const npmLock = JSON.parse(read("package-lock.json"));
 const config = JSON.parse(read("src-tauri/tauri.conf.json"));
@@ -10,22 +12,22 @@ const cargoVersion = read("src-tauri/Cargo.toml").match(
   /^version = "([^"]+)"/m,
 )?.[1];
 const cargoLockVersion = read("src-tauri/Cargo.lock").match(
-  /name = "miso-desktop"\nversion = "([^"]+)"/,
+  /name = "miso-desktop"\r?\nversion = "([^"]+)"/,
 )?.[1];
-if (
-  [
-    npmLock.version,
-    npmLock.packages[""].version,
-    config.version,
-    cargoVersion,
-    cargoLockVersion,
-  ].some((version) => version !== pkg.version)
-)
-  throw Error("Release versions disagree.");
+const versions = {
+  "package.json": pkg.version,
+  "package-lock.json": npmLock.version,
+  "package-lock.json root package": npmLock.packages[""].version,
+  "tauri.conf.json": config.version,
+  "Cargo.toml": cargoVersion,
+  "Cargo.lock": cargoLockVersion,
+};
+if (Object.values(versions).some((version) => version !== pkg.version))
+  throw Error(`Release versions disagree: ${JSON.stringify(versions)}`);
 const manifest = JSON.parse(read("licenses/manifest.json"));
 if (
-  manifest.npmLockSha256 !== digest(read("package-lock.json")) ||
-  manifest.cargoLockSha256 !== digest(read("src-tauri/Cargo.lock")) ||
+  manifest.npmLockSha256 !== digestSource(read("package-lock.json")) ||
+  manifest.cargoLockSha256 !== digestSource(read("src-tauri/Cargo.lock")) ||
   manifest.noticesSha256 !== digest(read("THIRD_PARTY_LICENSES.txt"))
 )
   throw Error(

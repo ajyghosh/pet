@@ -56,3 +56,7 @@ Character source resources now live under `assets/characters/collections/` and `
 Local source archives and debug apps created before this change do not contain Maple or this reorganization. Use the subsequent GitHub Actions installers for this revision.
 
 Validation after the folder move and Maple addition: 1,360 frontend unit tests, 21 browser tests, 19 native tests, release metadata checks, and the production build passed. Native formatting and frontend formatting also passed.
+
+## Windows release-check correction
+
+Windows Git checkouts exposed an LF-only Cargo.lock version parser. The checker now accepts LF and CRLF, and both the notice generator and verifier hash source lockfiles using canonical LF. `.gitattributes` keeps source files at LF while preserving the upstream license bundle and license sources verbatim. Five regression cases cover LF, simulated Windows CRLF, an actual version mismatch, a changed lockfile, and an altered license bundle.
