@@ -1,0 +1,33 @@
+import { describe, it, expect } from "vitest";
+import { defaults, normalizeSettings } from "./settings";
+describe("settings resilience", () => {
+  it("loads defaults for missing or corrupted structure", () => {
+    for (const value of [null, [], 3, "bad"])
+      expect(normalizeSettings(value)).toEqual(defaults);
+  });
+  it("clamps malformed values and keeps valid settings", () => {
+    const s = normalizeSettings({
+      name: " Bean ",
+      coat: "slate",
+      size: 100000,
+      speed: Infinity,
+      autostart: "yes",
+      reminders: { water: { minutes: 9999, message: "   ", enabled: false } },
+    });
+    expect(s.name).toBe("Bean");
+    expect(s.coat).toBe("slate");
+    expect(s.size).toBe(128);
+    expect(s.speed).toBe(45);
+    expect(s.autostart).toBe(false);
+    expect(s.reminders.water.minutes).toBe(240);
+    expect(s.reminders.water.enabled).toBe(false);
+    expect(s.reminders.water.message).toBe(defaults.reminders.water.message);
+  });
+  it("roundtrips valid settings without changing user choices", () => {
+    const s = structuredClone(defaults);
+    s.name = "Pixel";
+    s.reminders.break.minutes = 22;
+    s.bubbles = false;
+    expect(normalizeSettings(JSON.parse(JSON.stringify(s)))).toEqual(s);
+  });
+});

@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "local-windows",
+  "description": "Local app events only. Native operations are validated by Rust commands.",
+  "windows": ["pet", "settings", "bubble"],
+  "permissions": ["core:event:allow-listen", "core:event:allow-unlisten"]
+}
