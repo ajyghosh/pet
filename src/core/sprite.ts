@@ -1,5 +1,6 @@
 import { isCollectionCharacter, spriteGrid } from "./characters.ts";
 import { collectionSprite } from "./collectionArtwork.ts";
+import { footPose } from "./gait.ts";
 import type { CharacterId } from "./characters";
 import type { Animation, Coat } from "./settings";
 export const GRID = 32;
@@ -94,22 +95,26 @@ function drawSprite(
   const happy = animation === "happy",
     jumping = animation === "jumping",
     drinking = animation === "drinking";
-  const bob = walking && step % 2 ? 1 : 0;
+  const bob = walking && frame % 4 === 0 ? 1 : 0;
   const headY = sleeping
     ? 13 + (frame % 12 < 6 ? 0 : 1)
     : (character === "sage" ? 6 : 2) + bob;
   if (character === "alex" || character === "nova" || character === "sage") {
     // Denim legs, alternating stride, and chunky white-soled sneakers.
-    const left = walking && step === 1 ? 9 : 11;
-    const right = walking && step === 3 ? 19 : 17;
-    rect(left, 23, 5, 8, 0);
-    rect(left + 1, 23, 3, 6, 7);
-    rect(right, 23, 5, 8, 0);
-    rect(right + 1, 23, 3, 6, 7);
-    rect(left - 1, 29, 6, 3, 0);
-    rect(left, 30, 5, 1, 6);
-    rect(right, 29, 6, 3, 0);
-    rect(right + 1, 30, 4, 1, 6);
+    const back = footPose(frame, true),
+      front = footPose(frame);
+    const left = walking ? 12 + Math.round(back.travel * 4) : 11;
+    const right = walking ? 16 + Math.round(front.travel * 4) : 17;
+    const leftLift = walking ? Math.round(back.lift) : 0;
+    const rightLift = walking ? Math.round(front.lift) : 0;
+    rect(left, 23, 5, 8 - leftLift, 0);
+    rect(left + 1, 23, 3, 6 - leftLift, 7);
+    rect(right, 23, 5, 8 - rightLift, 0);
+    rect(right + 1, 23, 3, 6 - rightLift, 7);
+    rect(left - 1, 29 - leftLift, 6, 3, 0);
+    rect(left, 30 - leftLift, 5, 1, 6);
+    rect(right, 29 - rightLift, 6, 3, 0);
+    rect(right + 1, 30 - rightLift, 4, 1, 6);
     // Jacket, tee, collar, pockets and hands.
     const bodyY = sleeping ? 23 : 15 + bob;
     rect(10, bodyY, 13, sleeping ? 6 : 10, 0);
@@ -155,10 +160,10 @@ function drawSprite(
     rect(21, headY + 3, 2, 3, 5);
     const closed =
       sleeping || happy || (animation === "idle" && frame % 32 === 30);
-    rect(14, headY + 7, 2, closed ? 1 : 2, 0);
-    rect(19, headY + 7, 2, closed ? 1 : 2, 0);
-    rect(17, headY + 9, 1, 1, 4);
-    rect(16, headY + 10, happy ? 4 : 2, 1, happy ? 6 : 0);
+    if (!walking) rect(14, headY + 7, 2, closed ? 1 : 2, 0);
+    rect(walking ? 21 : 19, headY + 7, 2, closed ? 1 : 2, 0);
+    rect(walking ? 23 : 17, headY + 9, walking ? 2 : 1, 1, 4);
+    rect(walking ? 21 : 16, headY + 10, happy ? 4 : 2, 1, happy ? 6 : 0);
     if (sleeping) {
       rect(7, 25, 6, 3, 3);
       rect(21, 25, 5, 3, 3);
@@ -201,7 +206,15 @@ function drawSprite(
   }
   const runs: Run[] = [];
   for (let y = 0; y < GRID; y++) {
-    const row = direction < 0 ? [...pixels[y]].reverse() : pixels[y];
+    // A narrower three-quarter silhouette and forward facial features face travel.
+    let row = pixels[y];
+    if (walking) {
+      const profile = Array<number>(GRID).fill(-1);
+      for (let x = 0; x < GRID; x++)
+        if (row[x] >= 0) profile[Math.round(16 + (x - 16) * 0.75)] = row[x];
+      row = profile;
+    }
+    if (direction < 0) row = [...row].reverse();
     for (let x = 0; x < GRID;) {
       const c = row[x];
       let end = x + 1;
@@ -283,19 +296,25 @@ function drawCreature(
     jump = animation === "jumping";
   const drink = animation === "drinking";
   const step = frame % 4,
-    bob = walk && step % 2 ? 1 : 0;
+    bob = walk && frame % 4 === 0 ? 1 : 0;
   const closed = sleep || happy || (animation === "idle" && frame % 32 === 30);
   const eyes = (x: number, y: number, gap: number) => {
-    rect(x, y, 2, closed ? 1 : 3, 6);
+    if (!walk) rect(x, y, 2, closed ? 1 : 3, 6);
     rect(x + gap, y, 2, closed ? 1 : 3, 6);
     if (!closed) {
-      rect(x, y, 1, 1, 8);
+      if (!walk) rect(x, y, 1, 1, 8);
       rect(x + gap, y, 1, 1, 8);
     }
   };
-  const foot = (x: number, color = 1) => box(x, 28, 6, 4, color);
-  const left = walk && step === 1 ? 6 : 8,
-    right = walk && step === 3 ? 22 : 20;
+  const back = footPose(frame, true),
+    front = footPose(frame);
+  let footIndex = 0;
+  const foot = (x: number, color = 1) => {
+    const pose = footIndex++ === 0 ? back : front;
+    box(x, 28 - (walk ? Math.round(pose.lift) : 0), 6, 4, color);
+  };
+  const left = walk ? 10 + Math.round(back.travel * 4) : 8,
+    right = walk ? 17 + Math.round(front.travel * 4) : 20;
   const headY = sleep ? 17 + (frame % 12 < 6 ? 0 : 1) : 7 + bob;
 
   if (character === "robot") {
@@ -398,11 +417,11 @@ function drawCreature(
       rect(24, headY - earH + 4, 4, earH, 0);
       rect(25, headY - earH + 5, 2, earH - 1, 5);
     }
-    oval(7, headY + 1, 23, 15, 1);
+    oval(walk ? 10 : 7, headY + 1, walk ? 20 : 23, 15, 1);
     if (character === "panda") {
-      ellipse(10, headY + 5, 6, 7, 0);
+      if (!walk) ellipse(10, headY + 5, 6, 7, 0);
       ellipse(21, headY + 5, 6, 7, 0);
-      rect(12, headY + 6, 2, closed ? 1 : 3, 8);
+      if (!walk) rect(12, headY + 6, 2, closed ? 1 : 3, 8);
       rect(23, headY + 6, 2, closed ? 1 : 3, 8);
     } else eyes(12, headY + 6, 10);
     if (character === "corgi" || character === "fox") {
@@ -414,8 +433,8 @@ function drawCreature(
       rect(27, headY + 10, 1, 1, 0);
       rect(14, headY + 2, 3, 2, 3);
     } else {
-      rect(18, headY + 10, 3, 2, character === "rabbit" ? 5 : 0);
-      rect(19, headY + 12, happy ? 3 : 1, 1, 0);
+      rect(walk ? 27 : 18, headY + 10, 3, 2, character === "rabbit" ? 5 : 0);
+      rect(walk ? 26 : 19, headY + 12, happy ? 3 : 1, 1, 0);
     }
     if (character === "cat") {
       rect(15, headY + 2, 2, 3, 4);

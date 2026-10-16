@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Moon, Sun, Pause, Play, Monitor } from "lucide-react";
 import { PetSprite } from "./PetSprite";
 import type { Animation, Settings } from "../core/settings";
+import { walkingFrame } from "../core/gait";
 
 export const animations: { id: Animation; label: string }[] = [
   { id: "idle", label: "Idle" },
@@ -43,7 +44,7 @@ export function CompanionPreview({
       const now = performance.now();
       setTime((t) => t + Math.min(now - previous, 100));
       previous = now;
-    }, 50);
+    }, 33);
     return () => clearInterval(timer);
   }, [paused]);
   const size = Math.min(settings.size * (expanded ? 1.5 : 1.35), 160);
@@ -142,7 +143,11 @@ export function CompanionPreview({
           >
             <PetSprite
               animation={animation}
-              frame={Math.floor(time / 160)}
+              frame={
+                animation === "walking"
+                  ? walkingFrame((time / 1000) * settings.speed, size)
+                  : Math.floor(time / 160)
+              }
               coat={settings.coat}
               character={settings.character}
               direction={animation === "walking" ? direction : 1}

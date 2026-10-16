@@ -1,4 +1,5 @@
 import type { Animation, Coat } from "./settings";
+import { footPose } from "./gait.ts";
 import type { Run } from "./sprite";
 
 // Original procedural figures, rendered offline into transparent atlases. The 3D
@@ -45,10 +46,16 @@ export function collectionSprite(
     drink = animation === "drinking";
   const closed = sleep || happy || (animation === "idle" && frame % 32 === 30);
   const bob = walk
-    ? (phase % 2) * 0.5
+    ? frame % 4 === 0
+      ? 0.5
+      : 0
     : animation === "idle"
       ? Math.sin(frame / 5) * 0.12
       : 0;
+  const feet = [footPose(frame), footPose(frame, true)];
+  const yaw = walk ? Math.PI / 3 : 0;
+  const cos = Math.cos(yaw),
+    sin = Math.sin(yaw);
   const female = has(/girl|woman|grandma|bride|princess|witch|saree|nurse/);
   const elder = has(/grandpa|grandma|elder/);
   const skin = [0xd6a17d, 0xbf8464, 0x995f46, 0xe8b693, 0xad7353, 0xc78c66][
@@ -98,9 +105,9 @@ export function collectionSprite(
     color: number,
   ) => {
     shapes.push({
-      x: x * scale + offsetX,
+      x: (walk ? 16 + (x - 16) * cos + z * sin : x) * scale + offsetX,
       y: 32 - (32 - y) * scale,
-      z,
+      z: walk ? (-(x - 16) * sin + z * cos) * scale : z,
       rx: rx * scale,
       ry: ry * scale,
       rz: rz * scale,
@@ -117,13 +124,14 @@ export function collectionSprite(
     z: number,
     radius: number,
     color: number,
+    endZ = z,
   ) => {
     const steps = Math.max(1, Math.ceil(Math.hypot(x2 - x1, y2 - y1) * 1.4));
     for (let i = 0; i <= steps; i++)
       ball(
         x1 + ((x2 - x1) * i) / steps,
         y1 + ((y2 - y1) * i) / steps,
-        z,
+        z + ((endZ - z) * i) / steps,
         radius,
         color,
       );
@@ -141,12 +149,33 @@ export function collectionSprite(
       sphere(15, 23, -2, 8, 8, 1.4, accent);
     if (has(/hiker|explorer|traveller|student|school/))
       sphere(10.5, 20, -1.4, 3.4, 6, 2.8, accent);
-    limb(12, 24, 11 - stride, 29, 0, 2, pants);
-    limb(20, 24, 21 + stride, 29, 0, 2, pants);
-    sphere(10.5 - stride, 30.3, 1, 3.1, 1.7, 2.5, fabric);
-    sphere(21.5 + stride, 30.3, 1, 3.1, 1.7, 2.5, fabric);
-    sphere(10.5 - stride, 31.1, 1.4, 3.1, 0.7, 2.5, white);
-    sphere(21.5 + stride, 31.1, 1.4, 3.1, 0.7, 2.5, white);
+    if (walk) {
+      for (const [i, x] of [12, 20].entries()) {
+        const foot = feet[i],
+          z = foot.travel * 3.464;
+        // The supporting foot stays on the floor; the other bends at the knee.
+        limb(x, 23.5, x, 27 - foot.lift * 0.6, 0, 1.8, pants, z * 0.45);
+        limb(
+          x,
+          27 - foot.lift * 0.6,
+          x,
+          29 - foot.lift,
+          z * 0.45,
+          1.7,
+          pants,
+          z,
+        );
+        sphere(x, 30.3 - foot.lift, z + 0.7, 2.4, 1.7, 3.1, fabric);
+        sphere(x, 31.1 - foot.lift, z + 0.7, 2.4, 0.7, 3.1, white);
+      }
+    } else {
+      limb(12, 24, 11 - stride, 29, 0, 2, pants);
+      limb(20, 24, 21 + stride, 29, 0, 2, pants);
+      sphere(10.5 - stride, 30.3, 1, 3.1, 1.7, 2.5, fabric);
+      sphere(21.5 + stride, 30.3, 1, 3.1, 1.7, 2.5, fabric);
+      sphere(10.5 - stride, 31.1, 1.4, 3.1, 0.7, 2.5, white);
+      sphere(21.5 + stride, 31.1, 1.4, 3.1, 0.7, 2.5, white);
+    }
     sphere(16, torso, 0, 6.1, sleep ? 4 : 6.3, 3.4, shirt);
     if (
       has(
@@ -167,10 +196,12 @@ export function collectionSprite(
         : drink
           ? head + 4
           : torso + 3 - (walk ? stride / 2 : 0);
-    limb(11, torso - 2, 8, ly, 1, 1.8, shirt);
-    ball(8, ly + 1, 2, 1.8, bodySkin);
-    limb(21, torso - 2, 25, ry, 1, 1.8, shirt);
-    ball(25, ry, 2, 1.8, bodySkin);
+    const leftZ = walk ? -feet[0].travel * 2.5 : 2;
+    const rightZ = walk ? -feet[1].travel * 2.5 : 2;
+    limb(11, torso - 2, walk ? 10 : 8, ly, 1, 1.8, shirt, leftZ);
+    ball(walk ? 10 : 8, ly + 1, leftZ, 1.8, bodySkin);
+    limb(21, torso - 2, walk ? 22 : 25, ry, 1, 1.8, shirt, rightZ);
+    ball(walk ? 22 : 25, ry, rightZ, 1.8, bodySkin);
     sphere(16, head, 1.5, 6.4, 6.6, 4.5, faceSkin);
     ball(9.7, head + 1, 1, 1.4, bodySkin);
     ball(22.2, head + 1, 1, 1.4, bodySkin);
@@ -412,12 +443,12 @@ export function collectionSprite(
       4.2,
       fur,
     );
-    for (const [x, step] of [
-      [11, stride],
-      [21, -stride],
-    ]) {
-      sphere(x, sleep ? 30 : 30.3 + step * 0.15, 2, 3.3, 2.1, 3, fur);
-      sphere(x, sleep ? 30.5 : 30.8 + step * 0.15, 4.5, 1.8, 0.8, 0.6, cream);
+    for (const [i, x] of [11, 21].entries()) {
+      const foot = feet[i];
+      const step = walk ? -foot.lift : 0;
+      const footZ = walk ? foot.travel * 3.464 : 2;
+      sphere(x, sleep ? 30 : 30.3 + step, footZ, 3.3, 2.1, 3, fur);
+      sphere(x, sleep ? 30.5 : 30.8 + step, footZ + 2.5, 1.8, 0.8, 0.6, cream);
     }
     sphere(
       sleep ? 13 : 16,
@@ -446,6 +477,7 @@ export function collectionSprite(
       2,
       2.3,
       fur,
+      walk ? -feet[0].travel * 2.5 : 2,
     );
     limb(
       sleep ? 20 : 21.8,
@@ -455,6 +487,7 @@ export function collectionSprite(
       2,
       2.3,
       fur,
+      walk ? -feet[1].travel * 2.5 : 2,
     );
     // Big circular ears with inset peach pads, then a generously rounded head.
     for (const x of [headX - 6.2, headX + 6.2]) {
@@ -556,14 +589,14 @@ export function collectionSprite(
       4.1,
       fur,
     );
-    for (const [x, step] of [
-      [11, stride],
-      [21, -stride],
-    ]) {
+    for (const [i, x] of [11, 21].entries()) {
+      const foot = feet[i];
+      const step = walk ? -foot.lift : 0;
+      const footZ = walk ? foot.travel * 3.464 : 2;
       sphere(
         x,
-        sleep ? 30 : 30 + step * 0.2,
-        2,
+        sleep ? 30 : 30 + step,
+        footZ,
         3.2,
         1.8,
         3,
@@ -571,8 +604,8 @@ export function collectionSprite(
       );
       sphere(
         x,
-        30.7 + step * 0.1,
-        4.5,
+        30.7 + step,
+        footZ + 2.5,
         1.8,
         0.55,
         0.5,
@@ -619,6 +652,7 @@ export function collectionSprite(
       1.5,
       2.1,
       isPanda ? dark : fur,
+      walk ? -feet[0].travel * 2.5 : 1.5,
     );
     limb(
       sleep ? 20 : 21.5,
@@ -628,6 +662,7 @@ export function collectionSprite(
       1.5,
       2.1,
       isPanda ? dark : fur,
+      walk ? -feet[1].travel * 2.5 : 1.5,
     );
     // Ears/gills are behind the oversized head, distinct for each animal.
     if (species === "bunny") {
@@ -724,24 +759,32 @@ export function collectionSprite(
     depth = new Float32Array(grid * grid).fill(-Infinity);
   const factor = grid / 32;
   for (const s of shapes) {
-    const x0 = Math.max(0, Math.floor((s.x - s.rx) * factor)),
-      x1 = Math.min(grid - 1, Math.ceil((s.x + s.rx) * factor));
+    const extentX = Math.hypot(s.rx * cos, s.rz * sin);
+    const x0 = Math.max(0, Math.floor((s.x - extentX) * factor)),
+      x1 = Math.min(grid - 1, Math.ceil((s.x + extentX) * factor));
     const y0 = Math.max(0, Math.floor((s.y - s.ry) * factor)),
       y1 = Math.min(grid - 1, Math.ceil((s.y + s.ry) * factor));
     for (let y = y0; y <= y1; y++)
       for (let x = x0; x <= x1; x++) {
-        const dx = ((x + 0.5) / factor - s.x) / s.rx,
-          dy = ((y + 0.5) / factor - s.y) / s.ry,
-          q = 1 - dx * dx - dy * dy;
-        if (q <= 0) continue;
-        const dz = Math.sqrt(q),
-          z = s.z + s.rz * dz,
+        const dx = (x + 0.5) / factor - s.x,
+          dy = ((y + 0.5) / factor - s.y) / s.ry;
+        const ix = 1 / (s.rx * s.rx),
+          iz = 1 / (s.rz * s.rz);
+        const a = sin * sin * ix + cos * cos * iz;
+        const b = 2 * dx * sin * cos * (iz - ix);
+        const c = dx * dx * (cos * cos * ix + sin * sin * iz) + dy * dy - 1;
+        const discriminant = b * b - 4 * a * c;
+        if (discriminant <= 0) continue;
+        const dz = (-b + Math.sqrt(discriminant)) / (2 * a),
+          z = s.z + dz,
           i = y * grid + x;
         if (z <= depth[i]) continue;
         depth[i] = z;
-        const nx = dx / s.rx,
+        const localNX = (cos * dx - sin * dz) * ix;
+        const localNZ = (sin * dx + cos * dz) * iz;
+        const nx = cos * localNX + sin * localNZ,
           ny = dy / s.ry,
-          nz = dz / s.rz,
+          nz = -sin * localNX + cos * localNZ,
           length = Math.hypot(nx, ny, nz);
         const lighting =
           0.56 + 0.5 * Math.max(0, (-0.4 * nx - 0.6 * ny + 0.8 * nz) / length);

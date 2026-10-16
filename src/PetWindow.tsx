@@ -17,6 +17,7 @@ import {
   type Coat,
 } from "./core/settings";
 import { sprite, silhouette } from "./core/sprite";
+import { walkingFrame } from "./core/gait";
 import { PetSprite } from "./components/PetSprite";
 
 export function PetWindow() {
@@ -138,16 +139,22 @@ export function PetWindow() {
           pet = remind(pet, now, settings, reminder === "water");
         }
         if (now >= messageUntil) message = null;
+        const animation =
+          hover.current && pet.animation === "walking" ? "idle" : pet.animation;
+        const frame =
+          animation === "walking"
+            ? walkingFrame(pet.walkingDistance, settings.size)
+            : Math.floor(now / 160);
         const nextRuns = sprite(
-          pet.animation,
-          Math.floor(now / 160),
+          animation,
+          frame,
           settings.coat,
           pet.direction,
           settings.character,
         );
         setPose({
-          animation: pet.animation,
-          frame: Math.floor(now / 160),
+          animation,
+          frame,
           coat: settings.coat,
           character: settings.character,
           direction: pet.direction,

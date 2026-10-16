@@ -6,6 +6,7 @@ export interface PetState {
   until: number;
   nextDecision: number;
   lift: number;
+  walkingDistance: number;
   excursion: {
     phase: "out" | "wave" | "home";
     elapsed: number;
@@ -33,6 +34,7 @@ export function createPet(): PetState {
     until: 0,
     nextDecision: 4000,
     lift: 0,
+    walkingDistance: 0,
     excursion: null,
   };
 }
@@ -83,6 +85,7 @@ export function advance(
   const { left, right, home } = walkingBounds(width, settings);
   const dt = Math.max(0, Math.min(delta, 0.1));
   p.x = Math.max(left, Math.min(right, p.x));
+  const previousX = p.x;
   if (!(settings.roaming && settings.alertsOnly)) p.excursion = null;
   if (p.excursion) {
     const trip = p.excursion;
@@ -117,6 +120,7 @@ export function advance(
         }
       }
     }
+    p.walkingDistance += Math.abs(p.x - previousX);
     return p;
   }
   const parked = !settings.roaming || settings.alertsOnly;
@@ -144,6 +148,7 @@ export function advance(
       p.x = left;
       p.direction = 1;
     }
+    p.walkingDistance += Math.abs(p.x - previousX);
   }
   p.lift =
     p.animation === "jumping"
