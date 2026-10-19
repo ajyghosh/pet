@@ -128,9 +128,10 @@ export function PetWindow() {
         pet = advance(
           pet,
           now,
-          hover.current ? 0 : (now - last) / 1000,
+          (now - last) / 1000,
           width,
           settings,
+          hover.current,
         );
         last = now;
         const reminder = clock.tick(now);

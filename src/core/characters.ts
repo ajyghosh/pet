@@ -148,6 +148,45 @@ export const softFriends: Character[] = [
   style: "cute-3d",
 }));
 
+/** Original side-on reptiles with species-specific bodies and movement. */
+export const reptiles: Character[] = [
+  {
+    id: "reptile-chameleon",
+    name: "Prism",
+    description: "Chameleon · a curled tail and curious eyes",
+    color: "#e3f3d6",
+  },
+  {
+    id: "reptile-gecko",
+    name: "Gizmo",
+    description: "Gecko · little toes, big adventures",
+    color: "#f5eccd",
+  },
+  {
+    id: "reptile-tortoise",
+    name: "Moss",
+    description: "Tortoise · taking life one gentle step at a time",
+    color: "#e2edce",
+  },
+  {
+    id: "reptile-snake",
+    name: "Noodle",
+    description: "Snake · a friendly little slither",
+    color: "#e4e1f4",
+  },
+  {
+    id: "reptile-crocodile",
+    name: "Pickle",
+    description: "Crocodile · a small snout with a big smile",
+    color: "#dcebdc",
+  },
+].map((character) => ({
+  ...character,
+  kind: "Animals",
+  collection: "Little Reptiles",
+  style: "cute-3d",
+}));
+
 export const referenceCharacters = seed.characters.filter(
   (c) => c.asset_status === "reference_only",
 );
@@ -160,6 +199,7 @@ export const characterDefinitions: Character[] = [
     style: "pixel-art" as const,
   })),
   ...softFriends,
+  ...reptiles,
   ...seed.characters
     .filter((c) => {
       if (c.asset_status !== "planned" || seen.has(c.id)) return false;

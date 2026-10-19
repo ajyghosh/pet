@@ -7,6 +7,9 @@ export interface PetState {
   nextDecision: number;
   lift: number;
   walkingDistance: number;
+  routine: "rest" | "stroll" | "look" | "greet" | "nap";
+  randomState: number;
+  glanceAt: number;
   excursion: {
     phase: "out" | "wave" | "home";
     elapsed: number;
@@ -26,7 +29,9 @@ export function walkingBounds(width: number, settings: Settings) {
   );
   return { left, right, home: settings.homeSide === "right" ? right : left };
 }
-export function createPet(): PetState {
+export function createPet(
+  seed = Math.floor(Math.random() * 0xffffffff),
+): PetState {
   return {
     x: 80,
     direction: 1,
@@ -35,8 +40,54 @@ export function createPet(): PetState {
     nextDecision: 4000,
     lift: 0,
     walkingDistance: 0,
+    routine: "rest",
+    randomState: seed >>> 0 || 1,
+    glanceAt: Infinity,
     excursion: null,
   };
+}
+// Keep each pet's choices independent and reproducible without sampling randomness
+// every frame. Decisions happen only at activity boundaries.
+function random(pet: PetState) {
+  let n = pet.randomState;
+  n ^= n << 13;
+  n ^= n >>> 17;
+  n ^= n << 5;
+  pet.randomState = n >>> 0;
+  return pet.randomState / 0x100000000;
+}
+function duration(pet: PetState, min: number, max: number) {
+  return min + random(pet) * (max - min);
+}
+function beginRest(pet: PetState, now: number, edge = false) {
+  const choice = random(pet);
+  pet.routine = edge
+    ? "look"
+    : choice < 0.5
+      ? "rest"
+      : choice < 0.78
+        ? "look"
+        : choice < 0.92
+          ? "greet"
+          : "nap";
+  pet.animation =
+    pet.routine === "nap"
+      ? "sleeping"
+      : pet.routine === "greet"
+        ? "happy"
+        : "idle";
+  const [min, max] = edge
+    ? [900, 1600]
+    : pet.routine === "nap"
+      ? [12000, 22000]
+      : pet.routine === "greet"
+        ? [2000, 3200]
+        : [4000, 9000];
+  pet.nextDecision = now + duration(pet, min, max);
+  pet.glanceAt =
+    pet.routine === "look" && !edge
+      ? now + duration(pet, 1200, 2000)
+      : Infinity;
 }
 export function interact(
   pet: PetState,
@@ -52,6 +103,7 @@ export function interact(
         : now + (animation === "jumping" ? 700 : 2300),
     lift: 0,
     excursion: null,
+    glanceAt: Infinity,
   };
 }
 export function remind(
@@ -80,10 +132,15 @@ export function advance(
   delta: number,
   width: number,
   settings: Settings,
+  paused = false,
 ): PetState {
   const p = { ...pet, excursion: pet.excursion ? { ...pet.excursion } : null };
   const { left, right, home } = walkingBounds(width, settings);
-  const dt = Math.max(0, Math.min(delta, 0.1));
+  const dt = paused ? 0 : Math.max(0, Math.min(delta, 0.1));
+  if (paused && !p.until) {
+    p.nextDecision += Math.max(0, delta) * 1000;
+    p.glanceAt += Math.max(0, delta) * 1000;
+  }
   p.x = Math.max(left, Math.min(right, p.x));
   const previousX = p.x;
   if (!(settings.roaming && settings.alertsOnly)) p.excursion = null;
@@ -123,7 +180,7 @@ export function advance(
     p.walkingDistance += Math.abs(p.x - previousX);
     return p;
   }
-  const parked = !settings.roaming || settings.alertsOnly;
+  const parked = !settings.roaming || settings.alertsOnly || right - left < 1;
   if (parked) {
     p.x = home;
     p.direction = settings.homeSide === "right" ? -1 : 1;
@@ -131,11 +188,27 @@ export function advance(
   if (p.until && now >= p.until) {
     p.until = 0;
     p.animation = "idle";
-    p.nextDecision = now + 2200;
+    p.routine = "rest";
+    p.nextDecision = now + duration(p, 1500, 3000);
   }
-  if (!p.until && now >= p.nextDecision) {
-    p.animation = !parked && p.animation !== "walking" ? "walking" : "idle";
-    p.nextDecision = now + (p.animation === "walking" ? 11000 : 4500);
+  if (!paused && !p.until && now >= p.nextDecision) {
+    if (!parked && p.animation !== "walking") {
+      p.routine = "stroll";
+      p.animation = "walking";
+      // Longer, varied strolls replace the old fixed eleven-second stop.
+      p.nextDecision = now + duration(p, 18000, 38000);
+      p.glanceAt = Infinity;
+      if (p.x <= left) p.direction = 1;
+      else if (p.x >= right) p.direction = -1;
+      else if (random(p) < 0.35) p.direction = p.direction === 1 ? -1 : 1;
+    } else if (settings.alertsOnly) {
+      p.animation = "idle";
+      p.nextDecision = now + duration(p, 4000, 9000);
+    } else beginRest(p, now);
+  }
+  if (!paused && !p.until && p.routine === "look" && now >= p.glanceAt) {
+    if (!parked) p.direction = p.direction === 1 ? -1 : 1;
+    p.glanceAt = now + duration(p, 1200, 2400);
   }
   if (parked && p.animation === "walking") p.animation = "idle";
   if (p.animation === "walking") {
@@ -143,10 +216,12 @@ export function advance(
     if (p.x >= right) {
       p.x = right;
       p.direction = -1;
+      if (!p.until && dt > 0) beginRest(p, now, true);
     }
     if (p.x <= left) {
       p.x = left;
       p.direction = 1;
+      if (!p.until && dt > 0) beginRest(p, now, true);
     }
     p.walkingDistance += Math.abs(p.x - previousX);
   }

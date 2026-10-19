@@ -29,7 +29,7 @@ export function CharacterGallery({
       (category === "All" || c.kind === category) &&
       (collection === "All collections" || c.collection === collection) &&
       (style === "all" || c.style === style) &&
-      `${c.name} ${c.description}`
+      `${c.name} ${c.description} ${c.collection}`
         .toLowerCase()
         .includes(query.trim().toLowerCase()),
   );

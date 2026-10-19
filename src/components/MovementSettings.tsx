@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { advance, createPet, remind } from "../core/engine";
 import type { Settings } from "../core/settings";
 import { PetSprite } from "./PetSprite";
+import { walkingFrame } from "../core/gait";
 export function MovementSettings({
   settings,
   onChange,
@@ -104,7 +105,11 @@ export function MovementSettings({
               character={settings.character}
               coat={settings.coat}
               animation={pet.animation}
-              frame={frame}
+              frame={
+                pet.animation === "walking"
+                  ? walkingFrame(pet.walkingDistance, simulation.size)
+                  : frame
+              }
               direction={pet.direction}
             />
           </div>
@@ -167,7 +172,7 @@ export function MovementSettings({
             ? "Reminders bring a short walk and wave, then a return home (about 6 seconds)."
             : mode === "park"
               ? "Your companion stays at home and reacts to reminders in place."
-              : "Your companion walks and takes little pauses between the two limits."}{" "}
+              : "Your companion takes varied strolls, looks around, greets you, and occasionally naps. Hover over it to pause; move your pointer away to continue."}{" "}
           Save changes to apply to your desktop.
         </p>
       </div>

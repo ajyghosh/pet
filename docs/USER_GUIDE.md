@@ -8,7 +8,7 @@ An offline Windows and macOS desktop companion built with **Tauri 2, React, Type
 
 ## Characters and movement
 
-Choose from **139 original animated companions**, each with three color styles and six animation states. The first twelve are: Alex, Nova, Sage the wizard, Mochi the cat, Biscuit the corgi, Ember the fox, Clover the rabbit, Bao the panda, Pip the penguin, Sprout the frog, Bolt the robot, and Cinder the dragon. All PNG frames are included in `public/characters/`; the dependency-free `npm run icons` generator produces them from the same pixel data used for native click regions. No purchased or placeholder assets are used.
+Choose from **144 original animated companions**, each with three color styles and six animation states. The first twelve are: Alex, Nova, Sage the wizard, Mochi the cat, Biscuit the corgi, Ember the fox, Clover the rabbit, Bao the panda, Pip the penguin, Sprout the frog, Bolt the robot, and Cinder the dragon. All PNG frames are included in `public/characters/`; the dependency-free `npm run icons` generator produces them from the same pixel data used for native click regions. No purchased or placeholder assets are used.
 
 The **Soft Friends** collection includes Maple the bear, Mallow the bunny, Tofu the kitten, Pudding the puppy, Pebble the panda, Buttercup the duckling, and Bubble the axolotl. Each has three color styles and six animations. **Maple** is a rounded, clay-style little bear with a cream belly and heykup coral scarf. Choose caramel, cream, or slate fur and preview all six animations. Its shaded sprites are rendered locally, with no model download or graphics runtime required.
 
@@ -50,7 +50,7 @@ If the companion is missing: open settings, choose **Desktop & startup → Follo
 - Completely click-through speech bubbles in their own non-activating window.
 - Click to greet, double-click to jump, right-click for a quick reminder; hovering pauses movement.
 - Editable water, stretch, and break intervals and messages; individual switches; 15-minute snooze.
-- 139 playable characters, collection/style filters, three color styles, name, five sizes, speed, monitor selection, home side, walking-area limits, three movement modes, and speech bubbles.
+- 144 playable characters, collection/style filters, three color styles, name, five sizes, speed, monitor selection, home side, walking-area limits, three movement modes, and speech bubbles.
 - Per-monitor work-area and DPI detection, negative desktop coordinates, taskbar edge and auto-hide detection, and hot-plug fallback to the primary display.
 - Windows tray / Mac menu-bar controls, single-instance behavior, close-to-tray settings, and optional per-user login startup.
 - Validated local JSON settings written atomically. No runtime requests to external services or remote assets; license texts load from the packaged app.
@@ -240,3 +240,9 @@ License: [MIT](../LICENSE). See [third-party notices](../THIRD_PARTY_NOTICES.md)
 Host installer archives and `SHA256SUMS.txt` under a download path such as `/downloads/heykup-pets/` and link them from the existing heykup website. The desktop app does not need a hosted backend. Existing heykup account or office-planning data is not connected to pets.
 
 If you also want the browser preview under `/pets/`, run `npm run build -- --base=/pets/` and serve that `dist/` under `/pets/`. Sprite and notice URLs follow that base path. Run the normal `npm run build` again before a native package so its assets use the desktop app root. No DNS, hosting or existing-site changes are performed by these commands.
+
+## Everyday routines and Little Reptiles
+
+Walk freely now mixes 18–38 second strolls with short rests, looking around, occasional greetings, and brief naps that end on their own. Boundaries bring a short pause before walking in the opposite direction. The old fixed eleven-second stop has been removed. Hovering pauses walking and the everyday routine; move the pointer away to continue. Stay in place and Only move for reminders still respect their chosen area. Manual Sleep is indefinite; reminders and interactions still work.
+
+The Little Reptiles collection adds Prism (chameleon), Gizmo (gecko), Moss (tortoise), Noodle (snake), and Pickle (crocodile), with all three color styles and six animation states. Choose a reptile in Characters and save to use it on your desktop.

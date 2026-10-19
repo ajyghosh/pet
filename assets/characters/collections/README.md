@@ -6,4 +6,4 @@ The catalog preserves 120 original concepts and 20 reference-only concepts. Orig
 
 Finished sprite atlases and manifests live in `public/characters/`. Generate them with `npm run icons`, or generate one companion with `node scripts/generate-icons.mjs --character=soft-bear`.
 
-Maple is defined separately in `src/core/characters.ts` in the Soft Friends collection.
+Soft Friends and Little Reptiles are defined separately in `src/core/characters.ts`. Little Reptiles includes Prism the chameleon, Gizmo the gecko, Moss the tortoise, Noodle the snake, and Pickle the crocodile. Each has three color styles, all six animation states, and both directions. Their original procedural artwork is in `src/core/reptileArtwork.ts`, and shares the atlas renderer and exact native hit regions used by the other collections.

@@ -28,7 +28,7 @@ Built with **Tauri 2, React, TypeScript, and Rust**. No account, subscription, p
 
 |                                   | What you can do                                                                                                                                          |
 | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🐾 **139 companions**             | Choose animals, people, fantasy characters, pixel art, shaded Cute 3D figures, and seven plush animals from Soft Friends. Each has three color styles.   |
+| 🐾 **144 companions**             | Choose animals, people, fantasy characters, pixel art, shaded Cute 3D figures, seven plush animals from Soft Friends, and five Little Reptiles. Each has three color styles.   |
 | 🎬 **Six animations**             | Watch your companion idle, walk, wave, jump, drink water, and sleep. Try them in a separate preview studio with day/night scenes.                        |
 | 🎨 **Make it yours**              | Change its name, color style, size, and speed.                                                                                                           |
 | 🔔 **Gentle reminders**           | Set water, stretch, and break intervals, plus custom one-off or repeating reminders with speech bubbles and system notifications. Snooze for 15 minutes. |
@@ -63,6 +63,14 @@ Each friend comes with three color styles and all six animations. Every frame is
 ![Soft Friends gallery showing seven plush-style animals with rounded bodies and soft shading](docs/soft-friends.png)
 
 ![Maple the bear in three color styles, showing idle, walk, sleep, jump, wave, and drink poses](docs/maple-soft-bear.png)
+
+### Little Reptiles
+
+Meet **Prism** the chameleon, **Gizmo** the gecko, **Moss** the tortoise, **Noodle** the snake, and **Pickle** the crocodile. Curled and swaying tails, tiny toes, shell plates, curious eyes, and a continuous snake slither give each one its own character. All five include three color styles and every animation.
+
+![Little Reptiles collection](docs/reptiles.png)
+
+In **Walk freely** mode, companions now take varied 18–38 second strolls, look around, greet you, rest, and occasionally take a brief nap. They pause briefly to turn at the boundaries. These everyday routines do not depend on notifications. Hover pauses the routine; moving your pointer away resumes it. Manual Sleep is indefinite; reminders and interactions still work. Only move for reminders keeps its existing behavior.
 
 ### A little nudge when you need it
 

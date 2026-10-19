@@ -126,3 +126,97 @@ it("greeting a sleeping pet clears its indefinite sleep and resumes normal behav
   expect(Number.isFinite(awake.until)).toBe(true);
   expect(advance(awake, 103000, 0.1, 1000, defaults).animation).toBe("idle");
 });
+
+describe("everyday routines without notifications", () => {
+  it("walks past the old eleven-second cutoff, then takes a finite rest", () => {
+    let pet = advance(createPet(42), 4000, 0.05, 10000, defaults);
+    expect(pet.animation).toBe("walking");
+    const deadline = pet.nextDecision;
+    expect(deadline - 4000).toBeGreaterThanOrEqual(18000);
+    expect(deadline - 4000).toBeLessThanOrEqual(38000);
+    pet = advance(pet, 15001, 0.05, 10000, defaults);
+    expect(pet.animation).toBe("walking");
+    pet = advance(pet, deadline, 0.05, 10000, defaults);
+    expect(pet.animation).not.toBe("walking");
+    expect(pet.nextDecision).toBeGreaterThan(deadline);
+    expect(Number.isFinite(pet.nextDecision)).toBe(true);
+    pet = advance(pet, pet.nextDecision, 0.05, 10000, defaults);
+    expect(pet.animation).toBe("walking");
+  });
+
+  it("varies its strolls, looks around, greets, and wakes naturally from naps", () => {
+    let pet = createPet(123456);
+    const routines = new Set<string>();
+    const walkLengths = new Set<number>();
+    let turnedWhileResting = false;
+    let napWoke = false;
+    for (let now = 0; now < 20 * 60_000; now += 100) {
+      const previous = pet;
+      pet = advance(pet, now, 0.1, 10000, defaults);
+      routines.add(pet.routine);
+      if (pet.routine === "stroll" && previous.routine !== "stroll")
+        walkLengths.add(pet.nextDecision - now);
+      if (
+        pet.routine === "look" &&
+        previous.routine === "look" &&
+        pet.direction !== previous.direction
+      )
+        turnedWhileResting = true;
+      if (previous.routine === "nap" && pet.animation === "walking")
+        napWoke = true;
+      expect(pet.x).toBeGreaterThanOrEqual(0);
+      expect(pet.x).toBeLessThanOrEqual(9920);
+    }
+    expect(routines).toEqual(
+      new Set(["rest", "stroll", "look", "greet", "nap"]),
+    );
+    expect(walkLengths.size).toBeGreaterThan(5);
+    expect(turnedWhileResting).toBe(true);
+    expect(napWoke).toBe(true);
+  });
+
+  it("pauses its routine while hovered and continues the same walk afterward", () => {
+    let pet = advance(createPet(42), 4000, 0.05, 10000, defaults);
+    const x = pet.x,
+      remaining = pet.nextDecision - 4000;
+    pet = advance(pet, 64000, 60, 10000, defaults, true);
+    expect(pet.x).toBe(x);
+    expect(pet.animation).toBe("walking");
+    expect(pet.nextDecision - 64000).toBeCloseTo(remaining);
+    pet = advance(pet, 64100, 0.1, 10000, defaults);
+    expect(pet.x).toBeGreaterThan(x);
+    expect(pet.animation).toBe("walking");
+  });
+
+  it("pauses to turn at a boundary and never walks on a collapsed walking area", () => {
+    const pet = {
+      ...createPet(42),
+      x: 919,
+      animation: "walking" as const,
+      nextDecision: Infinity,
+    };
+    const edge = advance(pet, 1000, 0.1, 1000, defaults);
+    expect(edge.x).toBe(920);
+    expect(edge.direction).toBe(-1);
+    expect(edge.routine).toBe("look");
+    expect(edge.animation).toBe("idle");
+    expect(
+      advance(edge, edge.nextDecision + 1, 0.1, 1000, defaults).x,
+    ).toBeLessThan(edge.x);
+    const narrow = advance(pet, 5000, 0.1, 70, defaults);
+    expect(narrow.x).toBe(0);
+    expect(narrow.animation).not.toBe("walking");
+  });
+
+  it("keeps explicit sleep asleep and never roams spontaneously in reminder-only mode", () => {
+    let asleep = interact(createPet(42), "sleeping", 0);
+    let quiet = createPet(42);
+    for (let now = 0; now < 120_000; now += 1000) {
+      asleep = advance(asleep, now, 0.1, 1000, defaults);
+      quiet = advance(quiet, now, 0.1, 1000, { ...defaults, alertsOnly: true });
+      expect(asleep.animation).toBe("sleeping");
+      expect(quiet.animation).toBe("idle");
+      expect(quiet.x).toBe(0);
+    }
+  });
+});

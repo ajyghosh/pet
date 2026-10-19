@@ -5,14 +5,15 @@ import {
   referenceCharacters,
   spriteGrid,
   softFriends,
+  reptiles,
 } from "./characters";
 import seed from "../../assets/characters/collections/characters.json";
 import { normalizeSettings } from "./settings";
 describe("complete character collections", () => {
   it("includes every original concept once and keeps references unavailable", () => {
-    expect(characters).toHaveLength(139);
-    expect(new Set(characters.map((c) => c.id)).size).toBe(139);
-    expect(characters.filter((c) => c.style === "cute-3d")).toHaveLength(57);
+    expect(characters).toHaveLength(144);
+    expect(new Set(characters.map((c) => c.id)).size).toBe(144);
+    expect(characters.filter((c) => c.style === "cute-3d")).toHaveLength(62);
     expect(referenceCharacters).toHaveLength(20);
     for (const c of seed.characters) {
       expect(characters.some((ready) => ready.id === c.id)).toBe(
@@ -45,6 +46,23 @@ describe("complete character collections", () => {
       expect(manifest.outfits).toHaveLength(3);
     }
   });
+});
+
+it("includes five distinct, selectable reptiles in their own collection", () => {
+  expect(reptiles.map((pet) => pet.id)).toEqual([
+    "reptile-chameleon",
+    "reptile-gecko",
+    "reptile-tortoise",
+    "reptile-snake",
+    "reptile-crocodile",
+  ]);
+  for (const pet of reptiles) {
+    expect(characters).toContainEqual(pet);
+    expect(pet.collection).toBe("Little Reptiles");
+    expect(pet.kind).toBe("Animals");
+    expect(spriteGrid(pet.id)).toBe(64);
+    expect(normalizeSettings({ character: pet.id }).character).toBe(pet.id);
+  }
 });
 
 it("includes distinct plush animals as playable 64px Soft Friends", () => {

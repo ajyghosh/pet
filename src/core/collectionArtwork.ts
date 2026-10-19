@@ -1,19 +1,11 @@
 import type { Animation, Coat } from "./settings";
 import { footPose } from "./gait.ts";
 import type { Run } from "./sprite";
+import { reptileShapes, type Shape } from "./reptileArtwork.ts";
 
 // Original procedural figures, rendered offline into transparent atlases. The 3D
 // renderer casts orthographic rays at articulated ellipsoids with a depth buffer
 // and a fixed studio light; it does not use downloaded models or a remote API.
-interface Shape {
-  x: number;
-  y: number;
-  z: number;
-  rx: number;
-  ry: number;
-  rz: number;
-  color: number;
-}
 function hash(s: string) {
   let h = 2166136261;
   for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
@@ -53,7 +45,7 @@ export function collectionSprite(
       ? Math.sin(frame / 5) * 0.12
       : 0;
   const feet = [footPose(frame), footPose(frame, true)];
-  const yaw = walk ? Math.PI / 3 : 0;
+  const yaw = walk && !id.startsWith("reptile-") ? Math.PI / 3 : 0;
   const cos = Math.cos(yaw),
     sin = Math.sin(yaw);
   const female = has(/girl|woman|grandma|bride|princess|witch|saree|nurse/);
@@ -418,7 +410,9 @@ export function collectionSprite(
       sphere(25, 13, 1, 2.5, 0.4, 0.4, accent);
     }
   };
-  if (id === "soft-bear") {
+  if (id.startsWith("reptile-")) {
+    shapes.push(...reptileShapes(id, animation, frame, coat));
+  } else if (id === "soft-bear") {
     // Soft clay bear: broad rounded forms and matte studio shading. Coordinates
     // share the same depth buffer and opaque-pixel hit regions as other pets.
     const fur =
