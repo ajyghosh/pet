@@ -34,7 +34,11 @@ mod tests {
     #[test]
     fn startup_retries_are_bounded_and_stop_after_a_successful_frame() {
         let start = Instant::now();
-        assert!(!retry_startup(start, Some(0), start + Duration::from_secs(29)));
+        assert!(!retry_startup(
+            start,
+            Some(0),
+            start + Duration::from_secs(29)
+        ));
         for attempt in 0..3 {
             assert!(retry_startup(
                 start,
@@ -42,7 +46,11 @@ mod tests {
                 start + Duration::from_secs(30)
             ));
         }
-        assert!(!retry_startup(start, Some(3), start + Duration::from_secs(30)));
+        assert!(!retry_startup(
+            start,
+            Some(3),
+            start + Duration::from_secs(30)
+        ));
         assert!(!retry_startup(start, None, start + Duration::from_secs(30)));
     }
 }
