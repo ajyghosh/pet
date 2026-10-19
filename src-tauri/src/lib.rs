@@ -31,6 +31,7 @@ struct DesktopState {
     started: Instant,
     last_frame: Option<Instant>,
     pet_error: Option<String>,
+    startup_retries: Option<u8>,
 }
 type Shared = Mutex<DesktopState>;
 fn allowed(window: &WebviewWindow, labels: &[&str]) -> Result<(), String> {
@@ -63,7 +64,17 @@ fn bootstrap(
 ) -> Result<Bootstrap, String> {
     allowed(&window, &["settings", "pet"])?;
     let mut s = state.lock().map_err(|e| e.to_string())?;
-    s.settings.autostart = app.autolaunch().is_enabled().map_err(|e| e.to_string())?;
+    // Startup registration is independent of rendering the desktop companion.
+    // A registry/LaunchAgent read failure must not abort the pet's bootstrap.
+    match app.autolaunch().is_enabled() {
+        Ok(enabled) => s.settings.autostart = enabled,
+        Err(error) => {
+            let warning = format!("Could not check login startup: {error}");
+            if s.warning.is_none() {
+                s.warning = Some(warning);
+            }
+        }
+    }
     Ok(Bootstrap {
         platform: std::env::consts::OS,
         click_enabled: platform::input_status(),
@@ -359,6 +370,7 @@ fn present_frame(
     }
     s.last_frame = Some(Instant::now());
     s.pet_error = None;
+    s.startup_retries = None;
     Ok(hover)
 }
 #[tauri::command]
@@ -474,7 +486,7 @@ fn desktop_status(window: WebviewWindow, state: tauri::State<Shared>) -> Result<
         .is_some_and(|t| t.elapsed() < Duration::from_secs(5))
     {
         "Pet animation is running.".into()
-    } else if s.started.elapsed() < Duration::from_secs(10) {
+    } else if !watchdog::expired(s.started, s.last_frame, Instant::now()) {
         "Starting the desktop pet…".into()
     } else {
         "Pet animation has not responded. Select Show / restart pet to retry.".into()
@@ -487,6 +499,9 @@ fn restart_pet(
     state: tauri::State<Shared>,
 ) -> Result<(), String> {
     allowed(&window, &["settings"])?;
+    reset_pet(&app, &state, true)
+}
+fn reset_pet(app: &tauri::AppHandle, state: &Shared, manual: bool) -> Result<(), String> {
     {
         let mut s = state.lock().map_err(|e| e.to_string())?;
         s.hidden = false;
@@ -494,11 +509,15 @@ fn restart_pet(
         s.last_frame = None;
         s.started = Instant::now();
         s.shape.clear();
+        s.message = None;
+        if manual {
+            s.startup_retries = Some(0);
+        }
     }
     if let Some(bubble) = app.get_webview_window("bubble") {
         bubble.hide().map_err(|e| e.to_string())?;
     }
-    warm_pet(&app)?;
+    warm_pet(app)?;
     app.get_webview_window("pet")
         .ok_or("Pet window missing")?
         .reload()
@@ -510,6 +529,18 @@ fn expire_stalled_pet(app: &tauri::AppHandle) {
     let Ok(mut s) = state.try_lock() else {
         return;
     };
+    // Login can race display discovery and webview initialization. Retry only startup;
+    // a pet that has already rendered retains the normal fail-closed watchdog.
+    if !s.hidden && watchdog::retry_startup(s.started, s.startup_retries, Instant::now()) {
+        s.startup_retries = s.startup_retries.map(|attempt| attempt + 1);
+        drop(s);
+        if let Err(error) = reset_pet(app, &state, false) {
+            if let Ok(mut s) = state.lock() {
+                s.pet_error = Some(format!("Could not start the desktop pet: {error}"));
+            }
+        }
+        return;
+    }
     if s.hidden
         || s.pet_error.is_some()
         || !watchdog::expired(s.started, s.last_frame, Instant::now())
@@ -614,6 +645,7 @@ pub fn run() {
                 started: Instant::now(),
                 last_frame: None,
                 pet_error: None,
+                startup_retries: Some(0),
             }));
             WebviewWindowBuilder::new(app, "settings", WebviewUrl::App("index.html".into()))
                 .title("heykup pets · a little company")
@@ -653,7 +685,6 @@ pub fn run() {
                     .build()?;
             bubble.set_ignore_cursor_events(true)?;
             platform::initialize(app.handle())?;
-            start_watchdog(app.handle());
             if let Err(error) = warm_pet(app.handle()) {
                 app.state::<Shared>()
                     .lock()
@@ -661,6 +692,13 @@ pub fn run() {
                     .pet_error = Some(error);
                 show_settings(app.handle());
             }
+            // Window creation can take longer than the startup deadline at login.
+            // Give the renderer its full grace period after native setup is ready.
+            app.state::<Shared>()
+                .lock()
+                .map_err(|e| e.to_string())?
+                .started = Instant::now();
+            start_watchdog(app.handle());
             use tauri::{
                 menu::{Menu, MenuItem, PredefinedMenuItem},
                 tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
@@ -714,13 +752,21 @@ pub fn run() {
                     "visible" => {
                         let state = app.state::<Shared>();
                         if let Ok(mut s) = state.lock() {
-                            s.hidden = !s.hidden;
+                            s.hidden = !s.hidden && s.pet_error.is_none();
                             if s.hidden {
                                 platform::clear_input();
                                 for label in ["pet", "bubble"] {
                                     if let Some(w) = app.get_webview_window(label) {
                                         let _ = w.hide();
                                     }
+                                }
+                            } else {
+                                drop(s);
+                                if let Err(error) = reset_pet(app, &state, true) {
+                                    if let Ok(mut s) = state.lock() {
+                                        s.pet_error = Some(error);
+                                    }
+                                    show_settings(app);
                                 }
                             }
                         };

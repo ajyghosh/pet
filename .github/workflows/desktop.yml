@@ -60,7 +60,15 @@ jobs:
       - name: Native lint
         run: cargo clippy --locked --manifest-path src-tauri/Cargo.toml -- -D warnings
       - name: Build app and installers
+        if: runner.os == 'Windows'
         run: npm run desktop:build -- --ci --target ${{ matrix.target }} -- --locked
+      - name: Build Mac application
+        if: runner.os == 'macOS'
+        run: npm run desktop:build -- --ci --target ${{ matrix.target }} --bundles app -- --locked
+      - name: Package Mac disk image without mounting it
+        if: runner.os == 'macOS'
+        shell: bash
+        run: bash scripts/package-macos-dmg.sh '${{ matrix.target }}'
       - name: Archive Mac application preserving permissions and symlinks
         if: runner.os == 'macOS'
         shell: bash

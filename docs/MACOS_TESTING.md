@@ -16,6 +16,8 @@ Run against the installed release build on Intel and Apple Silicon. Record macOS
 - [ ] Test Mission Control, Spaces, fullscreen, Stage Manager, lock/unlock, and sleep/resume. Check for invisible input interception and document visibility limitations.
 - [ ] Set each reminder to one minute; verify custom messages, persistence, snooze, and bubble-disable behavior. Restart the app offline.
 - [ ] Enable startup only after moving the app to its final folder. Sign out/in: one companion appears without opening settings. Disable startup and repeat: heykup pets does not start.
+- [ ] Test a slow login with display discovery or the first webview frame delayed. The startup grace period begins after window setup; missing initial frames retry at 30-second intervals up to three times. Once frames arrive, the normal five-second stalled-frame safety timeout applies.
+- [ ] Hide the pet long enough for WebKit to suspend it, then choose Hide / show pet. It must reload and appear without needing an existing animation timer to wake it.
 - [ ] Launch a second instance: only one companion remains and settings open.
 - [ ] Disable startup, quit, and remove heykup-pets.app. Confirm no per-user LaunchAgent remains enabled. Settings may be retained.
 

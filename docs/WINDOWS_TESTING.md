@@ -34,6 +34,9 @@ Run on Windows 10 and Windows 11 with the actual installed release build. These 
 - [ ] Close settings: pet remains. Tray restores settings. Quit removes all windows and the tray icon.
 - [ ] Launch a second instance: only one companion remains and existing settings open.
 - [ ] Enable startup, sign out/in: companion starts without settings. Disable startup, sign out/in: it does not start.
+- [ ] On a slow login, delay Explorer/display discovery or WebView2 initialization. Allow 30 seconds after native setup for the first frame, with at most three automatic retries. Confirm the pet appears when the desktop is ready.
+- [ ] Hide the pet long enough for WebView2 to suspend its timers, then show it from the tray. Confirm it reloads, installs its silhouette, and only then enables mouse input.
+- [ ] Simulate an unreadable startup registration: the settings warning is shown, but the pet still renders. Startup save failures must still be reported.
 - [ ] Corrupt settings JSON while quit: defaults and warning appear, original data remains until an explicit save.
 
 ## Installed/offline behavior
