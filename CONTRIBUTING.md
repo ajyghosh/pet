@@ -54,7 +54,7 @@ cargo clippy --locked --manifest-path src-tauri/Cargo.toml -- -D warnings
 
 Use Prettier to format changed frontend files. For documentation-only changes, check links, image paths, and the rendered Markdown, then run `git diff --check`.
 
-Dependency updates must keep lockfiles and third-party notices in sync; see the [guide's distribution notes](docs/USER_GUIDE.md#beta-distribution-and-brand) for `npm run notices` prerequisites. The [desktop CI workflow](.github/workflows/desktop.yml) runs frontend, browser, and native checks before packaging all three supported targets.
+Dependency updates must keep lockfiles and third-party notices in sync; see the [guide's distribution notes](docs/USER_GUIDE.md#distribution-and-brand) for `npm run notices` prerequisites. The [desktop CI workflow](.github/workflows/desktop.yml) runs frontend, browser, and native checks before packaging all three supported targets.
 
 ## Open a pull request
 

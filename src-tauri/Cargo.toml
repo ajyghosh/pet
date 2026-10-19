@@ -1,6 +1,6 @@
 [package]
 name = "miso-desktop"
-version = "1.3.0-beta.1"
+version = "1.3.0"
 description = "A little offline desktop company"
 authors = ["Miso contributors"]
 edition = "2021"

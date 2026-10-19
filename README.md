@@ -10,7 +10,7 @@ An offline desktop companion that brings a little life to your workday.<br>
 Pick a friend, make it yours, and let it remind you to look after yourself.
 
 [![MIT license](https://img.shields.io/badge/license-MIT-f05a32)](LICENSE)
-[![Beta](https://img.shields.io/badge/version-1.3.0--beta.1-d85a30)](docs/BETA_FIXES.md)
+[![Version](https://img.shields.io/badge/version-1.3.0-d85a30)](https://github.com/ajyghosh/pet/releases/tag/v1.3.0)
 [![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20macOS-17191d)](#get-the-app)
 [![Desktop builds](https://github.com/ajyghosh/pet/actions/workflows/desktop.yml/badge.svg)](https://github.com/ajyghosh/pet/actions/workflows/desktop.yml)
 
@@ -22,20 +22,20 @@ Pick a friend, make it yours, and let it remind you to look after yourself.
 
 Built with **Tauri 2, React, TypeScript, and Rust**. No account, subscription, paid API, or runtime internet connection required. Original code and bundled character artwork are **MIT licensed**.
 
-> **Beta:** The current version is **1.3.0-beta.1**. Windows and macOS builds are configured in CI; native desktop acceptance testing is still in progress. See the [validation notes](docs/VALIDATION.md) for checks actually completed.
+> **Stable release:** The current version is **1.3.0**. Download the Windows or Mac installer from [Version 1.3.0](https://github.com/ajyghosh/pet/releases/tag/v1.3.0). See the [validation notes](docs/VALIDATION.md) for the scope of desktop acceptance testing.
 
 ## Features
 
-|                                   | What you can do                                                                                                                                          |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🐾 **144 companions**             | Choose animals, people, fantasy characters, pixel art, shaded Cute 3D figures, seven plush animals from Soft Friends, and five Little Reptiles. Each has three color styles.   |
-| 🎬 **Six animations**             | Watch your companion idle, walk, wave, jump, drink water, and sleep. Try them in a separate preview studio with day/night scenes.                        |
-| 🎨 **Make it yours**              | Change its name, color style, size, and speed.                                                                                                           |
-| 🔔 **Gentle reminders**           | Set water, stretch, and break intervals, plus custom one-off or repeating reminders with speech bubbles and system notifications. Snooze for 15 minutes. |
-| 🖥️ **Your desktop, your space**   | Choose a display, home side, and walking boundaries. Let your companion roam, stay put, or move only for reminders.                                      |
-| 🫧 **Click-through overlays**     | Transparent areas and speech bubbles let clicks reach the app underneath. Windows uses the actual sprite silhouette for hit testing.                     |
-| 🏠 **Local by design**            | Settings and reminders stay on your device. No analytics, cloud storage, or remote assets at runtime.                                                    |
-| ⚙️ **Tray and menu-bar controls** | Open settings, hide/show, sleep/wake, snooze, and quit. Optionally start at sign-in.                                                                     |
+|                                   | What you can do                                                                                                                                                              |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🐾 **144 companions**             | Choose animals, people, fantasy characters, pixel art, shaded Cute 3D figures, seven plush animals from Soft Friends, and five Little Reptiles. Each has three color styles. |
+| 🎬 **Six animations**             | Watch your companion idle, walk, wave, jump, drink water, and sleep. Try them in a separate preview studio with day/night scenes.                                            |
+| 🎨 **Make it yours**              | Change its name, color style, size, and speed.                                                                                                                               |
+| 🔔 **Gentle reminders**           | Set water, stretch, and break intervals, plus custom one-off or repeating reminders with speech bubbles and system notifications. Snooze for 15 minutes.                     |
+| 🖥️ **Your desktop, your space**   | Choose a display, home side, and walking boundaries. Let your companion roam, stay put, or move only for reminders.                                                          |
+| 🫧 **Click-through overlays**     | Transparent areas and speech bubbles let clicks reach the app underneath. Windows uses the actual sprite silhouette for hit testing.                                         |
+| 🏠 **Local by design**            | Settings and reminders stay on your device. No analytics, cloud storage, or remote assets at runtime.                                                                        |
+| ⚙️ **Tray and menu-bar controls** | Open settings, hide/show, sleep/wake, snooze, and quit. Optionally start at sign-in.                                                                                         |
 
 ## Meet your companions
 
@@ -84,15 +84,15 @@ Keep the desktop app running for delivery. The browser preview lets you edit rem
 
 ## Get the app
 
-Build artifacts are available from successful runs of [**Actions → Desktop builds**](https://github.com/ajyghosh/pet/actions/workflows/desktop.yml). Open a completed run, download the artifact for your computer, and extract the ZIP. GitHub may require you to sign in to download artifacts.
+Download the installer for your computer from the [latest stable release](https://github.com/ajyghosh/pet/releases/latest), or use a direct link below. Public release downloads do not require GitHub sign-in.
 
-| Computer                        | Artifact                          | Install                                               |
-| ------------------------------- | --------------------------------- | ----------------------------------------------------- |
-| Windows 10/11, Intel or AMD x64 | `heykup-pets-windows-x64`         | Run the `*-setup.exe`.                                |
-| Mac with Apple Silicon          | `heykup-pets-macos-apple-silicon` | Open the `.dmg` and copy the app to `~/Applications`. |
-| Mac with Intel CPU              | `heykup-pets-macos-intel`         | Open the `.dmg` and copy the app to `~/Applications`. |
+| Computer                        | Download                                                                                                      | Install                                               |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Windows 10/11, Intel or AMD x64 | [Windows installer](https://github.com/ajyghosh/pet/releases/download/v1.3.0/heykup-pets_1.3.0_x64-setup.exe) | Run the `*-setup.exe`.                                |
+| Mac with Apple Silicon          | [Apple Silicon DMG](https://github.com/ajyghosh/pet/releases/download/v1.3.0/heykup-pets_1.3.0_aarch64.dmg)   | Open the `.dmg` and copy the app to `~/Applications`. |
+| Mac with Intel CPU              | [Intel DMG](https://github.com/ajyghosh/pet/releases/download/v1.3.0/heykup-pets_1.3.0_x64.dmg)               | Open the `.dmg` and copy the app to `~/Applications`. |
 
-Artifacts expire after **30 days**; the workflow does not publish GitHub Releases. Each artifact includes `SHA256SUMS.txt`. You can also [build from source](#run-the-desktop-app).
+The release also includes alternate Mac app archives and `SHA256SUMS.txt`. Development artifacts are available from [successful CI runs](https://github.com/ajyghosh/pet/actions/workflows/desktop.yml) and expire after 30 days. You can also [build from source](#run-the-desktop-app).
 
 Windows installers run per user and include the offline WebView2 runtime. Mac builds target macOS 11 or later; launch the app from its final location, outside the DMG. You do not need Node.js or Rust to use a packaged app.
 
@@ -154,7 +154,7 @@ If your companion disappears, select **Desktop & startup → Follow primary disp
 
 ## Current scope and future work
 
-This beta supports **one active companion**. Features below are future work, not promises for a particular release:
+This version supports **one active companion**. Features below are future work, not promises for a particular release:
 
 - Multiple active companions and encounters between them.
 - Dragging, bespoke signature actions, and additional animations.

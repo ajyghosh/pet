@@ -955,7 +955,7 @@ export default function App() {
                   three color styles and six animation states. Pick a walking
                   area, park on either side, or move only for reminders.
                   Multiple simultaneous companions and fullscreen auto-hide are
-                  not available in this beta.
+                  not available in this version.
                 </p>
               </div>
               <p className="field-help">

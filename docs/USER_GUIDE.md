@@ -2,7 +2,7 @@
 
 # heykup pets · little companions, real company
 
-An offline Windows and macOS desktop companion built with **Tauri 2, React, TypeScript, and Rust**. Original pixel artwork and code are MIT licensed. Version **1.3.0-beta.1** adds quick and scheduled reminders, and the heykup brand theme. No account, backend, subscription, paid API, or paid assets.
+An offline Windows and macOS desktop companion built with **Tauri 2, React, TypeScript, and Rust**. Original pixel artwork and code are MIT licensed. Version **1.3.0** includes everyday companion routines, five Little Reptiles, quick and scheduled reminders, and the heykup brand theme. No account, backend, subscription, paid API, or paid assets.
 
 ![heykup pets settings preview](preview.png)
 
@@ -35,7 +35,7 @@ Later phases are **not implemented**: multiple active characters, photo intake/c
 
 ## Upgrading from Miso / a companion that never appeared
 
-Quit the older app using its tray menu before installing heykup pets 1.3.0-beta.1. The app identifier, settings paths, and legacy `Miso` user startup key are retained so upgrades can keep preferences. You can rename a retained companion in Appearance. Startup registration is refreshed to the installed executable when already enabled.
+Quit the older app using its tray menu before installing heykup pets 1.3.0. The app identifier, settings paths, and legacy `Miso` user startup key are retained so upgrades can keep preferences. You can rename a retained companion in Appearance. Startup registration is refreshed to the installed executable when already enabled.
 
 The overlay now starts visibly from Rust while remaining fully click-through until its first valid character region. It selects the correct view using Tauri's native window label, rather than URL query routing. Settings show whether animation frames are arriving and include **Show / restart pet** to safely reposition and reload a stalled companion. Placement failures are displayed in this status area. These changes address startup failure modes; the originally reported invisible Windows pet still needs confirmation with the new installer on the affected machine.
 
@@ -95,7 +95,7 @@ npm run desktop:build -- -- --locked
 Outputs:
 
 ```text
-src-tauri/target/release/bundle/nsis/heykup-pets_1.3.0-beta.1_x64-setup.exe
+src-tauri/target/release/bundle/nsis/heykup-pets_1.3.0_x64-setup.exe
 ```
 
 The installer runs in **current-user context**, installs under `%LOCALAPPDATA%`, and does not request administrator elevation. Launch it normally, without “Run as administrator.” The app manifest explicitly uses `asInvoker` with `uiAccess="false"`. heykup pets runs in the signed-in desktop session; it does not install a Windows service or use SYSTEM. Settings live in the user's profile and startup uses HKCU. The default MSI has been removed because it installs machine-wide. Organization policies can still block unapproved applications or runtime installation.
@@ -171,11 +171,11 @@ Keep heykup pets running in the tray for delivery. It does not start a backgroun
 
 The browser preview supports local reminder editing/persistence; it does not deliver system reminders. Windows notifications need an installed build. Calendar times are stored as timestamps; repeating reminders use fixed minute intervals rather than timezone-aware calendar recurrence.
 
-## Beta distribution and brand
+## Distribution and brand
 
 The displayed brand is **heykup pets** and downloadable bundles use **heykup-pets**. Colours were taken from [heykup.com](https://heykup.com/): coral `#f05a32`, rust `#d85a30`/`#993c1d`, warm cream `#fdf9f5`, and ink `#17191d`. No website, account integration, or remote hosting has been changed. Legacy app identity and settings/startup keys remain compatible with MiniMates/Miso upgrades.
 
-About includes complete third-party notices; installers also carry `LICENSE`, `THIRD_PARTY_NOTICES.md`, and generated `THIRD_PARTY_LICENSES.txt`. `npm run check:release` verifies version agreement, lockfile notice freshness and resource configuration. To regenerate after changing dependencies, install/fetch all three supported targets, then run `npm run notices`. The CI artifact includes `SHA256SUMS.txt` alongside the installer/archive. Use a committed beta tag and complete the native acceptance checklists before a public release. See [beta follow-up status](BETA_FIXES.md).
+About includes complete third-party notices; installers also carry `LICENSE`, `THIRD_PARTY_NOTICES.md`, and generated `THIRD_PARTY_LICENSES.txt`. `npm run check:release` verifies version agreement, lockfile notice freshness and resource configuration. To regenerate after changing dependencies, install/fetch all three supported targets, then run `npm run notices`. The CI artifact includes `SHA256SUMS.txt` alongside the installer/archive. Release installers are attached to stable tag `v1.3.0`. Continue recording native acceptance results using the platform checklists. See [beta follow-up status](BETA_FIXES.md).
 
 ## Reminders and local data
 
